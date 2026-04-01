@@ -5,7 +5,7 @@ export default function App() {
   return (
     <div>  
         <Header />
-        <div className="bg-black">
+        <div className="bg-zinc-800">
           <CarouselBody />
         </div>
       <main className="p-4"></main>

@@ -1,103 +1,102 @@
-import { useState } from "react"
+import { useEffect, useState } from "react"
+import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
+import { Separator } from "@/components/ui/separator"
+import {
+  Sheet,
+  SheetContent,
+  SheetTrigger,
+} from "@/components/ui/sheet"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
 import logo from "@/assets/ShoPIM-orange-removebg.png"
 
-export function Header() {
-  const [open, setOpen] = useState(false)
-  const [openCategory, setOpenCategory] = useState(false)
+export function HeaderLanding() {
+  const [offset, setOffset] = useState(0)
+
+  useEffect(() => {
+    const onScroll = () => {
+      setOffset(document.documentElement.scrollTop)
+    }
+
+    document.addEventListener("scroll", onScroll, { passive: true })
+    return () => document.removeEventListener("scroll", onScroll)
+  }, [])
 
   return (
-    <header className="bg-muted p-4 text-foreground bg-zinc-600">
-      <div className="flex items-center justify-between">
-        
-        <img src={logo} alt="Logo"  className="h-12" />
-
-        <nav className="hidden md:flex gap-8 items-center ">
-  <a href="#" onClick={(e) => e.preventDefault()}>
-    Início
-  </a>
-
-  {/* DROPDOWN DESKTOP */}
-  <div className="relative">
-    <button
-      onClick={() => setOpenCategory(!openCategory)}
-      className="flex items-center gap-1"
-    >      Categorias
-      <span>{openCategory ? "▲" : "▼"}</span>
-    </button>
-
-    {openCategory && (
-      <div className="absolute top-full left-0 mt-2 bg-zinc-900 shadow-lg rounded p-3 flex flex-col gap-2 min-w-[150px] z-50">
-        <a href="#" onClick={(e) => e.preventDefault()}>Eletrônicos</a>        
-        <a href="#" onClick={(e) => e.preventDefault()}>Roupas</a>
-        <a href="#" onClick={(e) => e.preventDefault()}>Acessórios</a>       
-      </div>
-    )}
-  </div>
-
-  <a href="#" onClick={(e) => e.preventDefault()}>
-    Ofertas
-  </a>
-  <a href="#" onClick={(e) => e.preventDefault()}>
-    Login
-  </a>
-</nav>
-
-        <Button
-          variant="ghost"
-          size="icon"
-          className="md:hidden"
-          onClick={() => setOpen(true)}
-        >
-          ☰
-        </Button>
-      </div>
-
-      {/* Sidebar mobile */}
+    <header
+      className={cn(
+        "sticky top-0 z-50 w-full transition-all",
+        offset > 10 && "shadow"
+      )}
+    >
       <div
-        className={`fixed bg-zinc-800 top-0 left-0 h-full w-64 bg-background shadow-lg transform transition-transform duration-300 z-50
-        ${open ? "translate-x-0" : "-translate-x-full"}`}
+        className={cn(
+          "relative flex h-16 items-center justify-between px-4",
+          offset > 10 &&
+            "after:absolute after:inset-0 after:-z-10 after:bg-background/70 after:backdrop-blur-lg"
+        )}
       >
-        <Button
-          variant="ghost"
-          className="m-2"
-          onClick={() => setOpen(false)}
-        >
-          ✕
-        </Button>
+        {/* LOGO */}
+        <div className="flex items-center gap-3">
+          <img src={logo} alt="Logo" className="h-10" />
+          <Separator orientation="vertical" className="h-6 hidden md:block" />
+        </div>
 
-        <nav className="flex flex-col gap-4 p-4 ">
-          <a href="#">Início</a>          
+        {/* DESKTOP NAV */}
+        <nav className="hidden md:flex items-center gap-6">
+          <a href="#">Início</a>
 
-          <div>
-            <button
-              onClick={() => setOpenCategory(!openCategory)}
-              className="flex justify-between w-full"
-            >
-              Categorias
-              <span>{openCategory ? "▲" : "▼"}</span>              
-            </button>
+          {/* DROPDOWN */}
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <button className="flex items-center gap-1">
+                Categorias
+              </button>
+            </DropdownMenuTrigger>
 
-            {openCategory && (
-              <div className="ml-4 mt-2 flex flex-col gap-2 text-sm">
-                <a href="#">Eletrônicos</a>                
-                <a href="#">Roupas</a>
-                <a href="#">Acessórios</a>                
-              </div>
-            )}
-          </div>
+            <DropdownMenuContent>
+              <DropdownMenuItem>Eletrônicos</DropdownMenuItem>
+              <DropdownMenuItem>Roupas</DropdownMenuItem>
+              <DropdownMenuItem>Acessórios</DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
 
           <a href="#">Ofertas</a>
-          <a href="#">Login</a>
+          <a href="/sign-in">Login</a>
         </nav>
-      </div>
 
-      {open && (
-        <div
-          className="fixed inset-0 bg-black/40 z-40"
-          onClick={() => setOpen(false)}
-        />
-      )}
+        {/* MOBILE MENU */}
+        <Sheet>
+          <SheetTrigger asChild>
+            <Button variant="ghost" size="icon" className="md:hidden">
+              ☰
+            </Button>
+          </SheetTrigger>
+
+          <SheetContent side="left" className="w-64">
+            <nav className="flex flex-col gap-4 mt-6">
+              <a href="#">Início</a>
+
+              <div className="flex flex-col gap-2">
+                <span className="font-medium">Categorias</span>
+                <div className="ml-2 flex flex-col gap-1 text-sm">
+                  <a href="#">Eletrônicos</a>
+                  <a href="#">Roupas</a>
+                  <a href="#">Acessórios</a>
+                </div>
+              </div>
+
+              <a href="#">Ofertas</a>
+              <a href="/sign-in">Login</a>
+            </nav>
+          </SheetContent>
+        </Sheet>
+      </div>
     </header>
   )
 }

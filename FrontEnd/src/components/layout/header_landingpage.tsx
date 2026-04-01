@@ -1,5 +1,6 @@
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
+import logo from "@/assets/ShoPIM-orange-removebg.png"
 
 export function Header() {
   const [open, setOpen] = useState(false)
@@ -7,15 +8,38 @@ export function Header() {
 
   return (
     <header className="bg-muted p-4 text-foreground">
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between ">
         
-        <img src="/ShoPIM-removebg.png" className="h-12" />
+        <img src={logo} alt="Logo"  className="h-12" />
 
-        <nav className="hidden md:flex gap-6 items-center">
-          <a href="#">Início</a>
-          <a href="#">Categorias</a>
-          <a href="#">Ofertas</a>
-        </nav>
+        <nav className="hidden md:flex gap-8 items-center">
+  <a href="#" onClick={(e) => e.preventDefault()}>
+    Início
+  </a>
+
+  {/* DROPDOWN DESKTOP */}
+  <div className="relative">
+    <button
+      onClick={() => setOpenCategory(!openCategory)}
+      className="flex items-center gap-1"
+    >
+      Categorias
+      <span>{openCategory ? "▲" : "▼"}</span>
+    </button>
+
+    {openCategory && (
+      <div className="absolute top-full left-0 mt-2 bg-gray-700 shadow-lg rounded p-3 flex flex-col gap-2 min-w-[150px] z-50">
+        <a href="#" onClick={(e) => e.preventDefault()}>Eletrônicos</a>
+        <a href="#" onClick={(e) => e.preventDefault()}>Roupas</a>
+        <a href="#" onClick={(e) => e.preventDefault()}>Acessórios</a>
+      </div>
+    )}
+  </div>
+
+  <a href="#" onClick={(e) => e.preventDefault()}>
+    Ofertas
+  </a>
+</nav>
 
         <Button
           variant="ghost"

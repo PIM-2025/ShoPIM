@@ -6,7 +6,7 @@ export default function App() {
     <div>  
       <HeaderLanding />
 
-      <div className="bg-black">
+      <div className="bg-zinc-800">
         <CarouselBody />
       </div>
 

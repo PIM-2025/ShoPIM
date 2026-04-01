@@ -3,10 +3,10 @@ import { CarouselBody } from "@/components/layout/body_landingpage"
 
 export default function App() {
   return (
-    <div>
-      <Header />
+    <div>  
+        <Header />
         <div className="bg-black">
-        <CarouselBody />
+          <CarouselBody />
         </div>
       <main className="p-4"></main>
     </div>

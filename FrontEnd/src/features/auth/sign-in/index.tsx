@@ -17,10 +17,9 @@ export function SignIn() {
     <AuthLayout>
       <Card className='gap-4'>
         <CardHeader>
-          <CardTitle className='text-lg tracking-tight'>Sign in</CardTitle>
+          <CardTitle className='text-lg tracking-tight'>Entrar</CardTitle>
           <CardDescription>
-            Enter your email and password below to <br />
-            log into your account
+            Digite seu email e senha abaixo para acessar sua conta:<br />
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -28,19 +27,19 @@ export function SignIn() {
         </CardContent>
         <CardFooter>
           <p className='px-8 text-center text-sm text-muted-foreground'>
-            By clicking sign in, you agree to our{' '}
+            Ao clicar em Entrar, você concorda com os nossos{' '}
             <a
               href='/terms'
               className='underline underline-offset-4 hover:text-primary'
             >
-              Terms of Service
+              Termos de Serviço
             </a>{' '}
             and{' '}
             <a
               href='/privacy'
               className='underline underline-offset-4 hover:text-primary'
             >
-              Privacy Policy
+              Política de Privacidade
             </a>
             .
           </p>

@@ -38,8 +38,8 @@ export const sidebarData: SidebarData = {
     },
     {
       name: 'Acme Inc',
-      logo: GalleryVerticalEnd,
-      plan: 'Enterprise',
+      logo: GalleryVerticalEnd,      
+      plan: 'Empresarial',
     },
     {
       name: 'Acme Corp.',
@@ -49,86 +49,86 @@ export const sidebarData: SidebarData = {
   ],
   navGroups: [
     {
-      title: 'General',
+      title: 'Geral',
       items: [
         {
-          title: 'Dashboard',
-          url: '/',
+          title: 'Painel',
+          url: '/dashboard',
           icon: LayoutDashboard,
         },
         {
-          title: 'Tasks',
+          title: 'Tarefas',
           url: '/tasks',
           icon: ListTodo,
         },
         {
-          title: 'Chats',
+          title: 'Conversas',
           url: '/chats',
           badge: '3',
           icon: MessagesSquare,
         },
         {
-          title: 'Users',
+          title: 'Usuários',
           url: '/users',
-          icon: Users,
+          icon: Users,          
         }
       ],
     },
     {
-      title: 'Pages',
+      title: 'Páginas',
       items: [
         {
-          title: 'Auth',
+          title: 'Autenticação',
           icon: ShieldCheck,
           items: [
             {
-              title: 'Sign In',
+              title: 'Entrar',
               url: '/sign-in',
             },
             {
-              title: 'Sign In (2 Col)',
+              title: 'Entrar (2 Col)',
               url: '/sign-in-2',
             },
             {
-              title: 'Sign Up',
+              title: 'Cadastrar',
               url: '/sign-up',
             },
             {
-              title: 'Forgot Password',
+              title: 'Esqueceu a Senha',
               url: '/forgot-password',
             },
             {
-              title: 'OTP',
+              title: 'OTP',              
               url: '/otp',
             },
           ],
         },
         {
-          title: 'Errors',
+          title: 'Erros',
           icon: Bug,
           items: [
             {
-              title: 'Unauthorized',
+              title: 'Não Autorizado',
               url: '/errors/unauthorized',
               icon: Lock,
             },
             {
-              title: 'Forbidden',
+              title: 'Proibido',
               url: '/errors/forbidden',
               icon: UserX,
             },
             {
-              title: 'Not Found',
+              title: 'Não Encontrado',
               url: '/errors/not-found',
               icon: FileX,
             },
             {
-              title: 'Internal Server Error',
+              title: 'Erro Interno do Servidor',
               url: '/errors/internal-server-error',
               icon: ServerOff,
             },
             {
-              title: 'Maintenance Error',
+              title: 'Erro de Manutenção',
               url: '/errors/maintenance-error',
               icon: Construction,
             },
@@ -137,41 +137,41 @@ export const sidebarData: SidebarData = {
       ],
     },
     {
-      title: 'Other',
+      title: 'Outro',
       items: [
         {
-          title: 'Settings',
+          title: 'Configurações',
           icon: Settings,
           items: [
             {
-              title: 'Profile',
+              title: 'Perfil',
               url: '/settings',
               icon: UserCog,
             },
             {
-              title: 'Account',
+              title: 'Conta',
               url: '/settings/account',
               icon: Wrench,
             },
             {
-              title: 'Appearance',
+              title: 'Aparência',
               url: '/settings/appearance',
               icon: Palette,
             },
             {
-              title: 'Notifications',
+              title: 'Notificações',
               url: '/settings/notifications',
               icon: Bell,
             },
             {
-              title: 'Display',
+              title: 'Exibição',
               url: '/settings/display',
               icon: Monitor,
             },
           ],
         },
         {
-          title: 'Help Center',
+          title: 'Central de Ajuda',
           url: '/help-center',
           icon: HelpCircle,
         },

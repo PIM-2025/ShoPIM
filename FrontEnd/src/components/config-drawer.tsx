@@ -55,9 +55,9 @@ export function ConfigDrawer() {
       </SheetTrigger>
       <SheetContent className='flex flex-col'>
         <SheetHeader className='pb-0 text-start'>
-          <SheetTitle>Theme Settings</SheetTitle>
+          <SheetTitle>Configuração dos temas</SheetTitle>
           <SheetDescription id='config-drawer-description'>
-            Adjust the appearance and layout to suit your preferences.
+            Ajuste a aparência e o layout para se adaptarem às suas preferências.
           </SheetDescription>
         </SheetHeader>
         <div className='space-y-6 overflow-y-auto px-4'>
@@ -205,7 +205,7 @@ function ThemeConfig() {
         ))}
       </Radio>
       <div id='theme-description' className='sr-only'>
-        Choose between system preference, light mode, or dark mode
+        Escolha entre a preferência do sistema, o modo claro ou o modo escuro.
       </div>
     </div>
   )
@@ -248,7 +248,7 @@ function SidebarConfig() {
         ))}
       </Radio>
       <div id='sidebar-description' className='sr-only'>
-        Choose between inset, floating, or standard sidebar layout
+        Escolha entre o layout de sidebar inset, floating ou padrão
       </div>
     </div>
   )
@@ -305,7 +305,7 @@ function LayoutConfig() {
         ))}
       </Radio>
       <div id='layout-description' className='sr-only'>
-        Choose between default expanded, compact icon-only, or full layout mode
+        Escolha entre o layout padrão expandido, compacto apenas com ícones, ou o modo de layout completo
       </div>
     </div>
   )

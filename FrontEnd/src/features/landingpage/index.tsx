@@ -5,12 +5,10 @@ export default function App() {
   return (
     <div>
       <Header />
-      <body className="bg-black">
-      <CarouselBody />
-      </body>
-      <main className="p-4">
-        
-      </main>
+        <div className="bg-black">
+        <CarouselBody />
+        </div>
+      <main className="p-4"></main>
     </div>
   )
 }

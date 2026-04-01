@@ -19,25 +19,23 @@ const images = [
 
 export function CarouselBody() {
   return (
-    <Carousel className="w-full max-w-5xl mx-auto relative">
-        <CarouselContent>
-            {images.map((src, index) => (
-            <CarouselItem key={index}>
-                <div>
-                <div className="aspect-[11/9] overflow-hidden">
-                    <img
-                    src={src}
-                    alt={`Imagem ${index + 1}`}
-                    className="w-full h-full object-cover"
-                    />
-                </div>
-                </div>
-            </CarouselItem>
-            ))}
-        </CarouselContent>
+    <Carousel className="w-full mx-auto relative max-w-sm sm:max-w-xl md:max-w-3xl lg:max-w-5xl">
+  <CarouselContent>
+    {images.map((src, index) => (
+      <CarouselItem key={index}>
+        <div className="aspect-[16/9] overflow-hidden">
+          <img
+            src={src}
+            alt={`Imagem ${index + 1}`}
+            className="w-full h-full object-cover"
+          />
+        </div>
+      </CarouselItem>
+    ))}
+  </CarouselContent>
 
-    <CarouselPrevious className="left-3 top-1/2 -translate-y-1/2 z-10" />
-    <CarouselNext className="right-3 top-1/2 -translate-y-1/2 z-10" />
-    </Carousel>
+  <CarouselPrevious className="left-3 top-1/2 -translate-y-1/2 z-10" />
+  <CarouselNext className="right-3 top-1/2 -translate-y-1/2 z-10" />
+</Carousel>
   )
 }

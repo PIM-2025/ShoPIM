@@ -2,6 +2,7 @@ import { useEffect, useState } from "react"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { Separator } from "@/components/ui/separator"
+import { ThemeSwitch } from '@/components/theme-switch'
 import {
   Sheet,
   SheetContent,
@@ -68,6 +69,7 @@ export function HeaderLanding() {
 
           <a href="#">Ofertas</a>
           <a href="/sign-in">Login</a>
+          <ThemeSwitch />
         </nav>
 
         {/* MOBILE MENU */}

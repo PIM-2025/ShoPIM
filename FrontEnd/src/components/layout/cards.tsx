@@ -38,7 +38,7 @@ export function Card({ title, price, image }: CardProps) {
         </button>
 
         {/* Carrinho */}
-        <button className="flex-[1] bg-green-500 text-white flex items-center justify-center rounded-lg hover:bg-green-600 transition">
+        <button className="flex-[1] bg-orange-600 text-white flex items-center justify-center rounded-lg hover:bg-orange-900 transition">
           <ShoppingCart size={18} />
         </button>
 

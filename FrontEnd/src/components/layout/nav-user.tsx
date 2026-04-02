@@ -30,7 +30,7 @@ import { SignOutDialog } from '@/components/sign-out-dialog'
 export function NavUser() {
   const { isMobile } = useSidebar()
   const [open, setOpen] = useDialogState()
-  const user = useAuthStore((state) => state.user)
+  const user = useAuthStore((state) => state.auth.user)
 
   if (!user) {
     return null

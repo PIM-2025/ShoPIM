@@ -1,7 +1,5 @@
 import blackFriday from "@/assets/black-friday.png"
 import freteGratis from "@/assets/frete-gratis.png"
-
-import { Card, CardContent } from "@/components/ui/card"
 import {
   Carousel,
   CarouselContent,

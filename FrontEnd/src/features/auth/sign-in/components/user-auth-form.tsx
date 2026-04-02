@@ -63,6 +63,8 @@ export function UserAuthForm({
           email: data.email, // Keep email as is, it's a user input
           role: ['user'],
           exp: Date.now() + 24 * 60 * 60 * 1000, // 24 hours from now
+          name: 'John Doe',
+          avatar: 'https://i.pravatar.cc/150?img=3'
         }
 
         // Set user and access token

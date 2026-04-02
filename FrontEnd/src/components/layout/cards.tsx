@@ -1,4 +1,3 @@
-import camisa from "@/assets/camisa.jpg"
 
 type CardProps = {
   title: string

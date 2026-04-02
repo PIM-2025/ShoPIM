@@ -24,7 +24,7 @@ const products: Product[] = [
   },
   {
     id: 3,
-    title: "IPhone 15 (250bg)",
+    title: "IPhone 15 (250 GB)",
     price: 6389.9,
     image: "https://http2.mlstatic.com/D_NQ_NP_2X_972898-MLA95936460027_102025-F.webp"
   },

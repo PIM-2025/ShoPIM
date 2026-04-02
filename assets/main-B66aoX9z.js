@@ -1,0 +1,1 @@
+import{t as e}from"./jsx-runtime-Bg_NI1en.js";import{c as t}from"./button-Bl-qLhje.js";var n=e();function r({fixed:e,className:r,fluid:i,...a}){return(0,n.jsx)(`main`,{"data-layout":e?`fixed`:`auto`,className:t(`px-4 py-6`,e&&`flex grow flex-col overflow-hidden`,!i&&`@7xl/content:mx-auto @7xl/content:w-full @7xl/content:max-w-7xl`,r),...a})}export{r as t};

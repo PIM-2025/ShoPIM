@@ -1,0 +1,1 @@
+var e=3600*24*7;function t(e){if(typeof document>`u`)return;let t=`; ${document.cookie}`.split(`; ${e}=`);if(t.length===2)return t.pop()?.split(`;`).shift()}function n(t,n,r=e){typeof document>`u`||(document.cookie=`${t}=${n}; path=/; max-age=${r}`)}function r(e){typeof document>`u`||(document.cookie=`${e}=; path=/; max-age=0`)}export{r as n,n as r,t};

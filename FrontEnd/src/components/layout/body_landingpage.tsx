@@ -19,15 +19,20 @@ const images = [
 
 export function CarouselBody() {
   return (
-    <Carousel className="w-full mx-auto relative max-w-sm sm:max-w-xl md:max-w-3xl lg:max-w-5xl">
+    <Carousel className="w-screen relative">
   <CarouselContent>
     {images.map((src, index) => (
       <CarouselItem key={index}>
-        <div className="aspect-[16/9] overflow-hidden">
+        <div className="w-full h-[180px] sm:h-[240px] md:h-auto overflow-hidden bg-black flex items-center justify-center">
           <img
             src={src}
             alt={`Imagem ${index + 1}`}
-            className="w-full h-full object-cover"
+            className="
+              w-full h-full
+              object-cover
+              md:object-contain
+              md:h-auto
+            "
           />
         </div>
       </CarouselItem>

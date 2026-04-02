@@ -1,3 +1,4 @@
+import { ShoppingCart } from "lucide-react"
 
 type CardProps = {
   title: string
@@ -7,25 +8,41 @@ type CardProps = {
 
 export function Card({ title, price, image }: CardProps) {
   return (
-    <div className="bg-white rounded-2xl shadow-md p-4 w-64">
+    <div className="bg-background border rounded-2xl shadow-sm p-4 w-full transition hover:shadow-md">
       
-      <img 
-        src={image} 
-        alt={title} 
-        className="w-full h-40 object-cover rounded-xl"
-      />
+      {/* IMAGEM */}
+      <div className="w-full h-40 rounded-xl flex items-center justify-center">
+        <img 
+          src={image} 
+          alt={title} 
+          className="max-h-full max-w-full object-contain"
+        />
+      </div>
 
-      <h2 className="text-lg font-semibold mt-2">
+      {/* TÍTULO */}
+      <h2 className="text-lg font-semibold mt-3 text-foreground">
         {title}
       </h2>
 
-      <p className="text-gray-600">
+      {/* PREÇO */}
+      <p className="text-muted-foreground">
         R$ {price.toFixed(2)}
       </p>
 
-      <button className="bg-blue-500 text-white w-full mt-3 py-2 rounded-lg hover:bg-blue-600">
-        Comprar
-      </button>
+      {/* BOTÕES */}
+      <div className="flex gap-2 mt-4">
+        
+        {/* Comprar */}
+        <button className="flex-[3] bg-primary text-primary-foreground py-2 rounded-lg hover:opacity-90 transition">
+          Comprar
+        </button>
+
+        {/* Carrinho */}
+        <button className="flex-[1] bg-green-500 text-white flex items-center justify-center rounded-lg hover:bg-green-600 transition">
+          <ShoppingCart size={18} />
+        </button>
+
+      </div>
 
     </div>
   )

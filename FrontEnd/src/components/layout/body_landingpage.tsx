@@ -1,5 +1,7 @@
-import blackFriday from "@/assets/black-friday.png"
+import promoRoupa from "@/assets/promoRoupa.png"
 import freteGratis from "@/assets/frete-gratis.png"
+import promocao from "@/assets/promocao.png"
+import kitInformatica from "@/assets/kit-informatica.png"
 import {
   Carousel,
   CarouselContent,
@@ -9,7 +11,9 @@ import {
 } from "@/components/ui/carousel"
 
 const images = [
-    blackFriday,
+    promoRoupa,
+    promocao,
+    kitInformatica,
     freteGratis
 ]
 

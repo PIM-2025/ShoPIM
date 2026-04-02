@@ -8,6 +8,8 @@ interface AuthUser {
   email: string
   role: string[]
   exp: number
+  name: string
+  avatar?: string
 }
 
 interface AuthState {

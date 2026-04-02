@@ -21,6 +21,7 @@ export function Card({ title, price, image }: CardProps) {
     dark:hover:shadow-white/10
   "
 >
+  
       
       {/* IMAGEM */}
       <div className="w-full h-40 rounded-xl flex items-center justify-center">

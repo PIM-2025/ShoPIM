@@ -2,6 +2,7 @@ import { useEffect, useState } from "react"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { Separator } from "@/components/ui/separator"
+import { ShoppingCart, User, House, ChevronDown, Menu} from "lucide-react"
 import { ThemeSwitch } from '@/components/theme-switch'
 import {
   Sheet,
@@ -70,7 +71,10 @@ export function HeaderLanding() {
 
         {/* DESKTOP NAV */}
         <nav className="hidden md:flex items-center gap-6 relative">
-          <a href="#">Início</a>
+          <a href="#" className="flex items-center gap-2 transition-transform duration-300 hover:scale-110">
+            <House />
+            Início
+          </a>
 
           {/* CATEGORIAS DESKTOP (HOVER) */}
           <div
@@ -78,27 +82,39 @@ export function HeaderLanding() {
             onMouseEnter={() => setOpenCategoryDesktop(true)}
             onMouseLeave={() => setOpenCategoryDesktop(false)}
           >
-            <button className="flex items-center gap-1">
+            <button className="flex items-center gap-2 transition-transform duration-300 hover:scale-110">
+              <ChevronDown
+                className={`transition-transform duration-300 ${
+                  openCategoryDesktop ? "rotate-180" : "rotate-0"
+                }`}
+              />
               Categorias
             </button>
 
             {openCategoryDesktop && (
+              
               <div className="absolute top-full bg-background shadow-md rounded-md p-2 flex flex-col gap-1 min-w-[150px]">
-                <a href="#" className="hover:bg-muted px-2 py-1 rounded">
+                <a href="#" className="hover:bg-muted px-2 py-1 rounded transition-transform duration-300 hover:scale-110">
                   Eletrônicos
                 </a>
-                <a href="#" className="hover:bg-muted px-2 py-1 rounded">
+                <a href="#" className="hover:bg-muted px-2 py-1 rounded transition-transform duration-300 hover:scale-110">
                   Roupas
                 </a>
-                <a href="#" className="hover:bg-muted px-2 py-1 rounded">
+                <a href="#" className="hover:bg-muted px-2 py-1 rounded transition-transform duration-300 hover:scale-110">
                   Acessórios
                 </a>
               </div>
             )}
           </div>
 
-          <a href="#">Ofertas</a>
-          <a href="/sign-in">Login</a>
+          <a href="#" className="flex items-center gap-2 transition-transform duration-300 hover:scale-110">
+            <ShoppingCart size={18} />
+            Carrinho
+          </a>
+          <a href="/sign-in" className="flex items-center gap-2 transition-transform duration-300 hover:scale-110">
+            <User size={18} />
+            Login
+          </a>
           <ThemeSwitch />
         </nav>
 
@@ -106,35 +122,56 @@ export function HeaderLanding() {
         <Sheet>
           <SheetTrigger asChild>
             <Button variant="ghost" size="icon" className="md:hidden">
-              ☰
+              <Menu/>
             </Button>
           </SheetTrigger>
 
           <SheetContent side="left" className="w-64">
             <nav className="flex flex-col gap-4 mt-6">
-              <a href="#">Início</a>
+              <a href="#" className="flex items-center gap-2 transition-transform duration-300 ml-2">
+                <House />
+                Início
+              </a>
 
               {/* CATEGORIAS MOBILE (CLICK) */}
               <div className="flex flex-col gap-2">
                 <button
-                  onClick={() => setOpenCategoryMobile(!openCategoryMobile)}
-                  className="font-medium text-left flex justify-between items-center"
-                >
-                  Categorias
-                  <span>{openCategoryMobile ? "−" : "+"}</span>
-                </button>
+                onClick={() => setOpenCategoryMobile(!openCategoryMobile)}
+                className="flex items-center gap-2 transition-transform duration-300 ml-2"
+              >
+                <ChevronDown
+                  className={`
+                    transition-all duration-300
+                    ${openCategoryMobile ? "rotate-180" : "rotate-0"}
+                  `}
+                />
+                Categorias
+              </button>
 
                 {openCategoryMobile && (
                   <div className="ml-2 flex flex-col gap-1 text-sm">
-                    <a href="#">Eletrônicos</a>
-                    <a href="#">Roupas</a>
-                    <a href="#">Acessórios</a>
+                    <a href="#" className="hover:bg-muted px-2 py-1 rounded transition-transform duration-300">
+                      Eletrônicos
+                    </a>
+                    <a href="#" className="hover:bg-muted px-2 py-1 rounded transition-transform duration-300">
+                      Roupas
+                    </a>
+                    <a href="#" className="hover:bg-muted px-2 py-1 rounded transition-transform duration-300">
+                      Acessórios
+                    </a>
                   </div>
                 )}
               </div>
 
-              <a href="#">Ofertas</a>
-              <a href="/sign-in">Login</a>
+              <a href="#" className="flex items-center gap-2 transition-transform duration-300 ml-3">
+                <ShoppingCart size={18} />
+                Carrinho
+              </a>
+              <a href="/sign-in" className="flex items-center gap-2 transition-transform duration-300 ml-3">
+                <User size={18} />
+                Login
+              </a>
+              <ThemeSwitch /> 
             </nav>
           </SheetContent>
         </Sheet>

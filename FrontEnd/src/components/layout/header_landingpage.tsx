@@ -8,10 +8,13 @@ import {
   SheetContent,
   SheetTrigger,
 } from "@/components/ui/sheet"
-import logo from "@/assets/ShoPIM-orange-removebg.png"
+import logoDark from "@/assets/ShoPIM-orange-removebg.png"
+import logoLight from "@/assets/ShoPIM-light-tema.png"
 
 export function HeaderLanding() {
   const [offset, setOffset] = useState(0)
+
+  const [isDark, setIsDark] = useState(false)
 
   // estados separados
   const [openCategoryMobile, setOpenCategoryMobile] = useState(false)
@@ -25,6 +28,25 @@ export function HeaderLanding() {
     document.addEventListener("scroll", onScroll, { passive: true })
     return () => document.removeEventListener("scroll", onScroll)
   }, [])
+
+  useEffect(() => {
+  const checkTheme = () => {
+    setIsDark(document.documentElement.classList.contains("dark"))
+  }
+
+  checkTheme()
+
+  // observa mudanças na classe do HTML
+  const observer = new MutationObserver(checkTheme)
+  observer.observe(document.documentElement, {
+    attributes: true,
+    attributeFilter: ["class"],
+  })
+
+  return () => observer.disconnect()
+}, [])
+
+  const currentLogo = isDark ? logoDark : logoLight
 
   return (
     <header
@@ -42,7 +64,7 @@ export function HeaderLanding() {
       >
         {/* LOGO */}
         <div className="flex items-center gap-3">
-          <img src={logo} alt="Logo" className="h-10" />
+         <img src={currentLogo} alt="Logo" className="h-10" />
           <Separator orientation="vertical" className="h-6 hidden md:block" />
         </div>
 

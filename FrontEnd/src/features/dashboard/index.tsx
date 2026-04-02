@@ -1,265 +1,223 @@
-import { useEffect, useState } from 'react'
-import { ShoppingCart, User, House, ChevronDown, Menu, X } from 'lucide-react'
-import logoLight from '@/assets/ShoPIM-light-tema.png'
-import logoDark from '@/assets/ShoPIM-orange-removebg.png'
-import { cn } from '@/lib/utils'
-import { Badge } from '@/components/ui/badge'
-import { Separator } from '@/components/ui/separator'
 import {
-  Sheet,
-  SheetContent,
-  SheetTrigger,
-  SheetClose,
-} from '@/components/ui/sheet'
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { ConfigDrawer } from '@/components/config-drawer'
+import { Header } from '@/components/layout/header'
+import { Main } from '@/components/layout/main'
+import { TopNav } from '@/components/layout/top-nav'
+import { ProfileDropdown } from '@/components/profile-dropdown'
 import { Search } from '@/components/search'
 import { ThemeSwitch } from '@/components/theme-switch'
+import { Analytics } from './components/analytics'
+import { Overview } from './components/overview'
+import { RecentSales } from './components/recent-sales'
 
-type Category = {
-  label: string
-  href: string
-  description: string
-}
-
-const categories: Category[] = [
-  {
-    label: 'Eletrônicos',
-    href: '#',
-    description: 'Smartphones, notebooks e mais',
-  },
-  { label: 'Roupas', href: '#', description: 'Moda masculina e feminina' },
-  { label: 'Acessórios', href: '#', description: 'Bolsas, relógios e joias' },
-]
-
-function CategoryItem({ cat }: { cat: Category }) {
+export function Dashboard() {
   return (
-    <a
-      href={cat.href}
-      className='flex flex-col rounded-md px-3 py-2 transition-colors hover:bg-accent'
-    >
-      <span className='text-sm font-medium text-foreground'>{cat.label}</span>
-      <span className='text-xs text-muted-foreground'>{cat.description}</span>
-    </a>
-  )
-}
-
-function CategoryItemMobile({ cat }: { cat: Category }) {
-  return (
-    <a
-      href={cat.href}
-      className='rounded-md px-3 py-2 text-sm text-muted-foreground transition-colors hover:bg-accent hover:text-foreground'
-    >
-      {cat.label}
-    </a>
-  )
-}
-
-export function HeaderLanding() {
-  const [offset, setOffset] = useState(0)
-  const [isDark, setIsDark] = useState(false)
-  const [openCategoryMobile, setOpenCategoryMobile] = useState(false)
-  const [openCategoryDesktop, setOpenCategoryDesktop] = useState(false)
-
-  useEffect(() => {
-    const onScroll = () => {
-      setOffset(document.documentElement.scrollTop)
-    }
-    document.addEventListener('scroll', onScroll, { passive: true })
-    return () => {
-      document.removeEventListener('scroll', onScroll)
-    }
-  }, [])
-
-  useEffect(() => {
-    const checkTheme = () => {
-      setIsDark(document.documentElement.classList.contains('dark'))
-    }
-    checkTheme()
-    const observer = new MutationObserver(checkTheme)
-    observer.observe(document.documentElement, {
-      attributes: true,
-      attributeFilter: ['class'],
-    })
-    return () => {
-      observer.disconnect()
-    }
-  }, [])
-
-  const scrolled = offset > 10
-
-  return (
-    <header
-      className={cn(
-        'sticky top-0 z-50 w-full border-b border-transparent transition-all duration-300',
-        scrolled &&
-          'border-border/40 bg-background/80 shadow-sm backdrop-blur-lg'
-      )}
-    >
-      <div className='mx-auto flex h-16 max-w-7xl items-center justify-between px-4 md:px-6'>
-        {/* LOGO */}
-        <a href='/' className='flex shrink-0 items-center gap-3'>
-          <img
-            src={isDark ? logoDark : logoLight}
-            alt='ShoPIM'
-            className='h-8 w-auto'
-          />
-          <Separator
-            orientation='vertical'
-            className='hidden h-5 opacity-50 md:block'
-          />
-        </a>
-
-        {/* DESKTOP NAV */}
-        <nav className='hidden items-center gap-1 md:flex'>
-          <a
-            href='#'
-            className='flex items-center gap-1.5 rounded-md px-3 py-2 text-sm font-medium text-muted-foreground transition-colors hover:bg-accent hover:text-foreground'
-          >
-            <House size={15} />
-            Início
-          </a>
-
-          <div
-            className='relative'
-            onMouseEnter={() => setOpenCategoryDesktop(true)}
-            onMouseLeave={() => setOpenCategoryDesktop(false)}
-          >
-            <button className='flex items-center gap-1.5 rounded-md px-3 py-2 text-sm font-medium text-muted-foreground transition-colors hover:bg-accent hover:text-foreground'>
-              <ChevronDown
-                size={15}
-                className={cn(
-                  'transition-transform duration-200',
-                  openCategoryDesktop && 'rotate-180'
-                )}
-              />
-              Categorias
-            </button>
-
-            {openCategoryDesktop && (
-              <div className='absolute top-full left-0 mt-1 flex min-w-[200px] flex-col gap-0.5 rounded-lg border border-border bg-popover p-1.5 shadow-md'>
-                {categories.map((cat) => (
-                  <CategoryItem key={cat.label} cat={cat} />
-                ))}
-              </div>
-            )}
-          </div>
-
-          <a
-            href='#'
-            className='relative flex items-center gap-1.5 rounded-md px-3 py-2 text-sm font-medium text-muted-foreground transition-colors hover:bg-accent hover:text-foreground'
-          >
-            <ShoppingCart size={15} />
-            Carrinho
-            <Badge className='absolute -top-0.5 -right-0.5 flex h-4 w-4 items-center justify-center p-0 text-[10px]'>
-              3
-            </Badge>
-          </a>
-        </nav>
-
-        {/* DESKTOP ACTIONS */}
-        <div className='hidden items-center gap-3 md:flex'>
+    <>
+      {/* ===== Top Heading ===== */}
+      <Header>
+        <TopNav links={topNav} />
+        <div className='ms-auto flex items-center space-x-4'>
           <Search />
           <ThemeSwitch />
-          <Separator orientation='vertical' className='h-5 opacity-50' />
-
-          <a
-            href='/sign-in'
-            className='flex items-center gap-1.5 rounded-full bg-foreground px-4 py-1.5 text-sm font-medium text-background transition-opacity hover:opacity-90'
-          >
-            <User size={14} />
-            Login
-          </a>
+          <ConfigDrawer />
+          <ProfileDropdown />
         </div>
+      </Header>
 
-        {/* MOBILE */}
-        <div className='flex items-center gap-2 md:hidden'>
-          <ThemeSwitch />
-          <Sheet>
-            <SheetTrigger asChild>
-              <button className='flex h-9 w-9 items-center justify-center rounded-md transition-colors hover:bg-accent'>
-                <Menu size={18} />
-              </button>
-            </SheetTrigger>
-
-            <SheetContent side='left' className='w-72 p-0'>
-              {/* Header do Sheet */}
-              <div className='flex h-16 items-center justify-between border-b px-4'>
-                <img
-                  src={isDark ? logoDark : logoLight}
-                  alt='ShoPIM'
-                  className='h-7 w-auto'
-                />
-                <SheetClose className='flex h-8 w-8 items-center justify-center rounded-md transition-colors hover:bg-accent'>
-                  <X size={16} />
-                </SheetClose>
-              </div>
-
-              {/* Search mobile */}
-              <div className='border-b px-3 py-3'>
-                <Search />
-              </div>
-
-              {/* Nav mobile */}
-              <nav className='flex flex-col gap-1 p-3'>
-                <a
-                  href='#'
-                  className='flex items-center gap-2.5 rounded-md px-3 py-2.5 text-sm font-medium transition-colors hover:bg-accent'
-                >
-                  <House size={16} className='text-muted-foreground' />
-                  Início
-                </a>
-
-                <div className='flex flex-col'>
-                  <button
-                    onClick={() => setOpenCategoryMobile(!openCategoryMobile)}
-                    className='flex items-center gap-2.5 rounded-md px-3 py-2.5 text-sm font-medium transition-colors hover:bg-accent'
-                  >
-                    <ChevronDown
-                      size={16}
-                      className={cn(
-                        'text-muted-foreground transition-transform duration-200',
-                        openCategoryMobile && 'rotate-180'
-                      )}
-                    />
-                    Categorias
-                  </button>
-
-                  <div
-                    className={cn(
-                      'overflow-hidden transition-all duration-200',
-                      openCategoryMobile ? 'max-h-48' : 'max-h-0'
-                    )}
-                  >
-                    <div className='ml-9 flex flex-col gap-0.5 pb-1'>
-                      {categories.map((cat) => (
-                        <CategoryItemMobile key={cat.label} cat={cat} />
-                      ))}
-                    </div>
-                  </div>
-                </div>
-
-                <a
-                  href='#'
-                  className='flex items-center gap-2.5 rounded-md px-3 py-2.5 text-sm font-medium transition-colors hover:bg-accent'
-                >
-                  <ShoppingCart size={16} className='text-muted-foreground' />
-                  Carrinho
-                  <Badge className='ml-auto h-5 px-1.5 text-xs'>3</Badge>
-                </a>
-
-                <Separator className='my-2' />
-
-                <a
-                  href='/sign-in'
-                  className='flex items-center gap-2.5 rounded-md bg-foreground px-3 py-2.5 text-sm font-medium text-background transition-opacity hover:opacity-90'
-                >
-                  <User size={16} />
-                  Entrar na conta
-                </a>
-              </nav>
-            </SheetContent>
-          </Sheet>
+      {/* ===== Main ===== */}
+      <Main>
+        <div className='mb-2 flex items-center justify-between space-y-2'>
+          <h1 className='text-2xl font-bold tracking-tight'>Painel</h1>
         </div>
-      </div>
-    </header>
+        <Tabs
+          orientation='vertical'
+          defaultValue='overview'
+          className='space-y-4'
+        >
+          <div className='w-full overflow-x-auto pb-2'>
+            <TabsList>
+              <TabsTrigger value='overview'>Visão Geral</TabsTrigger>
+              <TabsTrigger value='analytics'>Análises</TabsTrigger>
+              <TabsTrigger value='reports' disabled>
+                Relatórios
+              </TabsTrigger>
+              <TabsTrigger value='notifications' disabled>
+                Notificações
+              </TabsTrigger>
+            </TabsList>
+          </div>
+          <TabsContent value='overview' className='space-y-4'>
+            <div className='grid gap-4 sm:grid-cols-2 lg:grid-cols-4'>
+              <Card>
+                <CardHeader className='flex flex-row items-center justify-between space-y-0 pb-2'>
+                  <CardTitle className='text-sm font-medium'>
+                    Receita Total
+                  </CardTitle>
+                  <svg
+                    xmlns='http://www.w3.org/2000/svg'
+                    viewBox='0 0 24 24'
+                    fill='none'
+                    stroke='currentColor'
+                    strokeLinecap='round'
+                    strokeLinejoin='round'
+                    strokeWidth='2'
+                    className='h-4 w-4 text-muted-foreground'
+                  >
+                    <path d='M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6' />
+                  </svg>
+                </CardHeader>
+                <CardContent>
+                  <div className='text-2xl font-bold'>R$45,231.89</div>
+                  <p className='text-xs text-muted-foreground'>
+                    {' '}
+                    +20.1% do mês passado +20.1% from last month
+                  </p>
+                </CardContent>
+              </Card>
+              <Card>
+                <CardHeader className='flex flex-row items-center justify-between space-y-0 pb-2'>
+                  <CardTitle className='text-sm font-medium'>
+                    Inscrições
+                  </CardTitle>
+                  <svg
+                    xmlns='http://www.w3.org/2000/svg'
+                    viewBox='0 0 24 24'
+                    fill='none'
+                    stroke='currentColor'
+                    strokeLinecap='round'
+                    strokeLinejoin='round'
+                    strokeWidth='2'
+                    className='h-4 w-4 text-muted-foreground'
+                  >
+                    <path d='M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2' />
+                    <circle cx='9' cy='7' r='4' />
+                    <path d='M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75' />
+                  </svg>
+                </CardHeader>
+                <CardContent>
+                  <div className='text-2xl font-bold'>+2350</div>
+                  <p className='text-xs text-muted-foreground'>
+                    {' '}
+                    +180.1% do mês passado +180.1% from last month
+                  </p>
+                </CardContent>
+              </Card>
+              <Card>
+                <CardHeader className='flex flex-row items-center justify-between space-y-0 pb-2'>
+                  <CardTitle className='text-sm font-medium'>Sales</CardTitle>
+                  <CardTitle className='text-sm font-medium'>Vendas</CardTitle>
+                  <svg
+                    xmlns='http://www.w3.org/2000/svg'
+                    viewBox='0 0 24 24'
+                    fill='none'
+                    stroke='currentColor'
+                    strokeLinecap='round'
+                    strokeLinejoin='round'
+                    strokeWidth='2'
+                    className='h-4 w-4 text-muted-foreground'
+                  >
+                    <rect width='20' height='14' x='2' y='5' rx='2' />
+                    <path d='M2 10h20' />
+                  </svg>
+                </CardHeader>
+                <CardContent>
+                  <div className='text-2xl font-bold'>+12,234</div>
+                  <p className='text-xs text-muted-foreground'>
+                    {' '}
+                    +19% do mês passado +19% from last month
+                  </p>
+                </CardContent>
+              </Card>
+              <Card>
+                <CardHeader className='flex flex-row items-center justify-between space-y-0 pb-2'>
+                  <CardTitle className='text-sm font-medium'>
+                    Ativos Agora
+                  </CardTitle>
+                  <svg
+                    xmlns='http://www.w3.org/2000/svg'
+                    viewBox='0 0 24 24'
+                    fill='none'
+                    stroke='currentColor'
+                    strokeLinecap='round'
+                    strokeLinejoin='round'
+                    strokeWidth='2'
+                    className='h-4 w-4 text-muted-foreground'
+                  >
+                    <path d='M22 12h-4l-3 9L9 3l-3 9H2' />
+                  </svg>
+                </CardHeader>
+                <CardContent>
+                  <div className='text-2xl font-bold'>+573</div>
+                  <p className='text-xs text-muted-foreground'>
+                    {' '}
+                    +201 desde a última hora +201 since last hour
+                  </p>
+                </CardContent>
+              </Card>
+            </div>
+            <div className='grid grid-cols-1 gap-4 lg:grid-cols-7'>
+              <Card className='col-span-1 lg:col-span-4'>
+                <CardHeader>
+                  <CardTitle>Visão Geral</CardTitle>
+                </CardHeader>
+                <CardContent className='ps-2'>
+                  <Overview />
+                </CardContent>
+              </Card>
+              <Card className='col-span-1 lg:col-span-3'>
+                <CardHeader>
+                  <CardTitle>Vendas Recentes</CardTitle>
+                  <CardDescription>
+                    Você fez 265 vendas este mês.
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <RecentSales />
+                </CardContent>
+              </Card>
+            </div>
+          </TabsContent>
+          <TabsContent value='analytics' className='space-y-4'>
+            <Analytics />{' '}
+            {/* This component probably contains its own texts to be translated */}
+          </TabsContent>
+        </Tabs>
+      </Main>
+    </>
   )
 }
+
+const topNav = [
+  // Moving topNav directly into the Dashboard component or a separate file might be cleaner if it's only used here.
+  {
+    title: 'Visão Geral',
+    href: 'dashboard/overview',
+    isActive: true,
+    disabled: false,
+  },
+  {
+    title: 'Clientes',
+    href: 'dashboard/customers',
+    isActive: false,
+    disabled: true,
+  },
+  {
+    title: 'Produtos',
+    href: 'dashboard/products',
+    isActive: false,
+    disabled: true,
+  },
+  {
+    title: 'Configurações',
+    href: 'dashboard/settings',
+    isActive: false,
+    disabled: true,
+  },
+]

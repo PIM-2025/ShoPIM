@@ -8,24 +8,19 @@ type CardProps = {
 
 export function Card({ title, price, image }: CardProps) {
   return (
-    <div
-      className="
-        bg-background         /* fundo padrão do tema (light/dark automático) */
-        border border-border  /* adiciona borda com cor do tema */
-        rounded-2xl          /* bordas bem arredondadas */
-        
-        p-4                  /* padding interno (espaçamento dentro do card) */
-        w-full               /* ocupa 100% da largura disponível */
+<div
+  className="
+    bg-white dark:bg-zinc-800
+    border border-border
+    rounded-2xl
+    
+    p-4 w-full
 
-        transition           /* ativa transições suaves */
-        duration-300         /* duração da animação (300ms) */
-
-        hover:shadow-2xl     /* sombra forte ao passar o mouse */
-        hover:-translate-y-1 /* sobe levemente o card no hover */
-
-        dark:hover:shadow-white/10 /* sombra clara no modo dark (pra aparecer melhor) */
-      "
-    >
+    transition duration-300
+    hover:shadow-2xl hover:-translate-y-1
+    dark:hover:shadow-white/10
+  "
+>
       
       {/* IMAGEM */}
       <div className="w-full h-40 rounded-xl flex items-center justify-center">

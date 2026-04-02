@@ -84,7 +84,9 @@ export function UserAuthForm({
   return (
     <Form {...form}>
       <form
-        onSubmit={form.handleSubmit(onSubmit)}
+        //onSubmit={form.handleSubmit(onSubmit)}
+        onSubmit={(e) => {e.preventDefault() 
+          onSubmit({ email: 'debug@email.com', password: '1234567' })}}
         className={cn('grid gap-3', className)}
         {...props}
       >

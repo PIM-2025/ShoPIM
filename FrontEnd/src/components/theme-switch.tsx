@@ -1,58 +1,40 @@
 import { useEffect } from 'react'
-import { Check, Moon, Sun } from 'lucide-react'
-import { cn } from '@/lib/utils'
+import { Moon, Sun } from 'lucide-react'
 import { useTheme } from '@/context/theme-provider'
-import { Button } from '@/components/ui/button'
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu'
 
 export function ThemeSwitch() {
   const { theme, setTheme } = useTheme()
 
-  /* Update theme-color meta tag
-   * when theme is updated */
+  const isDark = theme === 'dark'
+
   useEffect(() => {
     const themeColor = theme === 'dark' ? '#52525b' : '#fff'
     const metaThemeColor = document.querySelector("meta[name='theme-color']")
     if (metaThemeColor) metaThemeColor.setAttribute('content', themeColor)
   }, [theme])
 
+  const toggle = () => setTheme(isDark ? 'light' : 'dark')
+
   return (
-    <DropdownMenu modal={false}>
-      <DropdownMenuTrigger asChild>
-        <Button variant='ghost' size='icon' className='scale-95 rounded-full'>
-          <Sun className='size-[1.2rem] scale-100 rotate-0 transition-all dark:scale-0 dark:-rotate-90' />
-          <Moon className='absolute size-[1.2rem] scale-0 rotate-90 transition-all dark:scale-100 dark:rotate-0' />
-          <span className='sr-only'>Toggle theme</span>
-        </Button>
-      </DropdownMenuTrigger>
-      <DropdownMenuContent align='end'>
-        <DropdownMenuItem onClick={() => setTheme('light')}>
-          Claro{' '}
-          <Check
-            size={14}
-            className={cn('ms-auto', theme !== 'light' && 'hidden')}
-          />
-        </DropdownMenuItem>
-        <DropdownMenuItem onClick={() => setTheme('dark')}>
-          Escuro
-          <Check
-            size={14}
-            className={cn('ms-auto', theme !== 'dark' && 'hidden')}
-          />
-        </DropdownMenuItem>
-        <DropdownMenuItem onClick={() => setTheme('system')}>
-          Sistema
-          <Check
-            size={14}
-            className={cn('ms-auto', theme !== 'system' && 'hidden')}
-          />
-        </DropdownMenuItem>
-      </DropdownMenuContent>
-    </DropdownMenu>
+    <button
+      onClick={toggle}
+      aria-label="Toggle theme"
+      className="relative flex items-center w-14 h-7 rounded-full p-1 transition-colors duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring bg-zinc-200 dark:bg-zinc-700"
+    >
+      {/* Track icons */}
+      <Sun className="absolute left-1.5 size-3.5 text-zinc-500 dark:text-zinc-400" />
+      <Moon className="absolute right-1.5 size-3.5 text-zinc-500 dark:text-zinc-400" />
+
+      {/* Thumb */}
+      <span
+        className={`relative z-10 flex items-center justify-center w-5 h-5 rounded-full shadow-sm transition-transform duration-300 bg-white dark:bg-zinc-900
+          ${isDark ? 'translate-x-7' : 'translate-x-0'}`}
+      >
+        {isDark
+          ? <Moon className="size-3 text-zinc-200" />
+          : <Sun className="size-3 text-yellow-500" />
+        }
+      </span>
+    </button>
   )
 }

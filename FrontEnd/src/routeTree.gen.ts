@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as ProdutosRouteImport } from './routes/produtos'
 import { Route as PaginaProdutosRouteImport } from './routes/paginaProdutos'
+import { Route as CartRouteImport } from './routes/cart'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
@@ -43,6 +44,11 @@ const ProdutosRoute = ProdutosRouteImport.update({
 const PaginaProdutosRoute = PaginaProdutosRouteImport.update({
   id: '/paginaProdutos',
   path: '/paginaProdutos',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CartRoute = CartRouteImport.update({
+  id: '/cart',
+  path: '/cart',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
@@ -170,6 +176,7 @@ const AuthenticatedErrorsErrorRoute =
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/cart': typeof CartRoute
   '/paginaProdutos': typeof PaginaProdutosRoute
   '/produtos': typeof ProdutosRoute
   '/settings': typeof AuthenticatedSettingsRouteRouteWithChildren
@@ -196,6 +203,7 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/cart': typeof CartRoute
   '/paginaProdutos': typeof PaginaProdutosRoute
   '/produtos': typeof ProdutosRoute
   '/forgot-password': typeof authForgotPasswordRoute
@@ -223,6 +231,7 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
+  '/cart': typeof CartRoute
   '/paginaProdutos': typeof PaginaProdutosRoute
   '/produtos': typeof ProdutosRoute
   '/_authenticated/settings': typeof AuthenticatedSettingsRouteRouteWithChildren
@@ -251,6 +260,7 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/cart'
     | '/paginaProdutos'
     | '/produtos'
     | '/settings'
@@ -277,6 +287,7 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/cart'
     | '/paginaProdutos'
     | '/produtos'
     | '/forgot-password'
@@ -303,6 +314,7 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/_authenticated'
+    | '/cart'
     | '/paginaProdutos'
     | '/produtos'
     | '/_authenticated/settings'
@@ -331,6 +343,7 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
+  CartRoute: typeof CartRoute
   PaginaProdutosRoute: typeof PaginaProdutosRoute
   ProdutosRoute: typeof ProdutosRoute
   authForgotPasswordRoute: typeof authForgotPasswordRoute
@@ -358,6 +371,13 @@ declare module '@tanstack/react-router' {
       path: '/paginaProdutos'
       fullPath: '/paginaProdutos'
       preLoaderRoute: typeof PaginaProdutosRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/cart': {
+      id: '/cart'
+      path: '/cart'
+      fullPath: '/cart'
+      preLoaderRoute: typeof CartRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_authenticated': {
@@ -573,6 +593,7 @@ const AuthenticatedRouteRouteWithChildren =
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
+  CartRoute: CartRoute,
   PaginaProdutosRoute: PaginaProdutosRoute,
   ProdutosRoute: ProdutosRoute,
   authForgotPasswordRoute: authForgotPasswordRoute,

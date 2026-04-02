@@ -8,16 +8,14 @@ import {
   SheetContent,
   SheetTrigger,
 } from "@/components/ui/sheet"
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
 import logo from "@/assets/ShoPIM-orange-removebg.png"
 
 export function HeaderLanding() {
   const [offset, setOffset] = useState(0)
+
+  // estados separados
+  const [openCategoryMobile, setOpenCategoryMobile] = useState(false)
+  const [openCategoryDesktop, setOpenCategoryDesktop] = useState(false)
 
   useEffect(() => {
     const onScroll = () => {
@@ -49,23 +47,33 @@ export function HeaderLanding() {
         </div>
 
         {/* DESKTOP NAV */}
-        <nav className="hidden md:flex items-center gap-6">
+        <nav className="hidden md:flex items-center gap-6 relative">
           <a href="#">Início</a>
 
-          {/* DROPDOWN */}
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <button className="flex items-center gap-1">
-                Categorias
-              </button>
-            </DropdownMenuTrigger>
+          {/* CATEGORIAS DESKTOP (HOVER) */}
+          <div
+            className="relative"
+            onMouseEnter={() => setOpenCategoryDesktop(true)}
+            onMouseLeave={() => setOpenCategoryDesktop(false)}
+          >
+            <button className="flex items-center gap-1">
+              Categorias
+            </button>
 
-            <DropdownMenuContent>
-              <DropdownMenuItem>Eletrônicos</DropdownMenuItem>
-              <DropdownMenuItem>Roupas</DropdownMenuItem>
-              <DropdownMenuItem>Acessórios</DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+            {openCategoryDesktop && (
+              <div className="absolute top-full bg-background shadow-md rounded-md p-2 flex flex-col gap-1 min-w-[150px]">
+                <a href="#" className="hover:bg-muted px-2 py-1 rounded">
+                  Eletrônicos
+                </a>
+                <a href="#" className="hover:bg-muted px-2 py-1 rounded">
+                  Roupas
+                </a>
+                <a href="#" className="hover:bg-muted px-2 py-1 rounded">
+                  Acessórios
+                </a>
+              </div>
+            )}
+          </div>
 
           <a href="#">Ofertas</a>
           <a href="/sign-in">Login</a>
@@ -84,13 +92,23 @@ export function HeaderLanding() {
             <nav className="flex flex-col gap-4 mt-6">
               <a href="#">Início</a>
 
+              {/* CATEGORIAS MOBILE (CLICK) */}
               <div className="flex flex-col gap-2">
-                <span className="font-medium">Categorias</span>
-                <div className="ml-2 flex flex-col gap-1 text-sm">
-                  <a href="#">Eletrônicos</a>
-                  <a href="#">Roupas</a>
-                  <a href="#">Acessórios</a>
-                </div>
+                <button
+                  onClick={() => setOpenCategoryMobile(!openCategoryMobile)}
+                  className="font-medium text-left flex justify-between items-center"
+                >
+                  Categorias
+                  <span>{openCategoryMobile ? "−" : "+"}</span>
+                </button>
+
+                {openCategoryMobile && (
+                  <div className="ml-2 flex flex-col gap-1 text-sm">
+                    <a href="#">Eletrônicos</a>
+                    <a href="#">Roupas</a>
+                    <a href="#">Acessórios</a>
+                  </div>
+                )}
               </div>
 
               <a href="#">Ofertas</a>

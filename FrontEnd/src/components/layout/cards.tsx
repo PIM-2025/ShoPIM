@@ -24,7 +24,7 @@ export function Card({ title, price, image }: CardProps) {
       </div>
 
       {/* TÍTULO */}
-      <h2 className="text-lg font-semibold mt-3 text-foreground text-zinc-900 dark:text-zinc-100">
+      <h2 className="text-lg font-semibold mt-3 text-foreground ">
         {title}
       </h2>
 

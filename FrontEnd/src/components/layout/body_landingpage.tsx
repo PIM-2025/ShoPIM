@@ -1,5 +1,3 @@
-import * as React from "react"
-
 import blackFriday from "@/assets/black-friday.png"
 import freteGratis from "@/assets/frete-gratis.png"
 

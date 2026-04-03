@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Link } from '@tanstack/react-router'
 import { ShoppingCart, User, House, ChevronDown, Menu, X } from 'lucide-react'
 import logoDark from '@/assets/logo_dark.png'
@@ -60,6 +60,17 @@ export function HeaderLanding() {
   const [openCategoryMobile, setOpenCategoryMobile] = useState(false)
   const [openCategoryDesktop, setOpenCategoryDesktop] = useState(false)
 
+  const closeTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
+
+  const handleMouseEnter = () => {
+    if (closeTimer.current) clearTimeout(closeTimer.current)
+    setOpenCategoryDesktop(true)
+  }
+
+  const handleMouseLeave = () => {
+    closeTimer.current = setTimeout(() => setOpenCategoryDesktop(false), 150)
+  }
+
   useEffect(() => {
     const onScroll = () => setOffset(document.documentElement.scrollTop)
     document.addEventListener('scroll', onScroll, { passive: true })
@@ -102,8 +113,8 @@ export function HeaderLanding() {
           <div className='hidden items-center gap-1 md:flex'>
             <div
               className='relative'
-              onMouseEnter={() => setOpenCategoryDesktop(true)}
-              onMouseLeave={() => setOpenCategoryDesktop(false)}
+              onMouseEnter={handleMouseEnter}
+              onMouseLeave={handleMouseLeave}
             >
               <button className='flex items-center gap-1.5 rounded-md px-3 py-2 text-sm font-medium text-muted-foreground transition-colors hover:bg-accent hover:text-foreground'>
                 <ChevronDown
@@ -117,7 +128,11 @@ export function HeaderLanding() {
               </button>
 
               {openCategoryDesktop && (
-                <div className='absolute top-full left-0 mt-1 flex min-w-[200px] flex-col gap-0.5 rounded-lg border border-border bg-popover p-1.5 shadow-md'>
+                <div
+                  className='absolute top-full left-0 mt-1 flex min-w-[200px] flex-col gap-0.5 rounded-lg border border-border bg-popover p-1.5 shadow-md'
+                  onMouseEnter={handleMouseEnter}
+                  onMouseLeave={handleMouseLeave}
+                >
                   {categories.map((cat) => (
                     <CategoryItem key={cat.label} cat={cat} />
                   ))}

@@ -55,16 +55,17 @@ O repositório está dividido em duas pastas principais:
 ## 📝 Funcionalidades (PIM)
 - [x] Listagem de produtos
 - [x] Carrinho de compras
-- [x] Integração com API Backend
-- [x] Gerenciamento de pedidos
+- [ ] Integração com API Backend
+- [ ] Gerenciamento de pedidos
 - [ ] Autenticação de usuários (em desenvolvimento)
 
 ---
 
 ## 👥 Integrantes do Grupo
-* **Nome do Aluno 1** - RA: 0000000
-* **Nome do Aluno 2** - RA: 0000000
-* **Nome do Aluno 3** - RA: 0000000
+* **Jean Campos** - RA: 0000000
+* **João Pedro** - RA: R8975J5
+* **Gabriel Massari** - RA: 0000000
+* * **Ramon Guimarães** - RA: 0000000
 
 ---
 

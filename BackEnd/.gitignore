@@ -1,0 +1,29 @@
+## Build e binários
+bin/
+obj/
+
+## Visual Studio
+.vs/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+## Rider (JetBrains)
+.idea/
+
+## Logs
+*.log
+logs/
+
+## Dados sensíveis
+appsettings.Development.json
+appsettings.Production.json
+
+## NuGet
+*.nupkg
+.nuget/
+
+## Sistema operacional
+.DS_Store
+Thumbs.db

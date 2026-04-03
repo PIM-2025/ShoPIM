@@ -65,7 +65,7 @@ O repositório está dividido em duas pastas principais:
 * **Jean Campos** - RA: 0000000
 * **João Pedro** - RA: R8975J5
 * **Gabriel Massari** - RA: 0000000
-* * **Ramon Guimarães** - RA: 0000000
+* **Ramon Guimarães** - RA: 0000000
 
 ---
 

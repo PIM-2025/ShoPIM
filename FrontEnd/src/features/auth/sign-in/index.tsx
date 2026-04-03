@@ -1,4 +1,5 @@
 import { useSearch } from '@tanstack/react-router'
+import { Button } from '@/components/ui/button'
 import {
   Card,
   CardContent,
@@ -7,6 +8,7 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card'
+import { FieldDescription } from '@/components/ui/field'
 import { AuthLayout } from '../auth-layout'
 import { UserAuthForm } from './components/user-auth-form'
 
@@ -19,11 +21,18 @@ export function SignIn() {
         <CardHeader>
           <CardTitle className='text-lg tracking-tight'>Entrar</CardTitle>
           <CardDescription>
-            Digite seu email e senha abaixo para acessar sua conta:<br />
+            Digite seu email e senha abaixo para acessar sua conta:
+            <br />
           </CardDescription>
         </CardHeader>
         <CardContent>
           <UserAuthForm redirectTo={redirect} />
+          <Button variant='outline' type='button' className='center'>
+            Login with Google
+          </Button>
+          <FieldDescription className='text-center'>
+            Não tem uma conta? <a href='/sign-up'>Cadastre-se</a>
+          </FieldDescription>
         </CardContent>
         <CardFooter>
           <p className='px-8 text-center text-sm text-muted-foreground'>

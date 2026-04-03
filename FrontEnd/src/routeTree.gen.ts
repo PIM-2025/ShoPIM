@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as ProdutosRouteImport } from './routes/produtos'
 import { Route as PaginaProdutosRouteImport } from './routes/paginaProdutos'
+import { Route as CheckoutRouteImport } from './routes/checkout'
 import { Route as CartRouteImport } from './routes/cart'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as IndexRouteImport } from './routes/index'
@@ -35,6 +36,10 @@ import { Route as AuthenticatedSettingsDisplayRouteImport } from './routes/_auth
 import { Route as AuthenticatedSettingsAppearanceRouteImport } from './routes/_authenticated/settings/appearance'
 import { Route as AuthenticatedSettingsAccountRouteImport } from './routes/_authenticated/settings/account'
 import { Route as AuthenticatedErrorsErrorRouteImport } from './routes/_authenticated/errors/$error'
+import { Route as AuthenticatedTasksauthSignUpRouteImport } from './routes/_authenticated/tasks/(auth)/sign-up'
+import { Route as AuthenticatedTasksauthSignInRouteImport } from './routes/_authenticated/tasks/(auth)/sign-in'
+import { Route as AuthenticatedTasksauthOtpRouteImport } from './routes/_authenticated/tasks/(auth)/otp'
+import { Route as AuthenticatedTasksauthForgotPasswordRouteImport } from './routes/_authenticated/tasks/(auth)/forgot-password'
 
 const ProdutosRoute = ProdutosRouteImport.update({
   id: '/produtos',
@@ -44,6 +49,11 @@ const ProdutosRoute = ProdutosRouteImport.update({
 const PaginaProdutosRoute = PaginaProdutosRouteImport.update({
   id: '/paginaProdutos',
   path: '/paginaProdutos',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CheckoutRoute = CheckoutRouteImport.update({
+  id: '/checkout',
+  path: '/checkout',
   getParentRoute: () => rootRouteImport,
 } as any)
 const CartRoute = CartRouteImport.update({
@@ -173,10 +183,35 @@ const AuthenticatedErrorsErrorRoute =
     path: '/errors/$error',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedTasksauthSignUpRoute =
+  AuthenticatedTasksauthSignUpRouteImport.update({
+    id: '/tasks/(auth)/sign-up',
+    path: '/tasks/sign-up',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedTasksauthSignInRoute =
+  AuthenticatedTasksauthSignInRouteImport.update({
+    id: '/tasks/(auth)/sign-in',
+    path: '/tasks/sign-in',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedTasksauthOtpRoute =
+  AuthenticatedTasksauthOtpRouteImport.update({
+    id: '/tasks/(auth)/otp',
+    path: '/tasks/otp',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedTasksauthForgotPasswordRoute =
+  AuthenticatedTasksauthForgotPasswordRouteImport.update({
+    id: '/tasks/(auth)/forgot-password',
+    path: '/tasks/forgot-password',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/cart': typeof CartRoute
+  '/checkout': typeof CheckoutRoute
   '/paginaProdutos': typeof PaginaProdutosRoute
   '/produtos': typeof ProdutosRoute
   '/settings': typeof AuthenticatedSettingsRouteRouteWithChildren
@@ -200,10 +235,15 @@ export interface FileRoutesByFullPath {
   '/settings/': typeof AuthenticatedSettingsIndexRoute
   '/tasks/': typeof AuthenticatedTasksIndexRoute
   '/users/': typeof AuthenticatedUsersIndexRoute
+  '/tasks/forgot-password': typeof AuthenticatedTasksauthForgotPasswordRoute
+  '/tasks/otp': typeof AuthenticatedTasksauthOtpRoute
+  '/tasks/sign-in': typeof AuthenticatedTasksauthSignInRoute
+  '/tasks/sign-up': typeof AuthenticatedTasksauthSignUpRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/cart': typeof CartRoute
+  '/checkout': typeof CheckoutRoute
   '/paginaProdutos': typeof PaginaProdutosRoute
   '/produtos': typeof ProdutosRoute
   '/forgot-password': typeof authForgotPasswordRoute
@@ -226,12 +266,17 @@ export interface FileRoutesByTo {
   '/settings': typeof AuthenticatedSettingsIndexRoute
   '/tasks': typeof AuthenticatedTasksIndexRoute
   '/users': typeof AuthenticatedUsersIndexRoute
+  '/tasks/forgot-password': typeof AuthenticatedTasksauthForgotPasswordRoute
+  '/tasks/otp': typeof AuthenticatedTasksauthOtpRoute
+  '/tasks/sign-in': typeof AuthenticatedTasksauthSignInRoute
+  '/tasks/sign-up': typeof AuthenticatedTasksauthSignUpRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/cart': typeof CartRoute
+  '/checkout': typeof CheckoutRoute
   '/paginaProdutos': typeof PaginaProdutosRoute
   '/produtos': typeof ProdutosRoute
   '/_authenticated/settings': typeof AuthenticatedSettingsRouteRouteWithChildren
@@ -255,12 +300,17 @@ export interface FileRoutesById {
   '/_authenticated/settings/': typeof AuthenticatedSettingsIndexRoute
   '/_authenticated/tasks/': typeof AuthenticatedTasksIndexRoute
   '/_authenticated/users/': typeof AuthenticatedUsersIndexRoute
+  '/_authenticated/tasks/(auth)/forgot-password': typeof AuthenticatedTasksauthForgotPasswordRoute
+  '/_authenticated/tasks/(auth)/otp': typeof AuthenticatedTasksauthOtpRoute
+  '/_authenticated/tasks/(auth)/sign-in': typeof AuthenticatedTasksauthSignInRoute
+  '/_authenticated/tasks/(auth)/sign-up': typeof AuthenticatedTasksauthSignUpRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
     | '/cart'
+    | '/checkout'
     | '/paginaProdutos'
     | '/produtos'
     | '/settings'
@@ -284,10 +334,15 @@ export interface FileRouteTypes {
     | '/settings/'
     | '/tasks/'
     | '/users/'
+    | '/tasks/forgot-password'
+    | '/tasks/otp'
+    | '/tasks/sign-in'
+    | '/tasks/sign-up'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/cart'
+    | '/checkout'
     | '/paginaProdutos'
     | '/produtos'
     | '/forgot-password'
@@ -310,11 +365,16 @@ export interface FileRouteTypes {
     | '/settings'
     | '/tasks'
     | '/users'
+    | '/tasks/forgot-password'
+    | '/tasks/otp'
+    | '/tasks/sign-in'
+    | '/tasks/sign-up'
   id:
     | '__root__'
     | '/'
     | '/_authenticated'
     | '/cart'
+    | '/checkout'
     | '/paginaProdutos'
     | '/produtos'
     | '/_authenticated/settings'
@@ -338,12 +398,17 @@ export interface FileRouteTypes {
     | '/_authenticated/settings/'
     | '/_authenticated/tasks/'
     | '/_authenticated/users/'
+    | '/_authenticated/tasks/(auth)/forgot-password'
+    | '/_authenticated/tasks/(auth)/otp'
+    | '/_authenticated/tasks/(auth)/sign-in'
+    | '/_authenticated/tasks/(auth)/sign-up'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   CartRoute: typeof CartRoute
+  CheckoutRoute: typeof CheckoutRoute
   PaginaProdutosRoute: typeof PaginaProdutosRoute
   ProdutosRoute: typeof ProdutosRoute
   authForgotPasswordRoute: typeof authForgotPasswordRoute
@@ -371,6 +436,13 @@ declare module '@tanstack/react-router' {
       path: '/paginaProdutos'
       fullPath: '/paginaProdutos'
       preLoaderRoute: typeof PaginaProdutosRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/checkout': {
+      id: '/checkout'
+      path: '/checkout'
+      fullPath: '/checkout'
+      preLoaderRoute: typeof CheckoutRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/cart': {
@@ -541,6 +613,34 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedErrorsErrorRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/tasks/(auth)/sign-up': {
+      id: '/_authenticated/tasks/(auth)/sign-up'
+      path: '/tasks/sign-up'
+      fullPath: '/tasks/sign-up'
+      preLoaderRoute: typeof AuthenticatedTasksauthSignUpRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/tasks/(auth)/sign-in': {
+      id: '/_authenticated/tasks/(auth)/sign-in'
+      path: '/tasks/sign-in'
+      fullPath: '/tasks/sign-in'
+      preLoaderRoute: typeof AuthenticatedTasksauthSignInRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/tasks/(auth)/otp': {
+      id: '/_authenticated/tasks/(auth)/otp'
+      path: '/tasks/otp'
+      fullPath: '/tasks/otp'
+      preLoaderRoute: typeof AuthenticatedTasksauthOtpRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/tasks/(auth)/forgot-password': {
+      id: '/_authenticated/tasks/(auth)/forgot-password'
+      path: '/tasks/forgot-password'
+      fullPath: '/tasks/forgot-password'
+      preLoaderRoute: typeof AuthenticatedTasksauthForgotPasswordRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
   }
 }
 
@@ -575,6 +675,10 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedHelpCenterIndexRoute: typeof AuthenticatedHelpCenterIndexRoute
   AuthenticatedTasksIndexRoute: typeof AuthenticatedTasksIndexRoute
   AuthenticatedUsersIndexRoute: typeof AuthenticatedUsersIndexRoute
+  AuthenticatedTasksauthForgotPasswordRoute: typeof AuthenticatedTasksauthForgotPasswordRoute
+  AuthenticatedTasksauthOtpRoute: typeof AuthenticatedTasksauthOtpRoute
+  AuthenticatedTasksauthSignInRoute: typeof AuthenticatedTasksauthSignInRoute
+  AuthenticatedTasksauthSignUpRoute: typeof AuthenticatedTasksauthSignUpRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
@@ -585,6 +689,11 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedHelpCenterIndexRoute: AuthenticatedHelpCenterIndexRoute,
   AuthenticatedTasksIndexRoute: AuthenticatedTasksIndexRoute,
   AuthenticatedUsersIndexRoute: AuthenticatedUsersIndexRoute,
+  AuthenticatedTasksauthForgotPasswordRoute:
+    AuthenticatedTasksauthForgotPasswordRoute,
+  AuthenticatedTasksauthOtpRoute: AuthenticatedTasksauthOtpRoute,
+  AuthenticatedTasksauthSignInRoute: AuthenticatedTasksauthSignInRoute,
+  AuthenticatedTasksauthSignUpRoute: AuthenticatedTasksauthSignUpRoute,
 }
 
 const AuthenticatedRouteRouteWithChildren =
@@ -594,6 +703,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   CartRoute: CartRoute,
+  CheckoutRoute: CheckoutRoute,
   PaginaProdutosRoute: PaginaProdutosRoute,
   ProdutosRoute: ProdutosRoute,
   authForgotPasswordRoute: authForgotPasswordRoute,

@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react'
 import { Link } from '@tanstack/react-router'
 import { ShoppingCart, User, House, ChevronDown, Menu, X } from 'lucide-react'
-import logoLight from '@/assets/ShoPIM-light-tema.png'
-import logoDark from '@/assets/ShoPIM-orange-removebg.png'
+import logoDark from '@/assets/logo_dark.png'
+import logoLight from '@/assets/logo_light.png'
 import { cn } from '@/lib/utils'
 import { Badge } from '@/components/ui/badge'
 import { Separator } from '@/components/ui/separator'
@@ -95,19 +95,11 @@ export function HeaderLanding() {
             <img
               src={isDark ? logoDark : logoLight}
               alt='ShoPIM'
-              className='h-12 w-auto'
+              className='h-9 w-auto'
             />
           </a>
 
           <div className='hidden items-center gap-1 md:flex'>
-            <a
-              href='#'
-              className='flex items-center gap-1.5 rounded-md px-3 py-2 text-sm font-medium text-muted-foreground transition-colors hover:bg-accent hover:text-foreground'
-            >
-              <House size={15} />
-              Início
-            </a>
-
             <div
               className='relative'
               onMouseEnter={() => setOpenCategoryDesktop(true)}
@@ -165,9 +157,8 @@ export function HeaderLanding() {
         </div>
 
         {/* MOBILE */}
-        <div className='col-span-2 flex items-center justify-end gap-2 md:hidden'>
-          <SearchBar />
-          <ThemeSwitch />
+        <div className='col-span-2 flex min-w-0 items-center justify-end gap-2 md:hidden'>
+          <SearchBar className='min-w-0 flex-1' placeholder='Buscar...' />
           <Sheet>
             <SheetTrigger asChild>
               <button className='flex h-9 w-9 items-center justify-center rounded-md transition-colors hover:bg-accent'>
@@ -235,6 +226,11 @@ export function HeaderLanding() {
                 </Link>
 
                 <Separator className='my-2' />
+
+                <div className='flex items-center justify-between rounded-md px-3 py-2.5'>
+                  <span className='text-sm font-medium'>Tema</span>
+                  <ThemeSwitch />
+                </div>
 
                 <a
                   href='/sign-in'

@@ -1,7 +1,13 @@
 import { Search } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
-export function SearchBar({ className }: { className?: string }) {
+export function SearchBar({
+  className,
+  placeholder = 'Buscar produtos...',
+}: {
+  className?: string
+  placeholder?: string
+}) {
   return (
     <div className={cn('relative', className)}>
       <Search
@@ -10,7 +16,7 @@ export function SearchBar({ className }: { className?: string }) {
       />
       <input
         type='text'
-        placeholder='Buscar produtos...'
+        placeholder={placeholder}
         className='h-9 w-full min-w-[140px] rounded-full border border-input bg-muted/25 pr-4 pl-9 text-sm text-muted-foreground transition-all outline-none focus:ring-2 focus:ring-ring'
       />
     </div>

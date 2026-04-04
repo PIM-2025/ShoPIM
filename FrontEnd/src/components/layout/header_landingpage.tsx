@@ -3,6 +3,7 @@ import { Link } from '@tanstack/react-router'
 import { ShoppingCart, User, House, ChevronDown, Menu, X } from 'lucide-react'
 import logoDark from '@/assets/logo_dark.png'
 import logoLight from '@/assets/logo_light.png'
+import { useAuthStore } from '@/stores/auth-store'
 import { cn } from '@/lib/utils'
 import { Badge } from '@/components/ui/badge'
 import { Separator } from '@/components/ui/separator'
@@ -12,6 +13,7 @@ import {
   SheetTrigger,
   SheetClose,
 } from '@/components/ui/sheet'
+import { ProfileDropdown } from '@/components/profile-dropdown'
 import { SearchBar } from '@/components/search_landing'
 import { ThemeSwitch } from '@/components/theme-switch'
 
@@ -55,6 +57,7 @@ function CategoryItemMobile({ cat }: { cat: Category }) {
 }
 
 export function HeaderLanding() {
+  const { auth } = useAuthStore()
   const [offset, setOffset] = useState(0)
   const [isDark, setIsDark] = useState(false)
   const [openCategoryMobile, setOpenCategoryMobile] = useState(false)
@@ -162,13 +165,17 @@ export function HeaderLanding() {
           <ThemeSwitch />
           <Separator orientation='vertical' className='h-5 opacity-50' />
 
-          <a
-            href='/sign-in'
-            className='flex items-center gap-1.5 rounded-full bg-foreground px-4 py-1.5 text-sm font-medium text-background transition-opacity hover:opacity-90'
-          >
-            <User size={14} />
-            Login
-          </a>
+          {auth.user ? (
+            <ProfileDropdown />
+          ) : (
+            <a
+              href='/sign-in'
+              className='flex items-center gap-1.5 rounded-full bg-foreground px-4 py-1.5 text-sm font-medium text-background transition-opacity hover:opacity-90'
+            >
+              <User size={14} />
+              Login
+            </a>
+          )}
         </div>
 
         {/* MOBILE */}
@@ -247,13 +254,22 @@ export function HeaderLanding() {
                   <ThemeSwitch />
                 </div>
 
-                <a
-                  href='/sign-in'
-                  className='flex items-center gap-2.5 rounded-md bg-foreground px-3 py-2.5 text-sm font-medium text-background transition-opacity hover:opacity-90'
-                >
-                  <User size={16} />
-                  Entrar na conta
-                </a>
+                {auth.user ? (
+                  <div className='flex items-center gap-2.5 rounded-md px-3 py-2.5'>
+                    <ProfileDropdown />
+                    <span className='text-sm font-medium'>
+                      {auth.user.name}
+                    </span>
+                  </div>
+                ) : (
+                  <a
+                    href='/sign-in'
+                    className='flex items-center gap-2.5 rounded-md bg-foreground px-3 py-2.5 text-sm font-medium text-background transition-opacity hover:opacity-90'
+                  >
+                    <User size={16} />
+                    Entrar na conta
+                  </a>
+                )}
               </nav>
             </SheetContent>
           </Sheet>

@@ -11,6 +11,7 @@ namespace ShoPIM.Models
     {
         [Key]
         [Column("ID_USER")]
+        [DatabaseGenerated(DatabaseGeneratedOption.None)]
         public int Id { get; set; }
 
         [Column("NOME")]
@@ -24,9 +25,8 @@ namespace ShoPIM.Models
         public string Email { get; set; }
 
         [Column("SENHA")]
-        [Required]
         [MaxLength(255)]
-        public string Senha { get; set; }
+        public string? Senha { get; set; }
 
         [Column("ROLE")]
         public int Role { get; set; } = 2;
@@ -38,9 +38,8 @@ namespace ShoPIM.Models
         public int? Ativo { get; set; }
 
         [Column("CPF")]
-        [Required]
         [MaxLength(11)]
-        public string Cpf { get; set; }
+        public string? Cpf { get; set; }
 
         // Navegação
         public ICollection<Address> Addresses { get; set; }

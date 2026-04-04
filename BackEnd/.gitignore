@@ -18,7 +18,7 @@ logs/
 
 ## Dados sensíveis
 appsettings.Development.json
-appsettings.Production.json
+appsettings.json
 
 ## NuGet
 *.nupkg
@@ -27,3 +27,12 @@ appsettings.Production.json
 ## Sistema operacional
 .DS_Store
 Thumbs.db
+
+## VS Copilot
+*.db
+
+## VS files
+.vs/
+BackEnd/.vs/
+*.backup.json
+DocumentLayout.json

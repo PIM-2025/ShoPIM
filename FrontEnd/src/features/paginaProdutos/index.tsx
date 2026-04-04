@@ -1,5 +1,6 @@
 import { ProdutoDetalhe } from "@/components/layout/produtos_detalhe"
 import { HeaderLanding } from '@/components/layout/header_landingpage'
+import { Rodape } from '@/components/layout/rodape'
 
 export default function App() {
   return(
@@ -9,6 +10,9 @@ export default function App() {
       </div>
       <div>
         <ProdutoDetalhe />
+      </div>
+      <div>
+        <Rodape />
       </div>
     </div>
   )

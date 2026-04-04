@@ -3,8 +3,16 @@
   "WorkspaceRootPath": "C:\\Users\\jpcae\\OneDrive\\Documentos\\Projetos\\ShoPIM\\BackEnd\\ShoPIM\\",
   "Documents": [
     {
+      "AbsoluteMoniker": "D:0:0:{A85D27A6-EE55-BE8F-CEC3-8B04CFBA54AF}|ShoPIM.csproj|c:\\users\\jpcae\\onedrive\\documentos\\projetos\\shopim\\backend\\shopim\\data\\appdbcontext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A85D27A6-EE55-BE8F-CEC3-8B04CFBA54AF}|ShoPIM.csproj|solutionrelative:data\\appdbcontext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
       "AbsoluteMoniker": "D:0:0:{A85D27A6-EE55-BE8F-CEC3-8B04CFBA54AF}|ShoPIM.csproj|c:\\users\\jpcae\\onedrive\\documentos\\projetos\\shopim\\backend\\shopim\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{A85D27A6-EE55-BE8F-CEC3-8B04CFBA54AF}|ShoPIM.csproj|solutionrelative:program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A85D27A6-EE55-BE8F-CEC3-8B04CFBA54AF}|ShoPIM.csproj|c:\\users\\jpcae\\onedrive\\documentos\\projetos\\shopim\\backend\\shopim\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
+      "RelativeMoniker": "D:0:0:{A85D27A6-EE55-BE8F-CEC3-8B04CFBA54AF}|ShoPIM.csproj|solutionrelative:appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{A85D27A6-EE55-BE8F-CEC3-8B04CFBA54AF}|ShoPIM.csproj|c:\\users\\jpcae\\onedrive\\documentos\\projetos\\shopim\\backend\\shopim\\models\\users.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
@@ -17,14 +25,6 @@
     {
       "AbsoluteMoniker": "D:0:0:{A85D27A6-EE55-BE8F-CEC3-8B04CFBA54AF}|ShoPIM.csproj|c:\\users\\jpcae\\onedrive\\documentos\\projetos\\shopim\\backend\\shopim\\models\\contact.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{A85D27A6-EE55-BE8F-CEC3-8B04CFBA54AF}|ShoPIM.csproj|solutionrelative:models\\contact.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{A85D27A6-EE55-BE8F-CEC3-8B04CFBA54AF}|ShoPIM.csproj|c:\\users\\jpcae\\onedrive\\documentos\\projetos\\shopim\\backend\\shopim\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
-      "RelativeMoniker": "D:0:0:{A85D27A6-EE55-BE8F-CEC3-8B04CFBA54AF}|ShoPIM.csproj|solutionrelative:appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{A85D27A6-EE55-BE8F-CEC3-8B04CFBA54AF}|ShoPIM.csproj|c:\\users\\jpcae\\onedrive\\documentos\\projetos\\shopim\\backend\\shopim\\data\\appdbcontext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{A85D27A6-EE55-BE8F-CEC3-8B04CFBA54AF}|ShoPIM.csproj|solutionrelative:data\\appdbcontext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     }
   ],
   "DocumentGroupContainers": [
@@ -34,11 +34,11 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 5,
+          "SelectedChildIndex": 3,
           "Children": [
             {
               "$type": "Document",
-              "DocumentIndex": 3,
+              "DocumentIndex": 5,
               "Title": "Contact.cs",
               "DocumentMoniker": "C:\\Users\\jpcae\\OneDrive\\Documentos\\Projetos\\ShoPIM\\BackEnd\\ShoPIM\\Models\\Contact.cs",
               "RelativeDocumentMoniker": "Models\\Contact.cs",
@@ -51,7 +51,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 2,
+              "DocumentIndex": 4,
               "Title": "Address.cs",
               "DocumentMoniker": "C:\\Users\\jpcae\\OneDrive\\Documentos\\Projetos\\ShoPIM\\BackEnd\\ShoPIM\\Models\\Address.cs",
               "RelativeDocumentMoniker": "Models\\Address.cs",
@@ -64,7 +64,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 1,
+              "DocumentIndex": 3,
               "Title": "Users.cs",
               "DocumentMoniker": "C:\\Users\\jpcae\\OneDrive\\Documentos\\Projetos\\ShoPIM\\BackEnd\\ShoPIM\\Models\\Users.cs",
               "RelativeDocumentMoniker": "Models\\Users.cs",
@@ -77,20 +77,20 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 5,
+              "DocumentIndex": 0,
               "Title": "AppDbContext.cs",
               "DocumentMoniker": "C:\\Users\\jpcae\\OneDrive\\Documentos\\Projetos\\ShoPIM\\BackEnd\\ShoPIM\\Data\\AppDbContext.cs",
               "RelativeDocumentMoniker": "Data\\AppDbContext.cs",
               "ToolTip": "C:\\Users\\jpcae\\OneDrive\\Documentos\\Projetos\\ShoPIM\\BackEnd\\ShoPIM\\Data\\AppDbContext.cs",
               "RelativeToolTip": "Data\\AppDbContext.cs",
-              "ViewState": "AgIAACsAAAAAAAAAAAAcwDYAAAAsAAAAAAAAAA==",
+              "ViewState": "AgIAAC0AAAAAAAAAAAAAADYAAAAsAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2026-04-03T22:14:15.569Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 4,
+              "DocumentIndex": 2,
               "Title": "appsettings.json",
               "DocumentMoniker": "C:\\Users\\jpcae\\OneDrive\\Documentos\\Projetos\\ShoPIM\\BackEnd\\ShoPIM\\appsettings.json",
               "RelativeDocumentMoniker": "appsettings.json",
@@ -103,13 +103,13 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 0,
+              "DocumentIndex": 1,
               "Title": "Program.cs",
               "DocumentMoniker": "C:\\Users\\jpcae\\OneDrive\\Documentos\\Projetos\\ShoPIM\\BackEnd\\ShoPIM\\Program.cs",
               "RelativeDocumentMoniker": "Program.cs",
               "ToolTip": "C:\\Users\\jpcae\\OneDrive\\Documentos\\Projetos\\ShoPIM\\BackEnd\\ShoPIM\\Program.cs",
               "RelativeToolTip": "Program.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAABYAAAAAAAAAAAAAAA==",
+              "ViewState": "AgIAAAYAAAAAAAAAAAAAABYAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2026-04-03T21:56:42.941Z",
               "EditorCaption": ""

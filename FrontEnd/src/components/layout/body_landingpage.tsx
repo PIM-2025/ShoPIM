@@ -29,7 +29,7 @@ export function CarouselBody() {
 
     const interval = setInterval(() => {
       apiRef.current?.scrollNext()
-    }, 3000)
+    }, 8000)
 
     return () => clearInterval(interval)
   }, [apiReady])

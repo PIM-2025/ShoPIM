@@ -11,7 +11,7 @@ namespace ShoPIM.Models
     {
         [Key]
         [Column("ID_USER")]
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        [DatabaseGenerated(DatabaseGeneratedOption.None)]
         public int Id { get; set; }
 
         [Column("NOME")]

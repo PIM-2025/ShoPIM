@@ -26,9 +26,7 @@ namespace ShoPIM.Data
                 entity.ToTable("USERS");
                 entity.HasKey(u => u.Id);
                 entity.Property(u => u.Id)
-                    .HasColumnName("ID_USER")
-                    .ValueGeneratedOnAdd()
-                    .HasDefaultValueSql("SEQ_USERS.NEXTVAL");
+                    .HasColumnName("ID_USER");
             });
 
             // ADDRESS

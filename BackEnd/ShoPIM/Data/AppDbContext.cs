@@ -27,6 +27,7 @@ namespace ShoPIM.Data
                 entity.HasKey(u => u.Id);
                 entity.Property(u => u.Id)
                     .HasColumnName("ID_USER")
+                    .ValueGeneratedOnAdd()
                     .HasDefaultValueSql("SEQ_USERS.NEXTVAL");
             });
 
@@ -37,6 +38,7 @@ namespace ShoPIM.Data
                 entity.HasKey(a => a.Id);
                 entity.Property(a => a.Id)
                     .HasColumnName("ID_ADDRESS")
+                    .ValueGeneratedOnAdd()
                     .HasDefaultValueSql("SEQ_ADDRESS.NEXTVAL");
 
                 entity.HasOne(a => a.User)
@@ -52,6 +54,7 @@ namespace ShoPIM.Data
                 entity.HasKey(c => c.Id);
                 entity.Property(c => c.Id)
                     .HasColumnName("ID_CONTACT")
+                    .ValueGeneratedOnAdd()
                     .HasDefaultValueSql("SEQ_CONTACT.NEXTVAL");
 
                 entity.HasOne(c => c.User)

@@ -1,6 +1,7 @@
 import { useSearch, useNavigate } from '@tanstack/react-router'
 import { useGoogleLogin } from '@react-oauth/google'
 import { useAuthStore } from '@/stores/auth-store'
+import { API_URL } from '@/lib/api'
 import { Button } from '@/components/ui/button'
 import {
   Card,
@@ -27,7 +28,7 @@ export function SignIn() {
         }
       ).then((r) => r.json())
 
-      const res = await fetch('http://localhost:5126/api/auth/google', {
+      const res = await fetch(`${API_URL}/api/auth/google`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email: userInfo.email, nome: userInfo.name }),

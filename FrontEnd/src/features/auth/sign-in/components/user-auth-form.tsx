@@ -3,10 +3,11 @@ import { z } from 'zod'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Link, useNavigate } from '@tanstack/react-router'
+import { login } from '@/service/authService'
 import { Loader2, LogIn } from 'lucide-react'
 import { toast } from 'sonner'
 import { useAuthStore } from '@/stores/auth-store'
-import { sleep, cn } from '@/lib/utils'
+import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
 import {
   Form,
@@ -20,11 +21,10 @@ import { Input } from '@/components/ui/input'
 import { PasswordInput } from '@/components/password-input'
 
 const formSchema = z.object({
-  email: z.email({
-    message: 'Por favor, insira seu e-mail.',
-  }),
+  email: z.string().email({ message: 'Por favor, insira seu e-mail.' }),
   password: z
-    .string().min(1, 'Por favor, insira sua senha.')
+    .string()
+    .min(1, 'Por favor, insira sua senha.')
     .min(7, 'A senha deve ter pelo menos 7 caracteres.'),
 })
 
@@ -43,50 +43,38 @@ export function UserAuthForm({
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
-    defaultValues: {
-      email: '',
-      password: '',
-    },
+    defaultValues: { email: '', password: '' },
   })
 
-  function onSubmit(data: z.infer<typeof formSchema>) {
+  async function onSubmit(data: z.infer<typeof formSchema>) {
     setIsLoading(true)
 
-    toast.promise(sleep(2000), {
-      loading: 'Entrando...',
-      success: () => {
-        setIsLoading(false)
+    try {
+      const result = await login(data.email, data.password)
 
-        // Mock successful authentication with expiry computed at success time
-        const mockUser = {
-          accountNo: 'ACC001',
-          email: data.email, // Keep email as is, it's a user input
-          role: ['user'],
-          exp: Date.now() + 24 * 60 * 60 * 1000, // 24 hours from now
-          name: 'John Doe',
-          avatar: 'https://i.pravatar.cc/150?img=3'
-        }
+      auth.setUser({
+        accountNo: result.email,
+        email: result.email,
+        name: result.nome,
+        role: ['user'],
+        exp: Date.now() + 8 * 60 * 60 * 1000,
+        avatar: '',
+      })
+      auth.setAccessToken(result.jwt)
 
-        // Set user and access token
-        auth.setUser(mockUser)
-        auth.setAccessToken('mock-access-token')
-
-        // Redirect to the stored location or default to dashboard
-        const targetPath = redirectTo || '/'
-        navigate({ to: targetPath, replace: true })
-
-        return `Bem-vindo(a) de volta, ${data.email}!`
-      },
-      error: 'Erro',
-    })
+      toast.success(`Bem-vindo(a) de volta, ${result.nome}!`)
+      navigate({ to: redirectTo ?? '/', replace: true })
+    } catch (err: any) {
+      toast.error(err?.response?.data?.message ?? 'E-mail ou senha inválidos.')
+    } finally {
+      setIsLoading(false)
+    }
   }
 
   return (
     <Form {...form}>
       <form
-        //onSubmit={form.handleSubmit(onSubmit)}
-        onSubmit={(e) => {e.preventDefault() 
-          onSubmit({ email: 'debug@email.com', password: '1234567' })}}
+        onSubmit={form.handleSubmit(onSubmit)}
         className={cn('grid gap-3', className)}
         {...props}
       >

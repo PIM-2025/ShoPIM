@@ -52,18 +52,25 @@ export function UserAuthForm({
     try {
       const result = await login(data.email, data.password)
 
+      const role = result.role ?? 2
+
       auth.setUser({
         accountNo: result.email,
         email: result.email,
         name: result.nome,
-        role: ['user'],
+        role: [role === 1 ? 'admin' : 'user'],
         exp: Date.now() + 8 * 60 * 60 * 1000,
         avatar: '',
       })
       auth.setAccessToken(result.jwt)
 
       toast.success(`Bem-vindo(a) de volta, ${result.nome}!`)
-      navigate({ to: redirectTo ?? '/', replace: true })
+
+      if (role === 1) {
+        navigate({ to: '/dashboard', replace: true })
+      } else {
+        navigate({ to: redirectTo ?? '/', replace: true })
+      }
     } catch (err: any) {
       toast.error(err?.response?.data?.message ?? 'E-mail ou senha inválidos.')
     } finally {

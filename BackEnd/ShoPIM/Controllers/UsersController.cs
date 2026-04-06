@@ -85,7 +85,7 @@ namespace ShoPIM.Controllers
                 return Unauthorized(new { message = "E-mail ou senha inválidos." });
 
             var jwt = GerarJwt(user);
-            return Ok(new { jwt, nome = user.Nome, email = user.Email });
+            return Ok(new { jwt, nome = user.Nome, email = user.Email, role = user.Role });
         }
 
         private string GerarJwt(Users user)

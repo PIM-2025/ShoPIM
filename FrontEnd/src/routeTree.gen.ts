@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as ProdutosRouteImport } from './routes/produtos'
+import { Route as PaginaprodutosramonRouteImport } from './routes/paginaprodutosramon'
 import { Route as PaginaProdutosRouteImport } from './routes/paginaProdutos'
 import { Route as CheckoutRouteImport } from './routes/checkout'
 import { Route as CartRouteImport } from './routes/cart'
@@ -44,6 +45,11 @@ import { Route as AuthenticatedTasksauthForgotPasswordRouteImport } from './rout
 const ProdutosRoute = ProdutosRouteImport.update({
   id: '/produtos',
   path: '/produtos',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PaginaprodutosramonRoute = PaginaprodutosramonRouteImport.update({
+  id: '/paginaprodutosramon',
+  path: '/paginaprodutosramon',
   getParentRoute: () => rootRouteImport,
 } as any)
 const PaginaProdutosRoute = PaginaProdutosRouteImport.update({
@@ -213,6 +219,7 @@ export interface FileRoutesByFullPath {
   '/cart': typeof CartRoute
   '/checkout': typeof CheckoutRoute
   '/paginaProdutos': typeof PaginaProdutosRoute
+  '/paginaprodutosramon': typeof PaginaprodutosramonRoute
   '/produtos': typeof ProdutosRoute
   '/settings': typeof AuthenticatedSettingsRouteRouteWithChildren
   '/forgot-password': typeof authForgotPasswordRoute
@@ -245,6 +252,7 @@ export interface FileRoutesByTo {
   '/cart': typeof CartRoute
   '/checkout': typeof CheckoutRoute
   '/paginaProdutos': typeof PaginaProdutosRoute
+  '/paginaprodutosramon': typeof PaginaprodutosramonRoute
   '/produtos': typeof ProdutosRoute
   '/forgot-password': typeof authForgotPasswordRoute
   '/otp': typeof authOtpRoute
@@ -278,6 +286,7 @@ export interface FileRoutesById {
   '/cart': typeof CartRoute
   '/checkout': typeof CheckoutRoute
   '/paginaProdutos': typeof PaginaProdutosRoute
+  '/paginaprodutosramon': typeof PaginaprodutosramonRoute
   '/produtos': typeof ProdutosRoute
   '/_authenticated/settings': typeof AuthenticatedSettingsRouteRouteWithChildren
   '/(auth)/forgot-password': typeof authForgotPasswordRoute
@@ -312,6 +321,7 @@ export interface FileRouteTypes {
     | '/cart'
     | '/checkout'
     | '/paginaProdutos'
+    | '/paginaprodutosramon'
     | '/produtos'
     | '/settings'
     | '/forgot-password'
@@ -344,6 +354,7 @@ export interface FileRouteTypes {
     | '/cart'
     | '/checkout'
     | '/paginaProdutos'
+    | '/paginaprodutosramon'
     | '/produtos'
     | '/forgot-password'
     | '/otp'
@@ -376,6 +387,7 @@ export interface FileRouteTypes {
     | '/cart'
     | '/checkout'
     | '/paginaProdutos'
+    | '/paginaprodutosramon'
     | '/produtos'
     | '/_authenticated/settings'
     | '/(auth)/forgot-password'
@@ -410,6 +422,7 @@ export interface RootRouteChildren {
   CartRoute: typeof CartRoute
   CheckoutRoute: typeof CheckoutRoute
   PaginaProdutosRoute: typeof PaginaProdutosRoute
+  PaginaprodutosramonRoute: typeof PaginaprodutosramonRoute
   ProdutosRoute: typeof ProdutosRoute
   authForgotPasswordRoute: typeof authForgotPasswordRoute
   authOtpRoute: typeof authOtpRoute
@@ -429,6 +442,13 @@ declare module '@tanstack/react-router' {
       path: '/produtos'
       fullPath: '/produtos'
       preLoaderRoute: typeof ProdutosRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/paginaprodutosramon': {
+      id: '/paginaprodutosramon'
+      path: '/paginaprodutosramon'
+      fullPath: '/paginaprodutosramon'
+      preLoaderRoute: typeof PaginaprodutosramonRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/paginaProdutos': {
@@ -705,6 +725,7 @@ const rootRouteChildren: RootRouteChildren = {
   CartRoute: CartRoute,
   CheckoutRoute: CheckoutRoute,
   PaginaProdutosRoute: PaginaProdutosRoute,
+  PaginaprodutosramonRoute: PaginaprodutosramonRoute,
   ProdutosRoute: ProdutosRoute,
   authForgotPasswordRoute: authForgotPasswordRoute,
   authOtpRoute: authOtpRoute,

@@ -16,10 +16,6 @@ namespace ShoPIM.Data
         {
             base.OnModelCreating(modelBuilder);
 
-            modelBuilder.HasSequence<int>("SEQ_USERS").StartsAt(1).IncrementsBy(1);
-            modelBuilder.HasSequence<int>("SEQ_ADDRESS").StartsAt(1).IncrementsBy(1);
-            modelBuilder.HasSequence<int>("SEQ_CONTACT").StartsAt(1).IncrementsBy(1);
-
             // USERS
             modelBuilder.Entity<Users>(entity =>
             {
@@ -35,9 +31,7 @@ namespace ShoPIM.Data
                 entity.ToTable("ADDRESS");
                 entity.HasKey(a => a.Id);
                 entity.Property(a => a.Id)
-                    .HasColumnName("ID_ADDRESS")
-                    .ValueGeneratedOnAdd()
-                    .HasDefaultValueSql("SEQ_ADDRESS.NEXTVAL");
+                    .HasColumnName("ID_ADDRESS");
 
                 entity.HasOne(a => a.User)
                     .WithMany(u => u.Addresses)
@@ -51,9 +45,7 @@ namespace ShoPIM.Data
                 entity.ToTable("CONTACT");
                 entity.HasKey(c => c.Id);
                 entity.Property(c => c.Id)
-                    .HasColumnName("ID_CONTACT")
-                    .ValueGeneratedOnAdd()
-                    .HasDefaultValueSql("SEQ_CONTACT.NEXTVAL");
+                    .HasColumnName("ID_CONTACT");
 
                 entity.HasOne(c => c.User)
                     .WithMany(u => u.Contacts)

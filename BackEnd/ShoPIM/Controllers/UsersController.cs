@@ -55,8 +55,11 @@ namespace ShoPIM.Controllers
             if (existe)
                 return BadRequest(new { message = "E-mail já cadastrado." });
 
+            var nextId = _context.Database.SqlQueryRaw<int>("SELECT SEQ_USERS.NEXTVAL AS \"Value\" FROM DUAL").AsEnumerable().First();
+
             var user = new Users
             {
+                Id = nextId,
                 Nome = request.Nome,
                 Email = request.Email,
                 Senha = BCrypt.Net.BCrypt.HashPassword(request.Senha),

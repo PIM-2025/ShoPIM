@@ -32,8 +32,10 @@ namespace ShoPIM.Controllers
 
                 if (user == null)
                 {
+                    var nextId = _context.Database.SqlQueryRaw<int>("SELECT SEQ_USERS.NEXTVAL AS \"Value\" FROM DUAL").AsEnumerable().First();
                     user = new Users
                     {
+                        Id = nextId,
                         Nome = request.Nome,
                         Email = request.Email,
                         Role = 2,

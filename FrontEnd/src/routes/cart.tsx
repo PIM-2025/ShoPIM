@@ -1,6 +1,6 @@
 import { createFileRoute } from '@tanstack/react-router'
+import Cart from '@/pages/cart'
 import { HeaderLanding } from '@/components/layout/header_landingpage'
-import Cart from '@/features/cart'
 
 export const Route = createFileRoute('/cart')({
   component: CartPage,

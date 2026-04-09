@@ -24,35 +24,31 @@ type Category = {
 }
 
 const categories: Category[] = [
-  {
-    label: 'Eletrônicos',
-    href: '#',
-    description: 'Smartphones, notebooks e mais',
-  },
-  { label: 'Roupas', href: '#', description: 'Moda masculina e feminina' },
-  { label: 'Acessórios', href: '#', description: 'Bolsas, relógios e joias' },
+  {label: 'Eletrônicos',href: '/produtos_eletronicos',description: 'Smartphones, notebooks e mais',},
+  { label: 'Roupas', href: '/roupas', description: 'Moda masculina e feminina' },
+  { label: 'Acessórios', href: '/acessorios', description: 'Bolsas, relógios e joias' },
 ]
 
 function CategoryItem({ cat }: { cat: Category }) {
   return (
-    <a
-      href={cat.href}
+    <Link
+      to={cat.href}
       className='flex flex-col rounded-md px-3 py-2 transition-colors hover:bg-accent'
     >
       <span className='text-sm font-medium text-foreground'>{cat.label}</span>
       <span className='text-xs text-muted-foreground'>{cat.description}</span>
-    </a>
+    </Link>
   )
 }
 
 function CategoryItemMobile({ cat }: { cat: Category }) {
   return (
-    <a
-      href={cat.href}
+    <Link
+      to={cat.href}
       className='rounded-md px-3 py-2 text-sm text-muted-foreground transition-colors hover:bg-accent hover:text-foreground'
     >
       {cat.label}
-    </a>
+    </Link>
   )
 }
 

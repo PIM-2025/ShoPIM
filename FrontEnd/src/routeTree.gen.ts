@@ -9,11 +9,13 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as RoupasRouteImport } from './routes/roupas'
+import { Route as Produtos_eletronicosRouteImport } from './routes/produtos_eletronicos'
 import { Route as ProdutosRouteImport } from './routes/produtos'
 import { Route as PaginaprodutosramonRouteImport } from './routes/paginaprodutosramon'
-import { Route as PaginaProdutosRouteImport } from './routes/paginaProdutos'
 import { Route as CheckoutRouteImport } from './routes/checkout'
 import { Route as CartRouteImport } from './routes/cart'
+import { Route as AcessoriosRouteImport } from './routes/acessorios'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
@@ -42,6 +44,16 @@ import { Route as AuthenticatedTasksauthSignInRouteImport } from './routes/_auth
 import { Route as AuthenticatedTasksauthOtpRouteImport } from './routes/_authenticated/tasks/(auth)/otp'
 import { Route as AuthenticatedTasksauthForgotPasswordRouteImport } from './routes/_authenticated/tasks/(auth)/forgot-password'
 
+const RoupasRoute = RoupasRouteImport.update({
+  id: '/roupas',
+  path: '/roupas',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const Produtos_eletronicosRoute = Produtos_eletronicosRouteImport.update({
+  id: '/produtos_eletronicos',
+  path: '/produtos_eletronicos',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ProdutosRoute = ProdutosRouteImport.update({
   id: '/produtos',
   path: '/produtos',
@@ -52,11 +64,6 @@ const PaginaprodutosramonRoute = PaginaprodutosramonRouteImport.update({
   path: '/paginaprodutosramon',
   getParentRoute: () => rootRouteImport,
 } as any)
-const PaginaProdutosRoute = PaginaProdutosRouteImport.update({
-  id: '/paginaProdutos',
-  path: '/paginaProdutos',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const CheckoutRoute = CheckoutRouteImport.update({
   id: '/checkout',
   path: '/checkout',
@@ -65,6 +72,11 @@ const CheckoutRoute = CheckoutRouteImport.update({
 const CartRoute = CartRouteImport.update({
   id: '/cart',
   path: '/cart',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AcessoriosRoute = AcessoriosRouteImport.update({
+  id: '/acessorios',
+  path: '/acessorios',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
@@ -216,11 +228,13 @@ const AuthenticatedTasksauthForgotPasswordRoute =
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/acessorios': typeof AcessoriosRoute
   '/cart': typeof CartRoute
   '/checkout': typeof CheckoutRoute
-  '/paginaProdutos': typeof PaginaProdutosRoute
   '/paginaprodutosramon': typeof PaginaprodutosramonRoute
   '/produtos': typeof ProdutosRoute
+  '/produtos_eletronicos': typeof Produtos_eletronicosRoute
+  '/roupas': typeof RoupasRoute
   '/settings': typeof AuthenticatedSettingsRouteRouteWithChildren
   '/forgot-password': typeof authForgotPasswordRoute
   '/otp': typeof authOtpRoute
@@ -249,11 +263,13 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/acessorios': typeof AcessoriosRoute
   '/cart': typeof CartRoute
   '/checkout': typeof CheckoutRoute
-  '/paginaProdutos': typeof PaginaProdutosRoute
   '/paginaprodutosramon': typeof PaginaprodutosramonRoute
   '/produtos': typeof ProdutosRoute
+  '/produtos_eletronicos': typeof Produtos_eletronicosRoute
+  '/roupas': typeof RoupasRoute
   '/forgot-password': typeof authForgotPasswordRoute
   '/otp': typeof authOtpRoute
   '/sign-in': typeof authSignInRoute
@@ -283,11 +299,13 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
+  '/acessorios': typeof AcessoriosRoute
   '/cart': typeof CartRoute
   '/checkout': typeof CheckoutRoute
-  '/paginaProdutos': typeof PaginaProdutosRoute
   '/paginaprodutosramon': typeof PaginaprodutosramonRoute
   '/produtos': typeof ProdutosRoute
+  '/produtos_eletronicos': typeof Produtos_eletronicosRoute
+  '/roupas': typeof RoupasRoute
   '/_authenticated/settings': typeof AuthenticatedSettingsRouteRouteWithChildren
   '/(auth)/forgot-password': typeof authForgotPasswordRoute
   '/(auth)/otp': typeof authOtpRoute
@@ -318,11 +336,13 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/acessorios'
     | '/cart'
     | '/checkout'
-    | '/paginaProdutos'
     | '/paginaprodutosramon'
     | '/produtos'
+    | '/produtos_eletronicos'
+    | '/roupas'
     | '/settings'
     | '/forgot-password'
     | '/otp'
@@ -351,11 +371,13 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/acessorios'
     | '/cart'
     | '/checkout'
-    | '/paginaProdutos'
     | '/paginaprodutosramon'
     | '/produtos'
+    | '/produtos_eletronicos'
+    | '/roupas'
     | '/forgot-password'
     | '/otp'
     | '/sign-in'
@@ -384,11 +406,13 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/_authenticated'
+    | '/acessorios'
     | '/cart'
     | '/checkout'
-    | '/paginaProdutos'
     | '/paginaprodutosramon'
     | '/produtos'
+    | '/produtos_eletronicos'
+    | '/roupas'
     | '/_authenticated/settings'
     | '/(auth)/forgot-password'
     | '/(auth)/otp'
@@ -419,11 +443,13 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
+  AcessoriosRoute: typeof AcessoriosRoute
   CartRoute: typeof CartRoute
   CheckoutRoute: typeof CheckoutRoute
-  PaginaProdutosRoute: typeof PaginaProdutosRoute
   PaginaprodutosramonRoute: typeof PaginaprodutosramonRoute
   ProdutosRoute: typeof ProdutosRoute
+  Produtos_eletronicosRoute: typeof Produtos_eletronicosRoute
+  RoupasRoute: typeof RoupasRoute
   authForgotPasswordRoute: typeof authForgotPasswordRoute
   authOtpRoute: typeof authOtpRoute
   authSignInRoute: typeof authSignInRoute
@@ -437,6 +463,20 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/roupas': {
+      id: '/roupas'
+      path: '/roupas'
+      fullPath: '/roupas'
+      preLoaderRoute: typeof RoupasRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/produtos_eletronicos': {
+      id: '/produtos_eletronicos'
+      path: '/produtos_eletronicos'
+      fullPath: '/produtos_eletronicos'
+      preLoaderRoute: typeof Produtos_eletronicosRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/produtos': {
       id: '/produtos'
       path: '/produtos'
@@ -451,13 +491,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PaginaprodutosramonRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/paginaProdutos': {
-      id: '/paginaProdutos'
-      path: '/paginaProdutos'
-      fullPath: '/paginaProdutos'
-      preLoaderRoute: typeof PaginaProdutosRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/checkout': {
       id: '/checkout'
       path: '/checkout'
@@ -470,6 +503,13 @@ declare module '@tanstack/react-router' {
       path: '/cart'
       fullPath: '/cart'
       preLoaderRoute: typeof CartRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/acessorios': {
+      id: '/acessorios'
+      path: '/acessorios'
+      fullPath: '/acessorios'
+      preLoaderRoute: typeof AcessoriosRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_authenticated': {
@@ -722,11 +762,13 @@ const AuthenticatedRouteRouteWithChildren =
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
+  AcessoriosRoute: AcessoriosRoute,
   CartRoute: CartRoute,
   CheckoutRoute: CheckoutRoute,
-  PaginaProdutosRoute: PaginaProdutosRoute,
   PaginaprodutosramonRoute: PaginaprodutosramonRoute,
   ProdutosRoute: ProdutosRoute,
+  Produtos_eletronicosRoute: Produtos_eletronicosRoute,
+  RoupasRoute: RoupasRoute,
   authForgotPasswordRoute: authForgotPasswordRoute,
   authOtpRoute: authOtpRoute,
   authSignInRoute: authSignInRoute,

@@ -48,7 +48,6 @@ export function CategoriaProdutosPage() {
                       : 'hover:bg-muted'
                   )}
                 >
-                  <span>{c.icon}</span>
                   {c.label}
                 </Link>
               </li>
@@ -60,7 +59,6 @@ export function CategoriaProdutosPage() {
         <main className='flex-1 px-4 py-6'>
           <div className='mb-6 flex flex-wrap items-center justify-between gap-3'>
             <h1 className='text-lg font-semibold capitalize'>
-              {categoriasMenu.find((c) => c.slug === categoria)?.icon}{' '}
               {categoriasMenu.find((c) => c.slug === categoria)?.label}
             </h1>
 

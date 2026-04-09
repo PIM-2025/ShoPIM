@@ -6,12 +6,15 @@ namespace ShoPIM.Data
 {
     public class AppDbContext : DbContext
     {
+        #region Propriedades publicas
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
-
         public DbSet<Users> Users { get; set; }
         public DbSet<Address> Address { get; set; }
         public DbSet<Contact> Contact { get; set; }
+        public DbSet<Product> Product { get; set; }
+        #endregion
 
+        #region OnModelCreating
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
@@ -52,6 +55,16 @@ namespace ShoPIM.Data
                     .HasForeignKey(c => c.IdUser)
                     .HasConstraintName("USERS_CONTACT");
             });
+
+            // PRODUCT
+            modelBuilder.Entity<Product>(entity =>
+            {
+                entity.ToTable("PRODUCT");
+                entity.HasKey(p => p.Id);
+                entity.Property(p => p.Id)
+                    .HasColumnName("ID_PRODUTO");
+            });
         }
+        #endregion
     }
 }

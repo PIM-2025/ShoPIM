@@ -5,7 +5,7 @@
 /* Project name:                                                          */
 /* Author:                                                                */
 /* Script type:           Database creation script                        */
-/* Created on:            2026-04-03 19:26                                */
+/* Created on:            2026-04-09 16:50                                */
 /* ---------------------------------------------------------------------- */
 
 
@@ -22,7 +22,7 @@ CREATE SEQUENCE SEC_USERS
     noorder;
 
 CREATE SEQUENCE SEC_ADRESS
-    START WITH 0
+    START WITH 1
     INCREMENT BY 1
     MINVALUE 1
     MAXVALUE 999999999
@@ -30,7 +30,15 @@ CREATE SEQUENCE SEC_ADRESS
     noorder;
 
 CREATE SEQUENCE SEC_CONTACT
-    START WITH 0
+    START WITH 1
+    INCREMENT BY 1
+    MINVALUE 1
+    MAXVALUE 999999999
+    nocycle
+    noorder;
+
+CREATE SEQUENCE SEQ_PRODUCT
+    START WITH 1
     INCREMENT BY 1
     MINVALUE 1
     MAXVALUE 999999999
@@ -81,6 +89,20 @@ CREATE TABLE ADDRESS (
     CEP VARCHAR2(40),
     ID_USER NUMBER(9),
     CONSTRAINT PK_ADDRESS PRIMARY KEY (ID_ADDRESS)
+);
+
+/* ---------------------------------------------------------------------- */
+/* Add table "PRODUCT"                                                    */
+/* ---------------------------------------------------------------------- */
+
+CREATE TABLE PRODUCT (
+    ID_PRODUTO NUMBER CONSTRAINT NN_PRODUCT_ID_PRODUTO NOT NULL,
+    DESCRICAO VARCHAR2(255),
+    PRECO NUMBER(9,2),
+    CATEGORIA VARCHAR2(255),
+    QUANTIDADE NUMBER(9),
+    IMAGEM VARCHAR2(255),
+    CONSTRAINT PK_PRODUCT PRIMARY KEY (ID_PRODUTO)
 );
 
 /* ---------------------------------------------------------------------- */

@@ -1,0 +1,92 @@
+﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using ShoPIM.Data;
+using ShoPIM.Models;
+
+namespace ShoPIM.Controllers
+{
+    [Route("api/[controller]")]
+    [ApiController]
+    public class ProductController : ControllerBase
+    {
+        #region Propriedades privadas
+        private readonly AppDbContext _context;
+        #endregion
+
+        #region Construtor
+        public ProductController(AppDbContext context)
+        {
+            _context = context;
+        }
+        #endregion
+
+        #region GET: api/product
+        [HttpGet]
+        public async Task<ActionResult<IEnumerable<Product>>> GetProducts()
+        {
+            return await _context.Product.ToListAsync();
+        }
+        #endregion
+
+        #region GET: api/product/{id}
+        [HttpGet("{id}")]
+        public async Task<ActionResult<Product>> GetProduct(int id)
+        {
+            var product = await _context.Product
+                .FirstOrDefaultAsync(p => p.Id == id);
+
+            if (product == null) return NotFound(new { message = "Produto não encontrado." });
+            return product;
+        }
+        #endregion
+
+        #region POST: api/product
+        [HttpPost]
+        public async Task<ActionResult> CreateProduct([FromBody] Product product)
+        {
+            var nextId = _context.Database
+                .SqlQueryRaw<int>("SELECT SEQ_PRODUCT.NEXTVAL AS \"Value\" FROM DUAL")
+                .AsEnumerable()
+                .First();
+
+            product.Id = nextId;
+
+            _context.Product.Add(product);
+            await _context.SaveChangesAsync();
+
+            return CreatedAtAction(nameof(GetProduct), new { id = product.Id }, product);
+        }
+        #endregion
+
+        #region PUT: api/product/{id}
+        [HttpPut("{id}")]
+        public async Task<ActionResult> UpdateProduct(int id, [FromBody] Product product)
+        {
+            if (id != product.Id)
+                return BadRequest(new { message = "ID divergente." });
+
+            var exists = await _context.Product.AnyAsync(p => p.Id == id);
+            if (!exists) return NotFound(new { message = "Produto não encontrado." });
+
+            _context.Entry(product).State = EntityState.Modified;
+            await _context.SaveChangesAsync();
+
+            return NoContent();
+        }
+        #endregion
+
+        #region DELETE: api/product/{id}
+        [HttpDelete("{id}")]
+        public async Task<ActionResult> DeleteProduct(int id)
+        {
+            var product = await _context.Product.FindAsync(id);
+            if (product == null) return NotFound(new { message = "Produto não encontrado." });
+
+            _context.Product.Remove(product);
+            await _context.SaveChangesAsync();
+
+            return NoContent();
+        }
+        #endregion
+    }
+}

@@ -3,6 +3,10 @@ import { Card } from '@/components/layout/cards'
 
 export function ProdutoCard({ produto }: { produto: Produto }) {
   return (
-    <Card title={produto.nome} price={produto.preco} image={produto.imagem} />
+    <Card
+      title={produto.descricao}
+      price={produto.preco}
+      image={produto.imagem}
+    />
   )
 }

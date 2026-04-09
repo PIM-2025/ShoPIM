@@ -43,8 +43,15 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 );
 
 builder.Services.AddEndpointsApiExplorer();
+
 builder.Services.AddSwaggerGen(c =>
 {
+    var order = new[] { "GET", "POST", "PUT", "DELETE", "PATCH" };
+    c.OrderActionsBy(api =>
+    {
+        var methodIndex = Array.IndexOf(order, api.HttpMethod?.ToUpper());
+        return $"{api.RelativePath}_{methodIndex}";
+    });
     c.SwaggerDoc("v1", new OpenApiInfo { Title = "ShoPIM API", Version = "v1" });
 });
 

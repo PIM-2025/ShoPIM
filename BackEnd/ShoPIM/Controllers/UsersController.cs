@@ -14,16 +14,20 @@ namespace ShoPIM.Controllers
     [ApiController]
     public class UsersController : ControllerBase
     {
+        #region Propriedades privadas
         private readonly AppDbContext _context;
         private readonly IConfiguration _config;
+        #endregion
 
+        #region Construtor
         public UsersController(AppDbContext context, IConfiguration config)
         {
             _context = context;
             _config = config;
         }
+        #endregion
 
-        // GET: api/users
+        #region GET: api/users
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Users>>> GetUsers()
         {
@@ -32,8 +36,9 @@ namespace ShoPIM.Controllers
                 .Include(u => u.Contacts)
                 .ToListAsync();
         }
+        #endregion
 
-        // GET: api/users/5
+        #region GET: api/users/{id}
         [HttpGet("{id}")]
         public async Task<ActionResult<Users>> GetUser(long id)
         {
@@ -45,8 +50,9 @@ namespace ShoPIM.Controllers
             if (user == null) return NotFound();
             return user;
         }
+        #endregion
 
-        // POST: api/users/cadastro
+        #region POST: api/users/cadastro
         [HttpPost("cadastro")]
         public async Task<ActionResult> Cadastro([FromBody] CadastroRequest request)
         {
@@ -74,8 +80,9 @@ namespace ShoPIM.Controllers
 
             return CreatedAtAction(nameof(GetUser), new { id = user.Id }, new { message = "Usuário criado com sucesso!" });
         }
+        #endregion
 
-        // POST: api/users/login
+        #region POST: api/users/login
         [HttpPost("login")]
         public async Task<ActionResult> Login([FromBody] LoginRequest request)
         {
@@ -90,7 +97,9 @@ namespace ShoPIM.Controllers
             var jwt = GerarJwt(user);
             return Ok(new { jwt, nome = user.Nome, email = user.Email, role = user.Role });
         }
+        #endregion
 
+        #region Gerar JWT
         private string GerarJwt(Users user)
         {
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Jwt:Secret"]!));
@@ -112,8 +121,10 @@ namespace ShoPIM.Controllers
 
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
+        #endregion
     }
 
+    #region Classes de request
     public class CadastroRequest
     {
         public string Nome { get; set; } = string.Empty;
@@ -127,4 +138,5 @@ namespace ShoPIM.Controllers
         public string Email { get; set; } = string.Empty;
         public string Senha { get; set; } = string.Empty;
     }
+    #endregion
 }

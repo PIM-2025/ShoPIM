@@ -17,12 +17,12 @@ namespace ShoPIM.Models
         [Column("NOME")]
         [Required]
         [MaxLength(150)]
-        public string Nome { get; set; }
+        public string? Nome { get; set; }
 
         [Column("EMAIL")]
         [Required]
         [MaxLength(255)]
-        public string Email { get; set; }
+        public string? Email { get; set; }
 
         [Column("SENHA")]
         [MaxLength(255)]
@@ -42,7 +42,7 @@ namespace ShoPIM.Models
         public string? Cpf { get; set; }
 
         // Navegação
-        public ICollection<Address> Addresses { get; set; }
-        public ICollection<Contact> Contacts { get; set; }
+        public ICollection<Address>? Addresses { get; set; }
+        public ICollection<Contact>? Contacts { get; set; }
     }
 }

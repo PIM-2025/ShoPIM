@@ -13,14 +13,16 @@ export function useProdutos(categoria?: Categoria) {
 
   useEffect(() => {
     setLoading(true)
-    getProdutos(categoria).then((data) => {
+    getProdutos().then((data) => {
+      // sem passar categoria aqui
       setProdutos(data)
       setLoading(false)
     })
-  }, [categoria])
+  }, [])
 
   const produtosFiltrados = produtos
-    .filter((p) => (soEstoque ? p.emEstoque : true))
+    .filter((p) => (categoria ? p.categoria === categoria : true)) // filtra aqui
+    .filter((p) => (soEstoque ? p.quantidade > 0 : true)) // emEstoque virou quantidade
     .sort((a, b) => {
       if (ordem === 'menor-preco') return a.preco - b.preco
       if (ordem === 'maior-preco') return b.preco - a.preco

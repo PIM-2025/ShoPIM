@@ -2,9 +2,9 @@ export type Categoria = 'eletronicos' | 'roupas' | 'acessorios'
 
 export interface Produto {
   id: number
-  nome: string
+  descricao: string // era 'nome'
   preco: number
-  categoria: Categoria
+  categoria: string
+  quantidade: number // era 'emEstoque'
   imagem: string
-  emEstoque: boolean
 }

@@ -4,6 +4,7 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useNavigate } from '@tanstack/react-router'
 import { cadastro } from '@/service/authService'
+import { Check, X } from 'lucide-react'
 import { toast } from 'sonner'
 import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
@@ -33,11 +34,47 @@ const formSchema = z
     path: ['confirmPassword'],
   })
 
+const passwordRules = [
+  { label: 'Pelo menos 7 caracteres', test: (v: string) => v.length >= 7 },
+  { label: 'Uma letra maiúscula', test: (v: string) => /[A-Z]/.test(v) },
+  { label: 'Uma letra minúscula', test: (v: string) => /[a-z]/.test(v) },
+  { label: 'Um número', test: (v: string) => /[0-9]/.test(v) },
+  {
+    label: 'Um caractere especial',
+    test: (v: string) => /[^A-Za-z0-9]/.test(v),
+  },
+]
+
+function PasswordChecklist({ value }: { value: string }) {
+  if (!value) return null
+
+  return (
+    <ul className='mt-1 space-y-1'>
+      {passwordRules.map(({ label, test }) => {
+        const passed = test(value)
+        return (
+          <li
+            key={label}
+            className={cn(
+              'flex items-center gap-1.5 text-xs',
+              passed ? 'text-green-600' : 'text-muted-foreground'
+            )}
+          >
+            {passed ? <Check className='size-3' /> : <X className='size-3' />}
+            {label}
+          </li>
+        )
+      })}
+    </ul>
+  )
+}
+
 export function SignUpForm({
   className,
   ...props
 }: React.HTMLAttributes<HTMLFormElement>) {
   const [isLoading, setIsLoading] = useState(false)
+  const [showPassword, setShowPassword] = useState(false)
   const navigate = useNavigate()
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -45,9 +82,10 @@ export function SignUpForm({
     defaultValues: { nome: '', email: '', password: '', confirmPassword: '' },
   })
 
+  const passwordValue = form.watch('password')
+
   async function onSubmit(data: z.infer<typeof formSchema>) {
     setIsLoading(true)
-
     try {
       await cadastro(data.nome, data.email, data.password)
       toast.success('Conta criada com sucesso!')
@@ -99,8 +137,14 @@ export function SignUpForm({
             <FormItem>
               <FormLabel>Senha</FormLabel>
               <FormControl>
-                <PasswordInput placeholder='********' {...field} />
+                <PasswordInput
+                  placeholder='********'
+                  showPassword={showPassword}
+                  onTogglePassword={() => setShowPassword((v) => !v)}
+                  {...field}
+                />
               </FormControl>
+              <PasswordChecklist value={passwordValue} />
               <FormMessage />
             </FormItem>
           )}
@@ -112,7 +156,12 @@ export function SignUpForm({
             <FormItem>
               <FormLabel>Confirmar Senha</FormLabel>
               <FormControl>
-                <PasswordInput placeholder='********' {...field} />
+                <PasswordInput
+                  placeholder='********'
+                  showPassword={showPassword}
+                  onTogglePassword={() => setShowPassword((v) => !v)}
+                  {...field}
+                />
               </FormControl>
               <FormMessage />
             </FormItem>

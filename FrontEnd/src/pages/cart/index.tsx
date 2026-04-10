@@ -1,5 +1,7 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useNavigate } from '@tanstack/react-router'
+import { CartItem } from '@/service/cartservice'
+import { useAuthStore } from '@/stores/auth-store'
 import {
   Trash2,
   Minus,
@@ -12,6 +14,7 @@ import {
   MoveRight,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import { useCart } from '@/hooks/useCart'
 import { Button } from '@/components/ui/button'
 import {
   Card,
@@ -22,106 +25,41 @@ import {
 } from '@/components/ui/card'
 import { Separator } from '@/components/ui/separator'
 
-interface CartItem {
-  id: string
-  name: string
-  color: string
-  size: string
-  price: number
-  originalPrice: number
-  quantity: number
-  image: string
-  estimatedDelivery: string
-}
-
-interface CartData {
-  items: CartItem[]
-  shipping: {
-    freeThreshold: number
-    message: string
-  }
-}
-
-const cartData: CartData = {
-  items: [
-    {
-      id: '1',
-      name: 'Cardigã de Lã Premium',
-      color: 'Verde Sálvia',
-      size: 'M',
-      price: 129.99,
-      originalPrice: 159.99,
-      quantity: 1,
-      image:
-        'https://images.unsplash.com/photo-1434389677669-e08b4cac3105?w=800',
-      estimatedDelivery: '2-4 dias úteis',
-    },
-    {
-      id: '2',
-      name: 'Bolsa de Couro de Grife',
-      color: 'Marrom Vintage',
-      size: 'Tamanho Único',
-      price: 299.99,
-      originalPrice: 349.99,
-      quantity: 1,
-      image: 'https://images.unsplash.com/photo-1548036328-c9fa89d128fa?w=800',
-      estimatedDelivery: '3-5 dias úteis',
-    },
-    {
-      id: '3',
-      name: 'Smartwatch Pro',
-      color: 'Cinza Espacial',
-      size: 'Tamanho Único',
-      price: 199.99,
-      originalPrice: 249.99,
-      quantity: 1,
-      image:
-        'https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=800&auto=format&fit=crop',
-      estimatedDelivery: '1-3 dias úteis',
-    },
-  ],
-  shipping: {
-    freeThreshold: 500,
-    message: 'Frete grátis em pedidos acima de R$500',
-  },
-}
+const FREE_SHIPPING_THRESHOLD = 500
+const SHIPPING_COST = 15.99
 
 export default function Cart() {
   const navigate = useNavigate()
-  const [items, setItems] = useState<CartItem[]>(cartData.items)
-  const [isRemoving, setIsRemoving] = useState<string | null>(null)
+  const [isRemoving, setIsRemoving] = useState<number | null>(null)
 
-  const updateQuantity = (id: string, increment: boolean) => {
-    setItems((currentItems) =>
-      currentItems.map((item) =>
-        item.id === id
-          ? {
-              ...item,
-              quantity: Math.max(1, item.quantity + (increment ? 1 : -1)),
-            }
-          : item
-      )
-    )
+  const { auth } = useAuthStore()
+  const idUsuario = auth.user?.id ?? null
+  const { items, loading, atualizar, remover } = useCart(idUsuario)
+
+  const handleUpdateQuantidade = async (item: CartItem, increment: boolean) => {
+    await atualizar(item, increment)
   }
 
-  const removeItem = (id: string) => {
+  const handleRemover = async (id: number) => {
     setIsRemoving(id)
-    setTimeout(() => {
-      setItems((currentItems) => currentItems.filter((item) => item.id !== id))
-      setIsRemoving(null)
-    }, 300)
+    const item = items.find((i) => i.id === id)
+    if (item) await remover(item)
+    setTimeout(() => setIsRemoving(null), 300)
   }
 
   const subtotal = items.reduce(
-    (sum, item) => sum + item.price * item.quantity,
+    (sum, item) => sum + item.produto.preco * item.quantidade,
     0
   )
-  const savings = items.reduce(
-    (sum, item) => sum + (item.originalPrice - item.price) * item.quantity,
-    0
-  )
-  const shipping = subtotal >= cartData.shipping.freeThreshold ? 0 : 15.99
+  const shipping = subtotal >= FREE_SHIPPING_THRESHOLD ? 0 : SHIPPING_COST
   const total = subtotal + shipping
+
+  if (loading)
+    return (
+      <div className='flex min-h-screen items-center justify-center text-muted-foreground'>
+        Carregando carrinho...
+      </div>
+    )
 
   return (
     <div className='container mx-auto max-w-7xl px-4 py-8'>
@@ -140,7 +78,6 @@ export default function Cart() {
 
       <div className='flex flex-col gap-8 lg:flex-row'>
         <div className='flex-1 space-y-6'>
-          {/* Cart Items */}
           {items.length === 0 ? (
             <Card className='border-dashed'>
               <CardContent className='flex flex-col items-center justify-center py-12 text-center'>
@@ -150,7 +87,7 @@ export default function Cart() {
                   Adicione alguns itens para começar
                 </p>
                 <Button
-                  className='mt-4 cursor-pointer'
+                  className='mt-4'
                   variant='outline'
                   onClick={() => navigate({ to: '/' })}
                 >
@@ -169,8 +106,8 @@ export default function Cart() {
                 <div className='flex flex-col sm:flex-row'>
                   <div className='relative h-auto w-full sm:w-40'>
                     <img
-                      src={item.image}
-                      alt={item.name}
+                      src={item.produto.imagem}
+                      alt={item.produto.descricao}
                       className='h-36 w-full object-cover object-center'
                     />
                   </div>
@@ -179,17 +116,17 @@ export default function Cart() {
                     <div className='flex items-start justify-between'>
                       <div>
                         <h3 className='text-lg font-medium text-foreground'>
-                          {item.name}
+                          {item.produto.descricao}
                         </h3>
-                        <p className='mt-1 text-sm text-muted-foreground'>
-                          {item.color} {item.size && `• ${item.size}`}
+                        <p className='mt-1 text-sm text-muted-foreground capitalize'>
+                          {item.produto.categoria}
                         </p>
                       </div>
                       <Button
                         variant='ghost'
                         size='icon'
-                        className='size-8 cursor-pointer text-muted-foreground hover:bg-destructive/10 hover:text-destructive'
-                        onClick={() => removeItem(item.id)}
+                        className='size-8 text-muted-foreground hover:bg-destructive/10 hover:text-destructive'
+                        onClick={() => handleRemover(item.id)}
                       >
                         <Trash2 className='size-4' />
                       </Button>
@@ -200,35 +137,28 @@ export default function Cart() {
                         <Button
                           variant='outline'
                           size='icon'
-                          className='size-8 cursor-pointer'
-                          onClick={() => updateQuantity(item.id, false)}
-                          disabled={item.quantity <= 1}
+                          className='size-8'
+                          onClick={() => handleUpdateQuantidade(item, false)}
+                          disabled={item.quantidade <= 1}
                         >
                           <Minus className='size-3' />
                         </Button>
                         <span className='w-8 text-center text-sm font-medium'>
-                          {item.quantity}
+                          {item.quantidade}
                         </span>
                         <Button
                           variant='outline'
                           size='icon'
-                          className='size-8 cursor-pointer'
-                          onClick={() => updateQuantity(item.id, true)}
+                          className='size-8'
+                          onClick={() => handleUpdateQuantidade(item, true)}
                         >
                           <Plus className='size-3' />
                         </Button>
                       </div>
 
-                      <div className='text-end'>
-                        <p className='text-lg font-semibold'>
-                          R${(item.price * item.quantity).toFixed(2)}
-                        </p>
-                        {item.originalPrice > item.price && (
-                          <p className='text-xs text-muted-foreground line-through'>
-                            R${item.originalPrice.toFixed(2)}
-                          </p>
-                        )}
-                      </div>
+                      <p className='text-lg font-semibold'>
+                        R${(item.produto.preco * item.quantidade).toFixed(2)}
+                      </p>
                     </div>
                   </div>
                 </div>
@@ -236,7 +166,7 @@ export default function Cart() {
                 <CardFooter className='border-t bg-muted/20 px-4 !py-2'>
                   <div className='flex items-center text-sm text-muted-foreground'>
                     <Package className='me-2 size-4' />
-                    <span>Entrega estimada: {item.estimatedDelivery}</span>
+                    <span>Entrega estimada: 3-7 dias úteis</span>
                   </div>
                 </CardFooter>
               </Card>
@@ -262,12 +192,6 @@ export default function Cart() {
                     {shipping === 0 ? 'Grátis' : `R$${shipping.toFixed(2)}`}
                   </span>
                 </div>
-                {savings > 0 && (
-                  <div className='flex justify-between text-sm font-medium'>
-                    <span>Você Economiza</span>
-                    <span>-R${savings.toFixed(2)}</span>
-                  </div>
-                )}
               </div>
 
               <Separator className='my-2' />
@@ -284,7 +208,7 @@ export default function Cart() {
 
               <Button
                 size='lg'
-                className='mt-4 w-full cursor-pointer text-base font-medium'
+                className='mt-4 w-full text-base font-medium'
                 disabled={items.length === 0}
                 onClick={() => navigate({ to: '/checkout' })}
               >
@@ -317,7 +241,7 @@ export default function Cart() {
 
           <Button
             variant='outline'
-            className='w-full cursor-pointer'
+            className='w-full'
             onClick={() => navigate({ to: '/' })}
           >
             <Store className='me-2 size-4' />

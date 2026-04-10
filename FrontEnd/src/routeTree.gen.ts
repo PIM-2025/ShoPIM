@@ -9,15 +9,12 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as RoupasRouteImport } from './routes/roupas'
-import { Route as Produtos_eletronicosRouteImport } from './routes/produtos_eletronicos'
 import { Route as ProdutosRouteImport } from './routes/produtos'
-import { Route as PaginaprodutosramonRouteImport } from './routes/paginaprodutosramon'
 import { Route as CheckoutRouteImport } from './routes/checkout'
 import { Route as CartRouteImport } from './routes/cart'
-import { Route as AcessoriosRouteImport } from './routes/acessorios'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as ProdutoIdRouteImport } from './routes/produto/$id'
 import { Route as CategoriaSlugRouteImport } from './routes/categoria/$slug'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as errors503RouteImport } from './routes/(errors)/503'
@@ -27,6 +24,7 @@ import { Route as errors403RouteImport } from './routes/(errors)/403'
 import { Route as errors401RouteImport } from './routes/(errors)/401'
 import { Route as authSignUpRouteImport } from './routes/(auth)/sign-up'
 import { Route as authSignInRouteImport } from './routes/(auth)/sign-in'
+import { Route as authResetPasswordRouteImport } from './routes/(auth)/reset-password'
 import { Route as authOtpRouteImport } from './routes/(auth)/otp'
 import { Route as authForgotPasswordRouteImport } from './routes/(auth)/forgot-password'
 import { Route as AuthenticatedSettingsRouteRouteImport } from './routes/_authenticated/settings/route'
@@ -45,24 +43,9 @@ import { Route as AuthenticatedTasksauthSignInRouteImport } from './routes/_auth
 import { Route as AuthenticatedTasksauthOtpRouteImport } from './routes/_authenticated/tasks/(auth)/otp'
 import { Route as AuthenticatedTasksauthForgotPasswordRouteImport } from './routes/_authenticated/tasks/(auth)/forgot-password'
 
-const RoupasRoute = RoupasRouteImport.update({
-  id: '/roupas',
-  path: '/roupas',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const Produtos_eletronicosRoute = Produtos_eletronicosRouteImport.update({
-  id: '/produtos_eletronicos',
-  path: '/produtos_eletronicos',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const ProdutosRoute = ProdutosRouteImport.update({
   id: '/produtos',
   path: '/produtos',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const PaginaprodutosramonRoute = PaginaprodutosramonRouteImport.update({
-  id: '/paginaprodutosramon',
-  path: '/paginaprodutosramon',
   getParentRoute: () => rootRouteImport,
 } as any)
 const CheckoutRoute = CheckoutRouteImport.update({
@@ -75,11 +58,6 @@ const CartRoute = CartRouteImport.update({
   path: '/cart',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AcessoriosRoute = AcessoriosRouteImport.update({
-  id: '/acessorios',
-  path: '/acessorios',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
   id: '/_authenticated',
   getParentRoute: () => rootRouteImport,
@@ -87,6 +65,11 @@ const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ProdutoIdRoute = ProdutoIdRouteImport.update({
+  id: '/produto/$id',
+  path: '/produto/$id',
   getParentRoute: () => rootRouteImport,
 } as any)
 const CategoriaSlugRoute = CategoriaSlugRouteImport.update({
@@ -132,6 +115,11 @@ const authSignUpRoute = authSignUpRouteImport.update({
 const authSignInRoute = authSignInRouteImport.update({
   id: '/(auth)/sign-in',
   path: '/sign-in',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const authResetPasswordRoute = authResetPasswordRouteImport.update({
+  id: '/(auth)/reset-password',
+  path: '/reset-password',
   getParentRoute: () => rootRouteImport,
 } as any)
 const authOtpRoute = authOtpRouteImport.update({
@@ -234,16 +222,13 @@ const AuthenticatedTasksauthForgotPasswordRoute =
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/acessorios': typeof AcessoriosRoute
   '/cart': typeof CartRoute
   '/checkout': typeof CheckoutRoute
-  '/paginaprodutosramon': typeof PaginaprodutosramonRoute
   '/produtos': typeof ProdutosRoute
-  '/produtos_eletronicos': typeof Produtos_eletronicosRoute
-  '/roupas': typeof RoupasRoute
   '/settings': typeof AuthenticatedSettingsRouteRouteWithChildren
   '/forgot-password': typeof authForgotPasswordRoute
   '/otp': typeof authOtpRoute
+  '/reset-password': typeof authResetPasswordRoute
   '/sign-in': typeof authSignInRoute
   '/sign-up': typeof authSignUpRoute
   '/401': typeof errors401Route
@@ -253,6 +238,7 @@ export interface FileRoutesByFullPath {
   '/503': typeof errors503Route
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/categoria/$slug': typeof CategoriaSlugRoute
+  '/produto/$id': typeof ProdutoIdRoute
   '/errors/$error': typeof AuthenticatedErrorsErrorRoute
   '/settings/account': typeof AuthenticatedSettingsAccountRoute
   '/settings/appearance': typeof AuthenticatedSettingsAppearanceRoute
@@ -270,15 +256,12 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/acessorios': typeof AcessoriosRoute
   '/cart': typeof CartRoute
   '/checkout': typeof CheckoutRoute
-  '/paginaprodutosramon': typeof PaginaprodutosramonRoute
   '/produtos': typeof ProdutosRoute
-  '/produtos_eletronicos': typeof Produtos_eletronicosRoute
-  '/roupas': typeof RoupasRoute
   '/forgot-password': typeof authForgotPasswordRoute
   '/otp': typeof authOtpRoute
+  '/reset-password': typeof authResetPasswordRoute
   '/sign-in': typeof authSignInRoute
   '/sign-up': typeof authSignUpRoute
   '/401': typeof errors401Route
@@ -288,6 +271,7 @@ export interface FileRoutesByTo {
   '/503': typeof errors503Route
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/categoria/$slug': typeof CategoriaSlugRoute
+  '/produto/$id': typeof ProdutoIdRoute
   '/errors/$error': typeof AuthenticatedErrorsErrorRoute
   '/settings/account': typeof AuthenticatedSettingsAccountRoute
   '/settings/appearance': typeof AuthenticatedSettingsAppearanceRoute
@@ -307,16 +291,13 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
-  '/acessorios': typeof AcessoriosRoute
   '/cart': typeof CartRoute
   '/checkout': typeof CheckoutRoute
-  '/paginaprodutosramon': typeof PaginaprodutosramonRoute
   '/produtos': typeof ProdutosRoute
-  '/produtos_eletronicos': typeof Produtos_eletronicosRoute
-  '/roupas': typeof RoupasRoute
   '/_authenticated/settings': typeof AuthenticatedSettingsRouteRouteWithChildren
   '/(auth)/forgot-password': typeof authForgotPasswordRoute
   '/(auth)/otp': typeof authOtpRoute
+  '/(auth)/reset-password': typeof authResetPasswordRoute
   '/(auth)/sign-in': typeof authSignInRoute
   '/(auth)/sign-up': typeof authSignUpRoute
   '/(errors)/401': typeof errors401Route
@@ -326,6 +307,7 @@ export interface FileRoutesById {
   '/(errors)/503': typeof errors503Route
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/categoria/$slug': typeof CategoriaSlugRoute
+  '/produto/$id': typeof ProdutoIdRoute
   '/_authenticated/errors/$error': typeof AuthenticatedErrorsErrorRoute
   '/_authenticated/settings/account': typeof AuthenticatedSettingsAccountRoute
   '/_authenticated/settings/appearance': typeof AuthenticatedSettingsAppearanceRoute
@@ -345,16 +327,13 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
-    | '/acessorios'
     | '/cart'
     | '/checkout'
-    | '/paginaprodutosramon'
     | '/produtos'
-    | '/produtos_eletronicos'
-    | '/roupas'
     | '/settings'
     | '/forgot-password'
     | '/otp'
+    | '/reset-password'
     | '/sign-in'
     | '/sign-up'
     | '/401'
@@ -364,6 +343,7 @@ export interface FileRouteTypes {
     | '/503'
     | '/dashboard'
     | '/categoria/$slug'
+    | '/produto/$id'
     | '/errors/$error'
     | '/settings/account'
     | '/settings/appearance'
@@ -381,15 +361,12 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
-    | '/acessorios'
     | '/cart'
     | '/checkout'
-    | '/paginaprodutosramon'
     | '/produtos'
-    | '/produtos_eletronicos'
-    | '/roupas'
     | '/forgot-password'
     | '/otp'
+    | '/reset-password'
     | '/sign-in'
     | '/sign-up'
     | '/401'
@@ -399,6 +376,7 @@ export interface FileRouteTypes {
     | '/503'
     | '/dashboard'
     | '/categoria/$slug'
+    | '/produto/$id'
     | '/errors/$error'
     | '/settings/account'
     | '/settings/appearance'
@@ -417,16 +395,13 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/_authenticated'
-    | '/acessorios'
     | '/cart'
     | '/checkout'
-    | '/paginaprodutosramon'
     | '/produtos'
-    | '/produtos_eletronicos'
-    | '/roupas'
     | '/_authenticated/settings'
     | '/(auth)/forgot-password'
     | '/(auth)/otp'
+    | '/(auth)/reset-password'
     | '/(auth)/sign-in'
     | '/(auth)/sign-up'
     | '/(errors)/401'
@@ -436,6 +411,7 @@ export interface FileRouteTypes {
     | '/(errors)/503'
     | '/_authenticated/dashboard'
     | '/categoria/$slug'
+    | '/produto/$id'
     | '/_authenticated/errors/$error'
     | '/_authenticated/settings/account'
     | '/_authenticated/settings/appearance'
@@ -455,15 +431,12 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
-  AcessoriosRoute: typeof AcessoriosRoute
   CartRoute: typeof CartRoute
   CheckoutRoute: typeof CheckoutRoute
-  PaginaprodutosramonRoute: typeof PaginaprodutosramonRoute
   ProdutosRoute: typeof ProdutosRoute
-  Produtos_eletronicosRoute: typeof Produtos_eletronicosRoute
-  RoupasRoute: typeof RoupasRoute
   authForgotPasswordRoute: typeof authForgotPasswordRoute
   authOtpRoute: typeof authOtpRoute
+  authResetPasswordRoute: typeof authResetPasswordRoute
   authSignInRoute: typeof authSignInRoute
   authSignUpRoute: typeof authSignUpRoute
   errors401Route: typeof errors401Route
@@ -472,36 +445,16 @@ export interface RootRouteChildren {
   errors500Route: typeof errors500Route
   errors503Route: typeof errors503Route
   CategoriaSlugRoute: typeof CategoriaSlugRoute
+  ProdutoIdRoute: typeof ProdutoIdRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/roupas': {
-      id: '/roupas'
-      path: '/roupas'
-      fullPath: '/roupas'
-      preLoaderRoute: typeof RoupasRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/produtos_eletronicos': {
-      id: '/produtos_eletronicos'
-      path: '/produtos_eletronicos'
-      fullPath: '/produtos_eletronicos'
-      preLoaderRoute: typeof Produtos_eletronicosRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/produtos': {
       id: '/produtos'
       path: '/produtos'
       fullPath: '/produtos'
       preLoaderRoute: typeof ProdutosRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/paginaprodutosramon': {
-      id: '/paginaprodutosramon'
-      path: '/paginaprodutosramon'
-      fullPath: '/paginaprodutosramon'
-      preLoaderRoute: typeof PaginaprodutosramonRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/checkout': {
@@ -518,13 +471,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CartRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/acessorios': {
-      id: '/acessorios'
-      path: '/acessorios'
-      fullPath: '/acessorios'
-      preLoaderRoute: typeof AcessoriosRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/_authenticated': {
       id: '/_authenticated'
       path: ''
@@ -537,6 +483,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/produto/$id': {
+      id: '/produto/$id'
+      path: '/produto/$id'
+      fullPath: '/produto/$id'
+      preLoaderRoute: typeof ProdutoIdRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/categoria/$slug': {
@@ -600,6 +553,13 @@ declare module '@tanstack/react-router' {
       path: '/sign-in'
       fullPath: '/sign-in'
       preLoaderRoute: typeof authSignInRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/(auth)/reset-password': {
+      id: '/(auth)/reset-password'
+      path: '/reset-password'
+      fullPath: '/reset-password'
+      preLoaderRoute: typeof authResetPasswordRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/(auth)/otp': {
@@ -782,15 +742,12 @@ const AuthenticatedRouteRouteWithChildren =
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
-  AcessoriosRoute: AcessoriosRoute,
   CartRoute: CartRoute,
   CheckoutRoute: CheckoutRoute,
-  PaginaprodutosramonRoute: PaginaprodutosramonRoute,
   ProdutosRoute: ProdutosRoute,
-  Produtos_eletronicosRoute: Produtos_eletronicosRoute,
-  RoupasRoute: RoupasRoute,
   authForgotPasswordRoute: authForgotPasswordRoute,
   authOtpRoute: authOtpRoute,
+  authResetPasswordRoute: authResetPasswordRoute,
   authSignInRoute: authSignInRoute,
   authSignUpRoute: authSignUpRoute,
   errors401Route: errors401Route,
@@ -799,6 +756,7 @@ const rootRouteChildren: RootRouteChildren = {
   errors500Route: errors500Route,
   errors503Route: errors503Route,
   CategoriaSlugRoute: CategoriaSlugRoute,
+  ProdutoIdRoute: ProdutoIdRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

@@ -30,11 +30,13 @@ const formSchema = z.object({
 
 interface UserAuthFormProps extends React.HTMLAttributes<HTMLFormElement> {
   redirectTo?: string
+  onAdminLogin?: () => void
 }
 
 export function UserAuthForm({
   className,
   redirectTo,
+  onAdminLogin,
   ...props
 }: UserAuthFormProps) {
   const [isLoading, setIsLoading] = useState(false)
@@ -55,6 +57,7 @@ export function UserAuthForm({
       const role = result.role ?? 2
 
       auth.setUser({
+        id: result.id,
         accountNo: result.email,
         email: result.email,
         name: result.nome,
@@ -67,7 +70,7 @@ export function UserAuthForm({
       toast.success(`Bem-vindo(a) de volta, ${result.nome}!`)
 
       if (role === 1) {
-        navigate({ to: '/dashboard', replace: true })
+        onAdminLogin?.()
       } else {
         navigate({ to: redirectTo ?? '/', replace: true })
       }

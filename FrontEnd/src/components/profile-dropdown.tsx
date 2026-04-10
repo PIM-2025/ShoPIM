@@ -1,3 +1,5 @@
+import { useNavigate, useRouterState } from '@tanstack/react-router'
+import { LayoutDashboard, Store } from 'lucide-react'
 import { useAuthStore } from '@/stores/auth-store'
 import useDialogState from '@/hooks/use-dialog-state'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
@@ -16,6 +18,11 @@ import { SignOutDialog } from '@/components/sign-out-dialog'
 export function ProfileDropdown() {
   const [open, setOpen] = useDialogState()
   const { auth } = useAuthStore()
+  const navigate = useNavigate()
+  const location = useRouterState({ select: (s) => s.location.pathname })
+
+  const isAdmin = auth.user?.role.includes('admin') ?? false
+  const onDashboard = location.startsWith('/dashboard')
 
   return (
     <>
@@ -28,7 +35,7 @@ export function ProfileDropdown() {
                 alt={auth.user?.name ?? ''}
               />
               <AvatarFallback>
-                {auth.user?.name?.charAt(0).toUpperCase() ?? 'U'}
+                {auth.user?.name?.charAt(0).toUpperCase() || 'U'}
               </AvatarFallback>
             </Avatar>
           </Button>
@@ -37,14 +44,31 @@ export function ProfileDropdown() {
           <DropdownMenuLabel className='font-normal'>
             <div className='flex flex-col gap-1.5'>
               <p className='text-sm leading-none font-medium'>
-                {auth.user?.name ?? 'Usuário'}
+                {auth.user?.name || 'Usuário'}
               </p>
               <p className='text-xs leading-none text-muted-foreground'>
-                {auth.user?.email ?? ''}
+                {auth.user?.email || ''}
               </p>
             </div>
           </DropdownMenuLabel>
           <DropdownMenuSeparator />
+          {isAdmin && (
+            <DropdownMenuItem
+              onClick={() => navigate({ to: onDashboard ? '/' : '/dashboard' })}
+            >
+              {onDashboard ? (
+                <>
+                  <Store className='mr-2 h-4 w-4' />
+                  Ir para o Site
+                </>
+              ) : (
+                <>
+                  <LayoutDashboard className='mr-2 h-4 w-4' />
+                  Acessar Dashboard
+                </>
+              )}
+            </DropdownMenuItem>
+          )}
           <DropdownMenuItem variant='destructive' onClick={() => setOpen(true)}>
             Sair
             <DropdownMenuShortcut className='text-current'>

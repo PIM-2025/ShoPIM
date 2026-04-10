@@ -12,6 +12,7 @@ namespace ShoPIM.Data
         public DbSet<Address> Address { get; set; }
         public DbSet<Contact> Contact { get; set; }
         public DbSet<Product> Product { get; set; }
+        public DbSet<Cart> Cart { get; set; }
         #endregion
 
         #region OnModelCreating
@@ -63,6 +64,32 @@ namespace ShoPIM.Data
                 entity.HasKey(p => p.Id);
                 entity.Property(p => p.Id)
                     .HasColumnName("ID_PRODUTO");
+            });
+
+            // CART
+            modelBuilder.Entity<Cart>(entity =>
+            {
+                entity.ToTable("CART");
+                entity.HasKey(c => c.Id);
+                entity.Property(c => c.Id)
+                    .HasColumnName("ID_CART")
+                    .ValueGeneratedNever();
+                entity.Property(c => c.IdUsuario)
+                    .HasColumnName("ID_USER");
+                entity.Property(c => c.IdProduto)
+                    .HasColumnName("ID_PRODUTO");
+                entity.Property(c => c.Quantidade)
+                    .HasColumnName("QUANTIDADE");
+                entity.Property(c => c.DataAdicao)
+                    .HasColumnName("DATAADICAO");
+                entity.HasOne(c => c.Usuario)
+                    .WithMany(u => u.Cart)
+                    .HasForeignKey(c => c.IdUsuario)
+                    .HasConstraintName("USERS_CART");
+                entity.HasOne(c => c.Produto)
+                    .WithMany()
+                    .HasForeignKey(c => c.IdProduto)
+                    .HasConstraintName("PRODUCT_CART");
             });
         }
         #endregion

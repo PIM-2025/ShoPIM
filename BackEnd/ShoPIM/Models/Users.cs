@@ -44,5 +44,6 @@ namespace ShoPIM.Models
         // Navegação
         public ICollection<Address>? Addresses { get; set; }
         public ICollection<Contact>? Contacts { get; set; }
+        public ICollection<Cart> Cart { get; set; } = new List<Cart>();
     }
 }

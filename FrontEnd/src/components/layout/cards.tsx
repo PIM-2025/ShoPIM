@@ -1,30 +1,46 @@
 import { ShoppingCart } from "lucide-react"
+import { toast } from "sonner"
+import { useNavigate } from "@tanstack/react-router"
+import { useAuthStore } from "@/stores/auth-store"
+import { useCart } from "@/hooks/useCart"
 
 type CardProps = {
+  id: number
   title: string
   price: number
   image: string
+  categoria: string
+  quantidade: number
 }
 
-export function Card({ title, price, image }: CardProps) {
+export function Card({ id, title, price, image, categoria, quantidade }: CardProps) {
+  const { auth } = useAuthStore()
+  const idUsuario = auth.user?.id ?? null
+  const { adicionar } = useCart(idUsuario)
+  const navigate = useNavigate()
+  const esgotado = quantidade === 0
+
   return (
-    <div
-      className="
-        bg-zinc-100 dark:bg-zinc-800 border border-border rounded-2xl p-4 w-full transition duration-300 hover:shadow-2xl hover:-translate-y-1 dark:hover:shadow-white/10
-      "
-    >
-      
+    <div className="relative bg-zinc-100 dark:bg-zinc-800 border border-border rounded-2xl p-4 w-full transition duration-300 hover:shadow-2xl hover:-translate-y-1 dark:hover:shadow-white/10">
+
       {/* IMAGEM */}
       <div className="w-full h-40 rounded-xl flex items-center justify-center">
-        <img 
-          src={image} 
-          alt={title} 
-          className="max-h-full max-w-full object-contain"
+        <img
+          src={image}
+          alt={title}
+          className={`max-h-full max-w-full object-contain transition ${esgotado ? 'opacity-40' : ''}`}
         />
       </div>
 
+      {/* BADGE ESGOTADO */}
+      {esgotado && (
+        <span className="absolute top-3 right-3 rounded-full border border-border bg-muted px-2.5 py-0.5 text-xs font-medium text-muted-foreground">
+          Esgotado
+        </span>
+      )}
+
       {/* TÍTULO */}
-      <h2 className="text-lg font-semibold mt-3 text-foreground ">
+      <h2 className="text-lg font-semibold mt-3 text-foreground">
         {title}
       </h2>
 
@@ -35,17 +51,24 @@ export function Card({ title, price, image }: CardProps) {
 
       {/* BOTÕES */}
       <div className="flex gap-2 mt-4">
-        
-        {/* Comprar */}
-        <button className="flex-[3] bg-primary text-primary-foreground py-2 rounded-lg hover:opacity-90 transition">
+        <button
+          disabled={esgotado}
+          onClick={() => navigate({ to: '/produto/$id', params: { id: String(id) } })}
+          className="flex-[3] bg-primary text-primary-foreground py-2 rounded-lg hover:opacity-90 transition disabled:opacity-40 disabled:cursor-not-allowed"
+        >
           Comprar
         </button>
 
-        {/* Carrinho */}
-        <button className="flex-[1] bg-orange-600 text-white flex items-center justify-center rounded-lg hover:bg-orange-900 transition">
+        <button
+          disabled={esgotado}
+          className="flex-[1] bg-orange-600 text-white flex items-center justify-center rounded-lg hover:bg-orange-900 transition disabled:opacity-40 disabled:cursor-not-allowed"
+          onClick={async () => {
+            await adicionar(id, 1, { id, descricao: title, preco: price, imagem: image, categoria })
+            toast.success(`${title} adicionado ao carrinho!`)
+          }}
+        >
           <ShoppingCart size={18} />
         </button>
-
       </div>
 
     </div>

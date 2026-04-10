@@ -1,94 +1,119 @@
-import { Cat } from 'lucide-react';
+import { useState } from 'react'
+import { Link } from '@tanstack/react-router'
+import { toast } from 'sonner'
 
-export function Rodape(){
-    return(
-        <footer className="w-full bg-background text-foreground border-t border-border px-8 pt-12 pb-6">
+export function Rodape() {
+  const [email, setEmail] = useState('')
 
-  
-            <div className="max-w-6xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-10 pb-10 border-b border-border">
+  function handleNewsletter() {
+    if (!email.trim() || !email.includes('@')) {
+      toast.error('Digite um e-mail válido.')
+      return
+    }
+    toast.success('Inscrição realizada! Fique de olho nas novidades.')
+    setEmail('')
+  }
 
-                <div className="col-span-2 md:col-span-1">
-                <h2 className="font-serif text-2xl font-semibold text-foreground tracking-tight mb-2">ShoPIM</h2>
-                <p className="text-sm text-muted-foreground leading-relaxed mb-4 max-w-xs">
-                    A ShoPIM é uma plataforma de e-commerce desenvolvida como projeto acadêmico.
-                </p>
-                <p className="text-xs uppercase tracking-widest text-muted-foreground mb-2">Novidades exclusivas</p>
-                <div className="flex border border-border rounded-md overflow-hidden">
-                    <input
-                        type="email"
-                        placeholder="seu@email.com"
-                        className="bg-transparent flex-1 min-w-0 px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground outline-none"
-                    />
-                    <button className="bg-orange-400 text-neutral-900 text-xs font-medium px-4 py-2 hover:bg-orange-500 transition-colors whitespace-nowrap shrink-0">
-                        Inscrever
-                    </button>
-                </div>
-                </div>
+  return (
+    <footer className='w-full border-t border-border bg-background px-8 pb-6 pt-12 text-foreground'>
 
-                <div>
-                <h3 className="text-xs uppercase tracking-widest text-muted-foreground mb-4">Categorias</h3>
-                <ul className="space-y-2">
-                    <li><a href="#" className="text-sm text-muted-foreground hover:text-orange-400 hover:underline underline-offset-4 transition-colors">Eletrônicos</a></li>
-                    <li><a href="#" className="text-sm text-muted-foreground hover:text-orange-400 hover:underline underline-offset-4 transition-colors">Roupas</a></li>
-                    <li><a href="#" className="text-sm text-muted-foreground hover:text-orange-400 hover:underline underline-offset-4 transition-colors">Acessórios</a></li>
-                    <li><a href="#" className="text-sm text-muted-foreground hover:text-orange-400 hover:underline underline-offset-4 transition-colors">Ofertas</a></li>
-                </ul>
-                </div>
+      <div className='mx-auto grid max-w-6xl grid-cols-2 gap-10 border-b border-border pb-10 md:grid-cols-4'>
 
-                <div>
-                <h3 className="text-xs uppercase tracking-widest text-muted-foreground mb-4">Suporte</h3>
-                <ul className="space-y-2">
-                    <li><a href="#" className="text-sm text-muted-foreground hover:text-orange-400 hover:underline underline-offset-4 transition-colors">Central de ajuda</a></li>
-                    <li><a href="#" className="text-sm text-muted-foreground hover:text-orange-400 hover:underline underline-offset-4 transition-colors">Trocas e devoluções</a></li>
-                    <li><a href="#" className="text-sm text-muted-foreground hover:text-orange-400 hover:underline underline-offset-4 transition-colors">Rastrear pedido</a></li>
-                    <li><a href="#" className="text-sm text-muted-foreground hover:text-orange-400 hover:underline underline-offset-4 transition-colors">Fale conosco</a></li>
-                </ul>
-                </div>
+        {/* MARCA + NEWSLETTER */}
+        <div className='col-span-2 md:col-span-1'>
+          <h2 className='mb-2 font-serif text-2xl font-semibold tracking-tight text-foreground'>ShoPIM</h2>
+          <p className='mb-4 max-w-xs text-sm leading-relaxed text-muted-foreground'>
+            A ShoPIM é uma plataforma de e-commerce desenvolvida como projeto acadêmico.
+          </p>
+          <p className='mb-2 text-xs uppercase tracking-widest text-muted-foreground'>Novidades exclusivas</p>
+          <div className='flex overflow-hidden rounded-md border border-border'>
+            <input
+              type='email'
+              placeholder='seu@email.com'
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              onKeyDown={(e) => e.key === 'Enter' && handleNewsletter()}
+              className='min-w-0 flex-1 bg-transparent px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground outline-none'
+            />
+            <button
+              onClick={handleNewsletter}
+              className='shrink-0 whitespace-nowrap bg-orange-600 px-4 py-2 text-xs font-medium text-white transition-colors hover:bg-orange-700'
+            >
+              Inscrever
+            </button>
+          </div>
+        </div>
 
-                <div>
-                <h3 className="text-xs uppercase tracking-widest text-muted-foreground mb-4">Empresa</h3>
-                <ul className="space-y-2">
-                    <li><a href="#" className="text-sm text-muted-foreground hover:text-orange-400 hover:underline underline-offset-4 transition-colors">Sobre nós</a></li>
-                    <li><a href="#" className="text-sm text-muted-foreground hover:text-orange-400 hover:underline underline-offset-4 transition-colors">Sustentabilidade</a></li>
-                    <li><a href="#" className="text-sm text-muted-foreground hover:text-orange-400 hover:underline underline-offset-4 transition-colors">Afiliados</a></li>
-                    <li><a href="#" className="text-sm text-muted-foreground hover:text-orange-400 hover:underline underline-offset-4 transition-colors">Política de privacidade</a></li>
-                    <li><a href="#" className="text-sm text-muted-foreground hover:text-orange-400 hover:underline underline-offset-4 transition-colors">Termos de uso</a></li>
-                </ul>
-                </div>
-            </div>
+        {/* CATEGORIAS */}
+        <div>
+          <h3 className='mb-4 text-xs uppercase tracking-widest text-muted-foreground'>Categorias</h3>
+          <ul className='space-y-2'>
+            <li><Link to='/categoria/$slug' params={{ slug: 'eletronicos' }} className='text-sm text-muted-foreground underline-offset-4 transition-colors hover:text-orange-600 hover:underline'>Eletrônicos</Link></li>
+            <li><Link to='/categoria/$slug' params={{ slug: 'roupas' }} className='text-sm text-muted-foreground underline-offset-4 transition-colors hover:text-orange-600 hover:underline'>Roupas</Link></li>
+            <li><Link to='/categoria/$slug' params={{ slug: 'acessorios' }} className='text-sm text-muted-foreground underline-offset-4 transition-colors hover:text-orange-600 hover:underline'>Acessórios</Link></li>
+          </ul>
+        </div>
 
-            <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-start md:items-center justify-between gap-4 mt-6 flex-wrap">
-                <span className="text-xs text-muted-foreground">© 2026 SHOPIM. Todos os direitos reservados.</span>
+        {/* SUPORTE */}
+        <div>
+          <h3 className='mb-4 text-xs uppercase tracking-widest text-muted-foreground'>Suporte</h3>
+          <ul className='space-y-2'>
+            <li><span className='cursor-default text-sm text-muted-foreground'>Central de ajuda</span></li>
+            <li><span className='cursor-default text-sm text-muted-foreground'>Trocas e devoluções</span></li>
+            <li><span className='cursor-default text-sm text-muted-foreground'>Rastrear pedido</span></li>
+            <li><span className='cursor-default text-sm text-muted-foreground'>Fale conosco</span></li>
+          </ul>
+        </div>
 
-                <div className="flex flex-wrap gap-2">
-                <span className="bg-muted border border-border rounded px-2.5 py-1 text-xs text-muted-foreground">Pix</span>
-                <span className="bg-muted border border-border rounded px-2.5 py-1 text-xs text-muted-foreground">Cartão</span>
-                <span className="bg-muted border border-border rounded px-2.5 py-1 text-xs text-muted-foreground">Boleto</span>
-                </div>
+        {/* EMPRESA */}
+        <div>
+          <h3 className='mb-4 text-xs uppercase tracking-widest text-muted-foreground'>Empresa</h3>
+          <ul className='space-y-2'>
+            <li><span className='cursor-default text-sm text-muted-foreground'>Sobre nós</span></li>
+            <li><Link to='/sign-in' className='text-sm text-muted-foreground underline-offset-4 transition-colors hover:text-orange-600 hover:underline'>Entrar na conta</Link></li>
+            <li><Link to='/sign-up' className='text-sm text-muted-foreground underline-offset-4 transition-colors hover:text-orange-600 hover:underline'>Criar conta</Link></li>
+            <li><Link to='/terms' className='text-sm text-muted-foreground underline-offset-4 transition-colors hover:text-orange-600 hover:underline'>Termos de uso</Link></li>
+            <li><Link to='/privacy' className='text-sm text-muted-foreground underline-offset-4 transition-colors hover:text-orange-600 hover:underline'>Política de privacidade</Link></li>
+          </ul>
+        </div>
+      </div>
 
-                <div className="flex gap-2">
-                <a href="https://github.com/PIM-2025/ShoPIM" target="_blank" className="w-8 h-8 rounded-full bg-muted border border-border flex items-center justify-center text-muted-foreground hover:bg-orange-500 hover:text-white hover:border-orange-500 transition-all"><Cat/></a>
-                </div>
-            </div>
+      {/* RODAPÉ INFERIOR */}
+      <div className='mx-auto mt-6 flex max-w-6xl flex-col flex-wrap items-start gap-4 md:flex-row md:items-center md:justify-between'>
+        <span className='text-xs text-muted-foreground'>© 2026 SHOPIM. Todos os direitos reservados.</span>
 
-            <div className="max-w-6xl mx-auto flex flex-wrap gap-6 mt-6 pt-6 border-t border-border">
-                <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                <span className="w-1.5 h-1.5 rounded-full bg-orange-400 shrink-0"></span>
-                Frete grátis
-                </div>
-                <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                <span className="w-1.5 h-1.5 rounded-full bg-orange-400 shrink-0"></span>
-                Troca em até 30 dias
-                </div>
-                <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                <span className="w-1.5 h-1.5 rounded-full bg-orange-400 shrink-0"></span>
-                Pagamento 100% seguro
-                </div>
-                <div className="flex items-center gap-2 text-xs text-neutral-600">
-                <span className="w-1.5 h-1.5 rounded-full bg-orange-400 shrink-0"></span>
-                Atendimento via WhatsApp
-                </div>
-            </div>
-        </footer>
-    )
+        <div className='flex flex-wrap gap-2'>
+          <span className='rounded border border-border bg-muted px-2.5 py-1 text-xs text-muted-foreground'>Pix</span>
+          <span className='rounded border border-border bg-muted px-2.5 py-1 text-xs text-muted-foreground'>Cartão</span>
+          <span className='rounded border border-border bg-muted px-2.5 py-1 text-xs text-muted-foreground'>Boleto</span>
+        </div>
+
+        <a
+          href='https://github.com/PIM-2025/ShoPIM'
+          target='_blank'
+          rel='noopener noreferrer'
+          className='flex h-8 w-8 items-center justify-center rounded-full border border-border bg-muted text-muted-foreground transition-all hover:border-orange-600 hover:bg-orange-600 hover:text-white'
+        >
+          <svg viewBox='0 0 24 24' className='h-4 w-4' fill='currentColor' aria-hidden='true'>
+            <path d='M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0 1 12 6.844a9.59 9.59 0 0 1 2.504.337c1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.02 10.02 0 0 0 22 12.017C22 6.484 17.522 2 12 2z' />
+          </svg>
+        </a>
+      </div>
+
+      {/* BENEFÍCIOS */}
+      <div className='mx-auto mt-6 flex max-w-6xl flex-wrap gap-6 border-t border-border pt-6'>
+        {[
+          'Frete grátis',
+          'Troca em até 30 dias',
+          'Pagamento 100% seguro',
+          'Atendimento via WhatsApp',
+        ].map((b) => (
+          <div key={b} className='flex items-center gap-2 text-xs text-muted-foreground'>
+            <span className='h-1.5 w-1.5 shrink-0 rounded-full bg-orange-600' />
+            {b}
+          </div>
+        ))}
+      </div>
+    </footer>
+  )
 }

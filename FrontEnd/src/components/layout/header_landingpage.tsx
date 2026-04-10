@@ -4,6 +4,7 @@ import { ShoppingCart, User, House, ChevronDown, Menu, X } from 'lucide-react'
 import logoDark from '@/assets/logo_dark.png'
 import logoLight from '@/assets/logo_light.png'
 import { useAuthStore } from '@/stores/auth-store'
+import { useCartStore } from '@/stores/cart-store'
 import { cn } from '@/lib/utils'
 import { Badge } from '@/components/ui/badge'
 import { Separator } from '@/components/ui/separator'
@@ -62,8 +63,16 @@ function CategoryItemMobile({ cat }: { cat: Category }) {
   )
 }
 
-export function HeaderLanding() {
+interface HeaderLandingProps {
+  searchValue?: string
+  onSearch?: (v: string) => void
+}
+
+export function HeaderLanding({ searchValue, onSearch }: HeaderLandingProps = {}) {
   const { auth } = useAuthStore()
+  const { items } = useCartStore()
+  const totalItens = items.reduce((sum, item) => sum + item.quantidade, 0)
+
   const [offset, setOffset] = useState(0)
   const [isDark, setIsDark] = useState(false)
   const [openCategoryMobile, setOpenCategoryMobile] = useState(false)
@@ -111,13 +120,13 @@ export function HeaderLanding() {
       <div className='mx-auto grid h-16 max-w-7xl grid-cols-3 items-center px-4 md:px-6'>
         {/* ESQUERDA — Logo + Nav */}
         <div className='flex items-center gap-1'>
-          <a href='/' className='mr-2 flex shrink-0 items-center'>
+          <Link to='/' className='mr-2 flex shrink-0 items-center'>
             <img
               src={isDark ? logoDark : logoLight}
               alt='ShoPIM'
               className='h-9 w-auto'
             />
-          </a>
+          </Link>
 
           <div className='hidden items-center gap-1 md:flex'>
             <div
@@ -153,7 +162,11 @@ export function HeaderLanding() {
 
         {/* CENTRO — Search */}
         <div className='hidden justify-center md:flex'>
-          <SearchBar className='w-full max-w-sm' />
+          <SearchBar
+            className='w-full max-w-sm'
+            value={searchValue}
+            onChange={onSearch}
+          />
         </div>
 
         {/* DIREITA — Carrinho + ThemeSwitch + Login */}
@@ -163,9 +176,11 @@ export function HeaderLanding() {
             className='relative flex h-9 w-9 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-accent hover:text-foreground'
           >
             <ShoppingCart size={18} />
-            <Badge className='absolute -top-0.5 -right-0.5 flex h-4 w-4 items-center justify-center p-0 text-[10px]'>
-              3
-            </Badge>
+            {totalItens > 0 && (
+              <Badge className='absolute -top-0.5 -right-0.5 flex h-4 w-4 items-center justify-center p-0 text-[10px]'>
+                {totalItens}
+              </Badge>
+            )}
           </Link>
 
           <ThemeSwitch />
@@ -174,19 +189,24 @@ export function HeaderLanding() {
           {auth.user ? (
             <ProfileDropdown />
           ) : (
-            <a
-              href='/sign-in'
+            <Link
+              to='/sign-in'
               className='flex items-center gap-1.5 rounded-full bg-foreground px-4 py-1.5 text-sm font-medium text-background transition-opacity hover:opacity-90'
             >
               <User size={14} />
               Login
-            </a>
+            </Link>
           )}
         </div>
 
         {/* MOBILE */}
         <div className='col-span-2 flex min-w-0 items-center justify-end gap-2 md:hidden'>
-          <SearchBar className='min-w-0 flex-1' placeholder='Buscar...' />
+          <SearchBar
+            className='min-w-0 flex-1'
+            placeholder='Buscar...'
+            value={searchValue}
+            onChange={onSearch}
+          />
           <Sheet>
             <SheetTrigger asChild>
               <button className='flex h-9 w-9 items-center justify-center rounded-md transition-colors hover:bg-accent'>
@@ -207,13 +227,15 @@ export function HeaderLanding() {
               </div>
 
               <nav className='flex flex-col gap-1 p-3'>
-                <a
-                  href='#'
-                  className='flex items-center gap-2.5 rounded-md px-3 py-2.5 text-sm font-medium transition-colors hover:bg-accent'
-                >
-                  <House size={16} className='text-muted-foreground' />
-                  Início
-                </a>
+                <SheetClose asChild>
+                  <Link
+                    to='/'
+                    className='flex items-center gap-2.5 rounded-md px-3 py-2.5 text-sm font-medium transition-colors hover:bg-accent'
+                  >
+                    <House size={16} className='text-muted-foreground' />
+                    Início
+                  </Link>
+                </SheetClose>
 
                 <div className='flex flex-col'>
                   <button
@@ -250,7 +272,11 @@ export function HeaderLanding() {
                 >
                   <ShoppingCart size={16} className='text-muted-foreground' />
                   Carrinho
-                  <Badge className='ml-auto h-5 px-1.5 text-xs'>3</Badge>
+                  {totalItens > 0 && (
+                    <Badge className='ml-auto h-5 px-1.5 text-xs'>
+                      {totalItens}
+                    </Badge>
+                  )}
                 </Link>
 
                 <Separator className='my-2' />
@@ -264,17 +290,19 @@ export function HeaderLanding() {
                   <div className='flex items-center gap-2.5 rounded-md px-3 py-2.5'>
                     <ProfileDropdown />
                     <span className='text-sm font-medium'>
-                      {auth.user.name}
+                      {auth.user.name || 'Usuário'}
                     </span>
                   </div>
                 ) : (
-                  <a
-                    href='/sign-in'
-                    className='flex items-center gap-2.5 rounded-md bg-foreground px-3 py-2.5 text-sm font-medium text-background transition-opacity hover:opacity-90'
-                  >
-                    <User size={16} />
-                    Entrar na conta
-                  </a>
+                  <SheetClose asChild>
+                    <Link
+                      to='/sign-in'
+                      className='flex items-center gap-2.5 rounded-md bg-foreground px-3 py-2.5 text-sm font-medium text-background transition-opacity hover:opacity-90'
+                    >
+                      <User size={16} />
+                      Entrar na conta
+                    </Link>
+                  </SheetClose>
                 )}
               </nav>
             </SheetContent>

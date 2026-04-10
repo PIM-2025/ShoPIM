@@ -13,22 +13,22 @@ namespace ShoPIM.Models
         [Column("RUA")]
         [Required]
         [MaxLength(50)]
-        public string Rua { get; set; }
+        public string? Rua { get; set; }
 
         [Column("NUMERO")]
         [Required]
         [MaxLength(40)]
-        public string Numero { get; set; }
+        public string? Numero { get; set; }
 
         [Column("CIDADE")]
         [Required]
         [MaxLength(40)]
-        public string Cidade { get; set; }
+        public string? Cidade { get; set; }
 
         [Column("ESTADO")]
         [Required]
         [MaxLength(40)]
-        public string Estado { get; set; }
+        public string? Estado { get; set; }
 
         [Column("CEP")]
         [MaxLength(40)]

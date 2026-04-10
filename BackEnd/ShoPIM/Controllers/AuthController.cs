@@ -50,7 +50,7 @@ namespace ShoPIM.Controllers
                 // 2. Gera o JWT
                 var jwt = GerarJwt(user);
 
-                return Ok(new { jwt, nome = user.Nome, email = user.Email, role = user.Role });
+                return Ok(new { jwt, id = user.Id, nome = user.Nome, email = user.Email, role = user.Role });
             }
             catch (Exception ex)
             {

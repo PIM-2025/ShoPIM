@@ -3,7 +3,8 @@ import { z } from 'zod'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useNavigate } from '@tanstack/react-router'
-import { showSubmittedData } from '@/lib/show-submitted-data'
+import { Loader2 } from 'lucide-react'
+import { toast } from 'sonner'
 import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
 import {
@@ -22,10 +23,7 @@ import {
 } from '@/components/ui/input-otp'
 
 const formSchema = z.object({
-  otp: z
-    .string()
-    .min(6, 'Please enter the 6-digit code.')
-    .max(6, 'Please enter the 6-digit code.'),
+  otp: z.string().min(6, 'Digite o código de 6 dígitos.').max(6),
 })
 
 type OtpFormProps = React.HTMLAttributes<HTMLFormElement>
@@ -39,17 +37,16 @@ export function OtpForm({ className, ...props }: OtpFormProps) {
     defaultValues: { otp: '' },
   })
 
-  // eslint-disable-next-line react-hooks/incompatible-library
   const otp = form.watch('otp')
 
   function onSubmit(data: z.infer<typeof formSchema>) {
+    // Salva o código digitado para o reset-password usar
+    sessionStorage.setItem('reset_token', data.otp)
     setIsLoading(true)
-    showSubmittedData(data)
-
     setTimeout(() => {
       setIsLoading(false)
-      navigate({ to: '/' })
-    }, 1000)
+      navigate({ to: '/reset-password' })
+    }, 300)
   }
 
   return (
@@ -64,7 +61,7 @@ export function OtpForm({ className, ...props }: OtpFormProps) {
           name='otp'
           render={({ field }) => (
             <FormItem>
-              <FormLabel className='sr-only'>One-Time Password</FormLabel>
+              <FormLabel className='sr-only'>Código</FormLabel>
               <FormControl>
                 <InputOTP
                   maxLength={6}
@@ -92,7 +89,8 @@ export function OtpForm({ className, ...props }: OtpFormProps) {
           )}
         />
         <Button className='mt-2' disabled={otp.length < 6 || isLoading}>
-          Verify
+          {isLoading && <Loader2 className='animate-spin' />}
+          Verificar
         </Button>
       </form>
     </Form>

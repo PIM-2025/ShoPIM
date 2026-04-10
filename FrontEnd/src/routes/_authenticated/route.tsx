@@ -9,10 +9,12 @@ export const Route = createFileRoute('/_authenticated')({
     if (!user) {
       throw redirect({
         to: '/sign-in',
-        search: {
-          redirect: location.href,
-        },
+        search: { redirect: location.href },
       })
+    }
+
+    if (!user.role.includes('admin')) {
+      throw redirect({ to: '/' })
     }
   },
   component: AuthenticatedLayout,

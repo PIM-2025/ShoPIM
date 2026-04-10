@@ -5,7 +5,7 @@
 /* Project name:                                                          */
 /* Author:                                                                */
 /* Script type:           Database creation script                        */
-/* Created on:            2026-04-09 16:50                                */
+/* Created on:            2026-04-10 08:50                                */
 /* ---------------------------------------------------------------------- */
 
 
@@ -13,7 +13,7 @@
 /* Add sequences                                                          */
 /* ---------------------------------------------------------------------- */
 
-CREATE SEQUENCE SEC_USERS
+CREATE SEQUENCE SEQ_USERS
     START WITH 1
     INCREMENT BY 1
     MINVALUE 1
@@ -21,7 +21,7 @@ CREATE SEQUENCE SEC_USERS
     nocycle
     noorder;
 
-CREATE SEQUENCE SEC_ADRESS
+CREATE SEQUENCE SEQ_ADRESS
     START WITH 1
     INCREMENT BY 1
     MINVALUE 1
@@ -29,7 +29,7 @@ CREATE SEQUENCE SEC_ADRESS
     nocycle
     noorder;
 
-CREATE SEQUENCE SEC_CONTACT
+CREATE SEQUENCE SEQ_CONTACT
     START WITH 1
     INCREMENT BY 1
     MINVALUE 1
@@ -38,6 +38,14 @@ CREATE SEQUENCE SEC_CONTACT
     noorder;
 
 CREATE SEQUENCE SEQ_PRODUCT
+    START WITH 1
+    INCREMENT BY 1
+    MINVALUE 1
+    MAXVALUE 999999999
+    nocycle
+    noorder;
+
+CREATE SEQUENCE SEQ_CART
     START WITH 1
     INCREMENT BY 1
     MINVALUE 1
@@ -96,13 +104,26 @@ CREATE TABLE ADDRESS (
 /* ---------------------------------------------------------------------- */
 
 CREATE TABLE PRODUCT (
-    ID_PRODUTO NUMBER CONSTRAINT NN_PRODUCT_ID_PRODUTO NOT NULL,
+    ID_PRODUTO NUMBER(9) CONSTRAINT NN_PRODUCT_ID_PRODUTO NOT NULL,
     DESCRICAO VARCHAR2(255),
     PRECO NUMBER(9,2),
     CATEGORIA VARCHAR2(255),
     QUANTIDADE NUMBER(9),
     IMAGEM VARCHAR2(255),
     CONSTRAINT PK_PRODUCT PRIMARY KEY (ID_PRODUTO)
+);
+
+/* ---------------------------------------------------------------------- */
+/* Add table "CART"                                                       */
+/* ---------------------------------------------------------------------- */
+
+CREATE TABLE CART (
+    ID_CART NUMBER(9) CONSTRAINT NN_CART_ID_CART NOT NULL,
+    ID_USER NUMBER(9),
+    ID_PRODUTO NUMBER(9),
+    QUANTIDADE NUMBER(9) DEFAULT 1,
+    DATAADICAO DATE,
+    CONSTRAINT PK_CART PRIMARY KEY (ID_CART)
 );
 
 /* ---------------------------------------------------------------------- */
@@ -114,3 +135,9 @@ ALTER TABLE CONTACT ADD CONSTRAINT USERS_CONTACT
 
 ALTER TABLE ADDRESS ADD CONSTRAINT USERS_ADDRESS 
     FOREIGN KEY (ID_USER) REFERENCES USERS (ID_USER);
+
+ALTER TABLE CART ADD CONSTRAINT USERS_CART 
+    FOREIGN KEY (ID_USER) REFERENCES USERS (ID_USER);
+
+ALTER TABLE CART ADD CONSTRAINT PRODUCT_CART 
+    FOREIGN KEY (ID_PRODUTO) REFERENCES PRODUCT (ID_PRODUTO);

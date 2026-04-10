@@ -5,7 +5,7 @@
 /* Project name:                                                          */
 /* Author:                                                                */
 /* Script type:           Database drop script                            */
-/* Created on:            2026-04-09 16:50                                */
+/* Created on:            2026-04-10 08:50                                */
 /* ---------------------------------------------------------------------- */
 
 
@@ -16,6 +16,22 @@
 ALTER TABLE CONTACT DROP CONSTRAINT USERS_CONTACT;
 
 ALTER TABLE ADDRESS DROP CONSTRAINT USERS_ADDRESS;
+
+ALTER TABLE CART DROP CONSTRAINT USERS_CART;
+
+ALTER TABLE CART DROP CONSTRAINT PRODUCT_CART;
+
+/* ---------------------------------------------------------------------- */
+/* Drop table "CART"                                                      */
+/* ---------------------------------------------------------------------- */
+
+/* Drop constraints */
+
+ALTER TABLE CART DROP CONSTRAINT NN_CART_ID_CART;
+
+ALTER TABLE CART DROP CONSTRAINT PK_CART;
+
+DROP TABLE CART;
 
 /* ---------------------------------------------------------------------- */
 /* Drop table "PRODUCT"                                                   */
@@ -91,10 +107,12 @@ DROP TABLE USERS;
 /* Drop sequences                                                         */
 /* ---------------------------------------------------------------------- */
 
-DROP SEQUENCE SEC_USERS;
+DROP SEQUENCE SEQ_USERS;
 
-DROP SEQUENCE SEC_ADRESS;
+DROP SEQUENCE SEQ_ADRESS;
 
-DROP SEQUENCE SEC_CONTACT;
+DROP SEQUENCE SEQ_CONTACT;
 
 DROP SEQUENCE SEQ_PRODUCT;
+
+DROP SEQUENCE SEQ_CART;

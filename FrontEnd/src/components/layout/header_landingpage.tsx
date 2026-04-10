@@ -334,16 +334,6 @@ export function HeaderLanding({
                 </div>
 
                 <nav className='flex flex-col gap-1 p-3'>
-                  <SheetClose asChild>
-                    <Link
-                      to='/'
-                      className='flex items-center gap-2.5 rounded-md px-3 py-2.5 text-sm font-medium transition-colors hover:bg-accent'
-                    >
-                      <House size={16} className='text-muted-foreground' />
-                      Início
-                    </Link>
-                  </SheetClose>
-
                   <div className='flex flex-col'>
                     <button
                       onClick={() => setOpenCategoryMobile(!openCategoryMobile)}

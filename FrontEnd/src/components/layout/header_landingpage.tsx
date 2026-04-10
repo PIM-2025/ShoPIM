@@ -1,14 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { Link } from '@tanstack/react-router'
-import {
-  ShoppingCart,
-  User,
-  House,
-  ChevronDown,
-  Menu,
-  X,
-  Search,
-} from 'lucide-react'
+import { ShoppingCart, User, ChevronDown, Menu, X, Search } from 'lucide-react'
 import logoDark from '@/assets/logo_dark.png'
 import logoLight from '@/assets/logo_light.png'
 import { useAuthStore } from '@/stores/auth-store'

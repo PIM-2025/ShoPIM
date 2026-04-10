@@ -1,7 +1,6 @@
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { useNavigate } from '@tanstack/react-router'
 import { CartItem } from '@/service/cartservice'
-import { useAuthStore } from '@/stores/auth-store'
 import {
   Trash2,
   Minus,
@@ -13,6 +12,7 @@ import {
   Store,
   MoveRight,
 } from 'lucide-react'
+import { useAuthStore } from '@/stores/auth-store'
 import { cn } from '@/lib/utils'
 import { useCart } from '@/hooks/useCart'
 import { Button } from '@/components/ui/button'

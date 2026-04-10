@@ -1,6 +1,14 @@
 import { useEffect, useRef, useState } from 'react'
 import { Link } from '@tanstack/react-router'
-import { ShoppingCart, User, House, ChevronDown, Menu, X } from 'lucide-react'
+import {
+  ShoppingCart,
+  User,
+  House,
+  ChevronDown,
+  Menu,
+  X,
+  Search,
+} from 'lucide-react'
 import logoDark from '@/assets/logo_dark.png'
 import logoLight from '@/assets/logo_light.png'
 import { useAuthStore } from '@/stores/auth-store'
@@ -68,7 +76,10 @@ interface HeaderLandingProps {
   onSearch?: (v: string) => void
 }
 
-export function HeaderLanding({ searchValue, onSearch }: HeaderLandingProps = {}) {
+export function HeaderLanding({
+  searchValue,
+  onSearch,
+}: HeaderLandingProps = {}) {
   const { auth } = useAuthStore()
   const { items } = useCartStore()
   const totalItens = items.reduce((sum, item) => sum + item.quantidade, 0)
@@ -77,6 +88,8 @@ export function HeaderLanding({ searchValue, onSearch }: HeaderLandingProps = {}
   const [isDark, setIsDark] = useState(false)
   const [openCategoryMobile, setOpenCategoryMobile] = useState(false)
   const [openCategoryDesktop, setOpenCategoryDesktop] = useState(false)
+  const [mobileSearchOpen, setMobileSearchOpen] = useState(false)
+  const mobileSearchRef = useRef<HTMLInputElement>(null)
 
   const closeTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
 
@@ -87,6 +100,15 @@ export function HeaderLanding({ searchValue, onSearch }: HeaderLandingProps = {}
 
   const handleMouseLeave = () => {
     closeTimer.current = setTimeout(() => setOpenCategoryDesktop(false), 150)
+  }
+
+  const handlePillClick = () => {
+    setMobileSearchOpen(true)
+    setTimeout(() => mobileSearchRef.current?.focus(), 50)
+  }
+
+  const handleMobileSearchBlur = () => {
+    if (!searchValue) setMobileSearchOpen(false)
   }
 
   useEffect(() => {
@@ -117,7 +139,8 @@ export function HeaderLanding({ searchValue, onSearch }: HeaderLandingProps = {}
           'border-border/40 bg-background/80 shadow-sm backdrop-blur-lg'
       )}
     >
-      <div className='mx-auto grid h-16 max-w-7xl grid-cols-3 items-center px-4 md:px-6'>
+      {/* ── DESKTOP ─────────────────────────────────────────────────── */}
+      <div className='mx-auto hidden h-16 max-w-7xl grid-cols-3 items-center px-4 md:grid md:px-6'>
         {/* ESQUERDA — Logo + Nav */}
         <div className='flex items-center gap-1'>
           <Link to='/' className='mr-2 flex shrink-0 items-center'>
@@ -128,7 +151,7 @@ export function HeaderLanding({ searchValue, onSearch }: HeaderLandingProps = {}
             />
           </Link>
 
-          <div className='hidden items-center gap-1 md:flex'>
+          <div className='flex items-center gap-1'>
             <div
               className='relative'
               onMouseEnter={handleMouseEnter}
@@ -161,7 +184,7 @@ export function HeaderLanding({ searchValue, onSearch }: HeaderLandingProps = {}
         </div>
 
         {/* CENTRO — Search */}
-        <div className='hidden justify-center md:flex'>
+        <div className='flex justify-center'>
           <SearchBar
             className='w-full max-w-sm'
             value={searchValue}
@@ -170,7 +193,7 @@ export function HeaderLanding({ searchValue, onSearch }: HeaderLandingProps = {}
         </div>
 
         {/* DIREITA — Carrinho + ThemeSwitch + Login */}
-        <div className='hidden items-center justify-end gap-2 md:flex'>
+        <div className='flex items-center justify-end gap-2'>
           <Link
             to='/cart'
             className='relative flex h-9 w-9 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-accent hover:text-foreground'
@@ -198,115 +221,168 @@ export function HeaderLanding({ searchValue, onSearch }: HeaderLandingProps = {}
             </Link>
           )}
         </div>
+      </div>
 
-        {/* MOBILE */}
-        <div className='col-span-2 flex min-w-0 items-center justify-end gap-2 md:hidden'>
-          <SearchBar
-            className='min-w-0 flex-1'
-            placeholder='Buscar...'
-            value={searchValue}
-            onChange={onSearch}
-          />
-          <Sheet>
-            <SheetTrigger asChild>
-              <button className='flex h-9 w-9 items-center justify-center rounded-md transition-colors hover:bg-accent'>
-                <Menu size={18} />
-              </button>
-            </SheetTrigger>
+      {/* ── MOBILE ──────────────────────────────────────────────────── */}
+      <div className='mx-auto flex h-16 max-w-7xl items-center gap-2 px-4 md:hidden'>
+        {/* Logo — some quando busca está aberta para dar mais espaço */}
+        {!mobileSearchOpen && (
+          <Link to='/' className='flex shrink-0 items-center'>
+            <img
+              src={isDark ? logoDark : logoLight}
+              alt='ShoPIM'
+              className='h-9 w-auto'
+            />
+          </Link>
+        )}
 
-            <SheetContent side='left' className='w-72 p-0'>
-              <div className='flex h-16 items-center justify-between border-b px-4'>
-                <img
-                  src={isDark ? logoDark : logoLight}
-                  alt='ShoPIM'
-                  className='h-10 w-auto'
-                />
-                <SheetClose className='flex h-8 w-8 items-center justify-center rounded-md transition-colors hover:bg-accent'>
-                  <X size={16} />
-                </SheetClose>
-              </div>
+        {/* Search pill / input expansível */}
+        <div className='relative flex min-w-0 flex-1'>
+          {!mobileSearchOpen ? (
+            /* Pill estática */
+            <button
+              onClick={handlePillClick}
+              className='flex h-8 w-full items-center gap-2 rounded-full bg-muted px-3 text-left transition-colors hover:bg-muted/80 active:scale-[0.98]'
+            >
+              <Search size={13} className='shrink-0 text-muted-foreground' />
+              <span className='truncate text-xs text-muted-foreground'>
+                {searchValue || 'Buscar produtos…'}
+              </span>
+            </button>
+          ) : (
+            /* SearchBar real expandida */
+            <SearchBar
+              ref={mobileSearchRef}
+              className='w-full'
+              placeholder='Buscar produtos…'
+              value={searchValue}
+              onChange={onSearch}
+              onBlur={handleMobileSearchBlur}
+              autoFocus
+            />
+          )}
+        </div>
 
-              <nav className='flex flex-col gap-1 p-3'>
-                <SheetClose asChild>
-                  <Link
-                    to='/'
-                    className='flex items-center gap-2.5 rounded-md px-3 py-2.5 text-sm font-medium transition-colors hover:bg-accent'
-                  >
-                    <House size={16} className='text-muted-foreground' />
-                    Início
-                  </Link>
-                </SheetClose>
+        {/* Ações direita */}
+        <div className='flex shrink-0 items-center gap-1'>
+          {/* Carrinho */}
+          {!mobileSearchOpen && (
+            <Link
+              to='/cart'
+              className='relative flex h-9 w-9 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-accent hover:text-foreground'
+            >
+              <ShoppingCart size={18} />
+              {totalItens > 0 && (
+                <Badge className='absolute -top-0.5 -right-0.5 flex h-4 w-4 items-center justify-center p-0 text-[10px]'>
+                  {totalItens}
+                </Badge>
+              )}
+            </Link>
+          )}
 
-                <div className='flex flex-col'>
-                  <button
-                    onClick={() => setOpenCategoryMobile(!openCategoryMobile)}
-                    className='flex items-center gap-2.5 rounded-md px-3 py-2.5 text-sm font-medium transition-colors hover:bg-accent'
-                  >
-                    <ChevronDown
-                      size={16}
-                      className={cn(
-                        'text-muted-foreground transition-transform duration-200',
-                        openCategoryMobile && 'rotate-180'
-                      )}
-                    />
-                    Categorias
-                  </button>
+          {!mobileSearchOpen && (
+            <Separator orientation='vertical' className='h-5 opacity-50' />
+          )}
 
-                  <div
-                    className={cn(
-                      'overflow-hidden transition-all duration-200',
-                      openCategoryMobile ? 'max-h-48' : 'max-h-0'
-                    )}
-                  >
-                    <div className='ml-9 flex flex-col gap-0.5 pb-1'>
-                      {categories.map((cat) => (
-                        <CategoryItemMobile key={cat.label} cat={cat} />
-                      ))}
-                    </div>
-                  </div>
-                </div>
-
+          {/* Login ou perfil */}
+          {!mobileSearchOpen && (
+            <>
+              {auth.user ? (
+                <ProfileDropdown />
+              ) : (
                 <Link
-                  to='/cart'
-                  className='flex items-center gap-2.5 rounded-md px-3 py-2.5 text-sm font-medium transition-colors hover:bg-accent'
+                  to='/sign-in'
+                  className='flex items-center gap-1.5 rounded-full bg-foreground px-3 py-1.5 text-sm font-medium text-background transition-opacity hover:opacity-90'
                 >
-                  <ShoppingCart size={16} className='text-muted-foreground' />
-                  Carrinho
-                  {totalItens > 0 && (
-                    <Badge className='ml-auto h-5 px-1.5 text-xs'>
-                      {totalItens}
-                    </Badge>
-                  )}
+                  <User size={14} />
+                  Entrar
                 </Link>
+              )}
+              <Separator orientation='vertical' className='h-5 opacity-50' />
+            </>
+          )}
 
-                <Separator className='my-2' />
+          {/* Cancelar busca (só aparece quando expandida) ou Menu */}
+          {mobileSearchOpen ? (
+            <button
+              onClick={() => {
+                setMobileSearchOpen(false)
+                onSearch?.('')
+              }}
+              className='flex h-9 items-center rounded-md px-2 text-sm text-muted-foreground transition-colors hover:bg-accent hover:text-foreground'
+            >
+              Cancelar
+            </button>
+          ) : (
+            <Sheet>
+              <SheetTrigger asChild>
+                <button className='flex h-9 w-9 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-accent hover:text-foreground'>
+                  <Menu size={18} />
+                </button>
+              </SheetTrigger>
 
-                <div className='flex items-center justify-between rounded-md px-3 py-2.5'>
-                  <span className='text-sm font-medium'>Tema</span>
-                  <ThemeSwitch />
+              <SheetContent side='left' className='w-72 p-0'>
+                <div className='flex h-16 items-center justify-between border-b px-4'>
+                  <img
+                    src={isDark ? logoDark : logoLight}
+                    alt='ShoPIM'
+                    className='h-10 w-auto'
+                  />
+                  <SheetClose className='flex h-8 w-8 items-center justify-center rounded-md transition-colors hover:bg-accent'>
+                    <X size={16} />
+                  </SheetClose>
                 </div>
 
-                {auth.user ? (
-                  <div className='flex items-center gap-2.5 rounded-md px-3 py-2.5'>
-                    <ProfileDropdown />
-                    <span className='text-sm font-medium'>
-                      {auth.user.name || 'Usuário'}
-                    </span>
-                  </div>
-                ) : (
+                <nav className='flex flex-col gap-1 p-3'>
                   <SheetClose asChild>
                     <Link
-                      to='/sign-in'
-                      className='flex items-center gap-2.5 rounded-md bg-foreground px-3 py-2.5 text-sm font-medium text-background transition-opacity hover:opacity-90'
+                      to='/'
+                      className='flex items-center gap-2.5 rounded-md px-3 py-2.5 text-sm font-medium transition-colors hover:bg-accent'
                     >
-                      <User size={16} />
-                      Entrar na conta
+                      <House size={16} className='text-muted-foreground' />
+                      Início
                     </Link>
                   </SheetClose>
-                )}
-              </nav>
-            </SheetContent>
-          </Sheet>
+
+                  <div className='flex flex-col'>
+                    <button
+                      onClick={() => setOpenCategoryMobile(!openCategoryMobile)}
+                      className='flex items-center gap-2.5 rounded-md px-3 py-2.5 text-sm font-medium transition-colors hover:bg-accent'
+                    >
+                      <ChevronDown
+                        size={16}
+                        className={cn(
+                          'text-muted-foreground transition-transform duration-200',
+                          openCategoryMobile && 'rotate-180'
+                        )}
+                      />
+                      Categorias
+                    </button>
+
+                    <div
+                      className={cn(
+                        'overflow-hidden transition-all duration-200',
+                        openCategoryMobile ? 'max-h-48' : 'max-h-0'
+                      )}
+                    >
+                      <div className='ml-9 flex flex-col gap-0.5 pb-1'>
+                        {categories.map((cat) => (
+                          <CategoryItemMobile key={cat.label} cat={cat} />
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+
+                  <Separator className='my-2' />
+
+                  <div className='flex items-center justify-between rounded-md px-3 py-2.5'>
+                    <span className='text-sm font-medium'>Tema</span>
+                    <ThemeSwitch />
+                  </div>
+                </nav>
+              </SheetContent>
+            </Sheet>
+          )}
         </div>
       </div>
     </header>

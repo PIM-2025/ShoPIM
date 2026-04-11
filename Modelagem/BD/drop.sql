@@ -25,11 +25,25 @@ ALTER TABLE MENSAGEM DROP CONSTRAINT CONVERSA_MENSAGEM;
 
 ALTER TABLE PEDIDO DROP CONSTRAINT USERS_PEDIDO;
 
-ALTER TABLE PEDIDO DROP CONSTRAINT ADDRESS_PEDIDO;
+ALTER TABLE PEDIDO DROP CONSTRAINT PEDIDO_ADDRESS;
 
 ALTER TABLE ITEM_PEDIDO DROP CONSTRAINT PEDIDO_ITEM_PEDIDO;
 
 ALTER TABLE ITEM_PEDIDO DROP CONSTRAINT PRODUCT_ITEM_PEDIDO;
+
+/* ---------------------------------------------------------------------- */
+/* Drop table "CONFIGURACAO"                                              */
+/* ---------------------------------------------------------------------- */
+
+/* Drop constraints */
+
+ALTER TABLE CONFIGURACAO DROP CONSTRAINT NN_CONFIGURACAO_ID;
+
+ALTER TABLE CONFIGURACAO DROP CONSTRAINT NN_CONFIGURACAO_NOME;
+
+ALTER TABLE CONFIGURACAO DROP CONSTRAINT PK_CONFIGURACAO;
+
+DROP TABLE CONFIGURACAO;
 
 /* ---------------------------------------------------------------------- */
 /* Drop table "ITEM_PEDIDO"                                               */

@@ -179,7 +179,7 @@ namespace ShoPIM.Controllers
 
             var body = new
             {
-                sender = new { name = "ShoPIM", email = "noreply@shopim.com.br" },
+                sender = new { name = "ShoPIM", email = "shopim.noreply@gmail.com" },
                 to = new[] { new { email = destinatario, name = nome } },
                 subject = "Seu código de redefinição de senha - ShoPIM",
                 htmlContent = html

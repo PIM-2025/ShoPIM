@@ -1,5 +1,5 @@
 import { useNavigate, useRouterState } from '@tanstack/react-router'
-import { LayoutDashboard, Store } from 'lucide-react'
+import { LayoutDashboard, ShoppingBag, Store } from 'lucide-react'
 import { useAuthStore } from '@/stores/auth-store'
 import useDialogState from '@/hooks/use-dialog-state'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
@@ -22,7 +22,8 @@ export function ProfileDropdown() {
   const location = useRouterState({ select: (s) => s.location.pathname })
 
   const isAdmin = auth.user?.role.includes('admin') ?? false
-  const onDashboard = location.startsWith('/dashboard')
+  const ADMIN_PREFIXES = ['/dashboard', '/chats', '/clientes', '/produtos', '/pedidos', '/users', '/settings', '/help-center']
+  const onAdminArea = ADMIN_PREFIXES.some((p) => location.startsWith(p))
 
   return (
     <>
@@ -54,12 +55,12 @@ export function ProfileDropdown() {
           <DropdownMenuSeparator />
           {isAdmin && (
             <DropdownMenuItem
-              onClick={() => navigate({ to: onDashboard ? '/' : '/dashboard' })}
+              onClick={() => navigate({ to: onAdminArea ? '/' : '/dashboard' })}
             >
-              {onDashboard ? (
+              {onAdminArea ? (
                 <>
                   <Store className='mr-2 h-4 w-4' />
-                  Ir para o Site
+                  Abrir Site
                 </>
               ) : (
                 <>
@@ -69,6 +70,11 @@ export function ProfileDropdown() {
               )}
             </DropdownMenuItem>
           )}
+          <DropdownMenuItem onClick={() => navigate({ to: '/minhas-compras' })}>
+            <ShoppingBag className='mr-2 h-4 w-4' />
+            Meus Pedidos
+          </DropdownMenuItem>
+          <DropdownMenuSeparator />
           <DropdownMenuItem variant='destructive' onClick={() => setOpen(true)}>
             Sair
             <DropdownMenuShortcut className='text-current'>

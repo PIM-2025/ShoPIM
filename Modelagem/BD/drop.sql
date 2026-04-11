@@ -5,7 +5,7 @@
 /* Project name:                                                          */
 /* Author:                                                                */
 /* Script type:           Database drop script                            */
-/* Created on:            2026-04-11 10:40                                */
+/* Created on:            2026-04-11 16:20                                */
 /* ---------------------------------------------------------------------- */
 
 
@@ -22,6 +22,54 @@ ALTER TABLE CART DROP CONSTRAINT USERS_CART;
 ALTER TABLE CART DROP CONSTRAINT PRODUCT_CART;
 
 ALTER TABLE MENSAGEM DROP CONSTRAINT CONVERSA_MENSAGEM;
+
+ALTER TABLE PEDIDO DROP CONSTRAINT USERS_PEDIDO;
+
+ALTER TABLE PEDIDO DROP CONSTRAINT ADDRESS_PEDIDO;
+
+ALTER TABLE ITEM_PEDIDO DROP CONSTRAINT PEDIDO_ITEM_PEDIDO;
+
+ALTER TABLE ITEM_PEDIDO DROP CONSTRAINT PRODUCT_ITEM_PEDIDO;
+
+/* ---------------------------------------------------------------------- */
+/* Drop table "ITEM_PEDIDO"                                               */
+/* ---------------------------------------------------------------------- */
+
+/* Drop constraints */
+
+ALTER TABLE ITEM_PEDIDO DROP CONSTRAINT NN_ITEM_PEDIDO_ID;
+
+ALTER TABLE ITEM_PEDIDO DROP CONSTRAINT NN_ITEM_PEDIDO_ID_PEDIDO;
+
+ALTER TABLE ITEM_PEDIDO DROP CONSTRAINT NN_ITEM_PEDIDO_ID_PRODUTO;
+
+ALTER TABLE ITEM_PEDIDO DROP CONSTRAINT NN_ITEM_PEDIDO_QUANTIDADE;
+
+ALTER TABLE ITEM_PEDIDO DROP CONSTRAINT NN_ITEM_PEDIDO_PRECO_UNITARIO;
+
+ALTER TABLE ITEM_PEDIDO DROP CONSTRAINT PK_ITEM_PEDIDO;
+
+DROP TABLE ITEM_PEDIDO;
+
+/* ---------------------------------------------------------------------- */
+/* Drop table "PEDIDO"                                                    */
+/* ---------------------------------------------------------------------- */
+
+/* Drop constraints */
+
+ALTER TABLE PEDIDO DROP CONSTRAINT NN_PEDIDO_ID;
+
+ALTER TABLE PEDIDO DROP CONSTRAINT NN_PEDIDO_ID_USER;
+
+ALTER TABLE PEDIDO DROP CONSTRAINT NN_PEDIDO_STATUS;
+
+ALTER TABLE PEDIDO DROP CONSTRAINT NN_PEDIDO_DATA_PEDIDO;
+
+ALTER TABLE PEDIDO DROP CONSTRAINT NN_PEDIDO_TOTAL;
+
+ALTER TABLE PEDIDO DROP CONSTRAINT PK_PEDIDO;
+
+DROP TABLE PEDIDO;
 
 /* ---------------------------------------------------------------------- */
 /* Drop table "MENSAGEM"                                                  */
@@ -151,7 +199,7 @@ DROP TABLE USERS;
 
 DROP SEQUENCE SEQ_USERS;
 
-DROP SEQUENCE SEQ_ADRESS;
+DROP SEQUENCE SEQ_ADDRESS;
 
 DROP SEQUENCE SEQ_CONTACT;
 
@@ -162,3 +210,7 @@ DROP SEQUENCE SEQ_CART;
 DROP SEQUENCE SEQ_CONVERSA;
 
 DROP SEQUENCE SEQ_MENSAGEM;
+
+DROP SEQUENCE SEQ_PEDIDO;
+
+DROP SEQUENCE SEQ_ITEM_PEDIDO;

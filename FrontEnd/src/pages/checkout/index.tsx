@@ -1,13 +1,14 @@
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
+import { useNavigate } from '@tanstack/react-router'
 import {
   ArrowLeft,
   CreditCard,
   Eye,
   EyeOff,
   Gift,
+  Loader2,
   Lock,
   Shield,
-  Tag,
   Truck,
 } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
@@ -23,450 +24,352 @@ import { Checkbox } from '@/components/ui/checkbox'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select'
 import { Separator } from '@/components/ui/separator'
+import { useAuthStore } from '@/stores/auth-store'
+import { useCartStore } from '@/stores/cart-store'
+import { criarPedido, getEnderecoUsuario } from '@/service/pedidoService'
 
 export default function Checkout() {
+  const navigate = useNavigate()
+  const { auth } = useAuthStore()
+  const { items, setItems } = useCartStore()
+  const usuario = auth.user
+
   const [step, setStep] = useState(1)
   const [showCvv, setShowCvv] = useState(false)
-  const [formData, setFormData] = useState({
-    // Personal Information
-    email: '',
-    firstName: '',
-    lastName: '',
-    phone: '',
+  const [submitting, setSubmitting] = useState(false)
+  const [errors, setErrors] = useState<Record<string, string>>({})
+  const [cepLoading, setCepLoading] = useState(false)
+  const cepRef = useRef<HTMLInputElement>(null)
 
-    // Shipping Address
-    address: '',
+  const [formData, setFormData] = useState({
+    email: usuario?.email ?? '',
+    firstName: usuario?.name?.split(' ')[0] ?? '',
+    lastName: usuario?.name?.split(' ').slice(1).join(' ') ?? '',
+    phone: '',
+    rua: '',
+    numero: '',
+    complemento: '',
     city: '',
     state: '',
     zipCode: '',
-    country: 'BR',
-
-    // Payment
     cardNumber: '',
     expiryDate: '',
     cvv: '',
     cardName: '',
-
-    // Options
     saveInfo: false,
-    sameAsBilling: true,
-    newsletter: false,
-    promoCode: '',
   })
 
-  const [orderSummary] = useState({
-    items: [
-      {
-        id: 1,
-        name: 'Fone de Ouvido Sem Fio Premium',
-        variant: 'Midnight Black',
-        price: 299.99,
-        quantity: 1,
-        image:
-          'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=100&auto=format&fit=crop&q=60',
-      },
-      {
-        id: 2,
-        name: 'Bolsa de Couro para Laptop',
-        variant: 'Marrom Escuro',
-        price: 89.99,
-        quantity: 1,
-        image:
-          'https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=100&auto=format&fit=crop&q=60',
-      },
-    ],
-    shipping: 15.99,
-    tax: 27.54,
-    discount: 0,
-    promoDiscount: 0,
-  })
+  // Pré-carrega endereço existente do usuário
+  useEffect(() => {
+    if (!usuario?.id) return
+    getEnderecoUsuario(usuario.id).then((end) => {
+      if (!end) return
+      setFormData((prev) => ({
+        ...prev,
+        rua: end.rua ?? '',
+        numero: end.numero ?? '',
+        complemento: end.complemento ?? '',
+        city: end.cidade ?? '',
+        state: end.estado ?? '',
+        zipCode: end.cep ?? '',
+      }))
+    })
+  }, [usuario?.id])
 
   const handleInputChange = (field: string, value: string | boolean) => {
     setFormData((prev) => ({ ...prev, [field]: value }))
   }
 
   const handleCardNumberChange = (value: string) => {
-    // Format card number with spaces
-    const formatted = value
-      .replace(/\s/g, '')
-      .replace(/(.{4})/g, '$1 ')
-      .trim()
+    const formatted = value.replace(/\s/g, '').replace(/(.{4})/g, '$1 ').trim()
     handleInputChange('cardNumber', formatted)
   }
 
   const handleExpiryChange = (value: string) => {
-    // Format expiry as MM/YY
     const formatted = value.replace(/\D/g, '').replace(/(\d{2})(\d)/, '$1/$2')
     handleInputChange('expiryDate', formatted)
   }
 
-  const subtotal = orderSummary.items.reduce(
-    (sum, item) => sum + item.price * item.quantity,
-    0
-  )
-  const total =
-    subtotal +
-    orderSummary.shipping +
-    orderSummary.tax -
-    orderSummary.discount -
-    orderSummary.promoDiscount
+  const handleCepChange = async (value: string) => {
+    const digits = value.replace(/\D/g, '')
+    const formatted = digits.replace(/(\d{5})(\d)/, '$1-$2')
+    handleInputChange('zipCode', formatted)
 
-  const nextStep = () => setStep((prev) => Math.min(prev + 1, 3))
-  const prevStep = () => setStep((prev) => Math.max(prev - 1, 1))
+    if (digits.length === 8) {
+      setCepLoading(true)
+      try {
+        const res = await fetch(`https://viacep.com.br/ws/${digits}/json/`)
+        const data = await res.json()
+        if (!data.erro) {
+          setFormData((prev) => ({
+            ...prev,
+            zipCode: formatted,
+            rua: data.logradouro ?? prev.rua,
+            city: data.localidade ?? prev.city,
+            state: data.uf ?? prev.state,
+          }))
+          setErrors((prev) => ({ ...prev, rua: '', city: '', state: '', zipCode: '' }))
+        }
+      } catch {
+        // ignora erro de rede
+      } finally {
+        setCepLoading(false)
+      }
+    }
+  }
+
+  const subtotal = items.reduce((sum, i) => sum + i.produto.preco * i.quantidade, 0)
+  const frete = subtotal >= 75 ? 0 : 15.99
+  const total = subtotal + frete
+
+  const validateStep = (s: number): boolean => {
+    const newErrors: Record<string, string> = {}
+    if (s === 1) {
+      if (!formData.email.trim()) newErrors.email = 'E-mail obrigatório'
+      if (!formData.firstName.trim()) newErrors.firstName = 'Nome obrigatório'
+      if (!formData.lastName.trim()) newErrors.lastName = 'Sobrenome obrigatório'
+    }
+    if (s === 2) {
+      if (!formData.rua.trim()) newErrors.rua = 'Rua obrigatória'
+      if (!formData.numero.trim()) newErrors.numero = 'Número obrigatório'
+      if (!formData.city.trim()) newErrors.city = 'Cidade obrigatória'
+      if (!formData.state.trim()) newErrors.state = 'Estado obrigatório'
+      if (!formData.zipCode.trim()) newErrors.zipCode = 'CEP obrigatório'
+    }
+    if (s === 3) {
+      if (!formData.cardNumber.trim()) newErrors.cardNumber = 'Número do cartão obrigatório'
+      if (!formData.expiryDate.trim()) newErrors.expiryDate = 'Validade obrigatória'
+      if (!formData.cvv.trim()) newErrors.cvv = 'CVV obrigatório'
+      if (!formData.cardName.trim()) newErrors.cardName = 'Nome no cartão obrigatório'
+    }
+    setErrors(newErrors)
+    return Object.keys(newErrors).length === 0
+  }
+
+  const nextStep = () => {
+    if (validateStep(step)) setStep((p) => Math.min(p + 1, 3))
+  }
+  const prevStep = () => {
+    setErrors({})
+    setStep((p) => Math.max(p - 1, 1))
+  }
+
+  const handleFinalizar = async () => {
+    if (!validateStep(3)) return
+    if (!usuario?.id) return
+    setSubmitting(true)
+    try {
+      const result = await criarPedido({
+        idUsuario: usuario.id,
+        rua: formData.rua,
+        numero: formData.numero,
+        complemento: formData.complemento || undefined,
+        cidade: formData.city,
+        estado: formData.state,
+        cep: formData.zipCode,
+      })
+      setItems([])
+      navigate({ to: '/pedido/$id', params: { id: String(result.id) } })
+    } catch (e) {
+      console.error('Erro ao finalizar pedido', e)
+    } finally {
+      setSubmitting(false)
+    }
+  }
+
+  if (items.length === 0) {
+    return (
+      <div className='flex min-h-[60vh] flex-col items-center justify-center gap-4 text-center'>
+        <p className='text-lg font-medium'>Seu carrinho está vazio.</p>
+        <Button onClick={() => navigate({ to: '/' })}>Continuar comprando</Button>
+      </div>
+    )
+  }
 
   return (
-    <div className='bg-muted/30'>
+    <div className='bg-muted/30 min-h-screen'>
       <div className='container mx-auto px-4 py-8'>
-        {/* Header */}
         <div className='mb-8 text-center'>
-          <h1 className='mb-2 text-3xl font-bold text-balance'>
-            Checkout Seguro
-          </h1>
-          <p className='text-muted-foreground'>
-            Informe seus dados e finalize sua compra seguindo os passos abaixo.
-          </p>
+          <h1 className='mb-2 text-3xl font-bold'>Checkout Seguro</h1>
+          <p className='text-muted-foreground'>Informe seus dados e finalize sua compra.</p>
         </div>
 
-        {/* Progress Indicator */}
+        {/* Progress */}
         <div className='mb-8 flex justify-center'>
           <div className='flex items-center space-x-4'>
-            {[1, 2, 3].map((stepNumber) => (
-              <div key={stepNumber} className='flex items-center'>
-                <div
-                  className={`flex h-10 w-10 items-center justify-center rounded-full text-sm font-medium transition-colors ${
-                    stepNumber <= step
-                      ? 'bg-primary text-primary-foreground'
-                      : 'bg-muted text-muted-foreground'
-                  }`}
-                >
-                  {stepNumber}
+            {[
+              { n: 1, label: 'Contato' },
+              { n: 2, label: 'Entrega' },
+              { n: 3, label: 'Pagamento' },
+            ].map(({ n, label }) => (
+              <div key={n} className='flex items-center'>
+                <div className='flex flex-col items-center gap-1'>
+                  <div className={`flex h-10 w-10 items-center justify-center rounded-full text-sm font-medium transition-colors ${
+                    n <= step ? 'bg-primary text-primary-foreground' : 'bg-muted text-muted-foreground'
+                  }`}>{n}</div>
+                  <span className='text-xs text-muted-foreground'>{label}</span>
                 </div>
-                {stepNumber < 3 && (
-                  <div
-                    className={`mx-4 h-1 w-16 rounded transition-colors ${
-                      stepNumber < step ? 'bg-primary' : 'bg-muted'
-                    }`}
-                  />
-                )}
+                {n < 3 && <div className={`mx-4 mb-5 h-1 w-16 rounded transition-colors ${n < step ? 'bg-primary' : 'bg-muted'}`} />}
               </div>
             ))}
           </div>
         </div>
 
         <div className='grid gap-8 lg:grid-cols-3'>
-          {/* Main Form */}
+          {/* Formulário */}
           <div className='lg:col-span-2'>
             <Card>
               <CardHeader>
-                <CardTitle className='text-balance'>
+                <CardTitle>
                   {step === 1 && 'Informações de Contato'}
                   {step === 2 && 'Endereço de Entrega'}
-                  {step === 3 && 'Detalhes do Pagamento'}
+                  {step === 3 && 'Pagamento'}
                 </CardTitle>
                 <CardDescription>
-                  {step === 1 &&
-                    'Nós enviaremos atualizações sobre seu pedido por email.'}
+                  {step === 1 && 'Confirme seus dados de contato.'}
                   {step === 2 && 'Onde devemos enviar seu pedido?'}
-                  {step === 3 &&
-                    'Suas informações de pagamento são seguras e criptografadas'}
+                  {step === 3 && 'Suas informações são seguras e criptografadas.'}
                 </CardDescription>
               </CardHeader>
               <CardContent className='space-y-6'>
-                {/* Step 1: Contact Information */}
+
+                {/* Step 1 */}
                 {step === 1 && (
                   <div className='space-y-4'>
                     <div className='space-y-2'>
-                      <Label htmlFor='email-kL9x23P'>Endereço de E-mail</Label>
-                      <Input
-                        id='email-kL9x23P'
-                        type='email'
-                        placeholder='john@example.com'
-                        value={formData.email}
-                        onChange={(e) =>
-                          handleInputChange('email', e.target.value)
-                        }
-                        className='mt-2'
-                      />
+                      <Label>E-mail <span className='text-destructive'>*</span></Label>
+                      <Input value={formData.email} onChange={(e) => handleInputChange('email', e.target.value)} className={errors.email ? 'border-destructive' : ''} />
+                      {errors.email && <p className='text-xs text-destructive'>{errors.email}</p>}
                     </div>
-
                     <div className='grid gap-4 md:grid-cols-2'>
                       <div className='space-y-2'>
-                        <Label htmlFor='firstName-mN7z84Q'>Nome</Label>
-                        <Input
-                          id='firstName-mN7z84Q'
-                          placeholder='John'
-                          value={formData.firstName}
-                          onChange={(e) =>
-                            handleInputChange('firstName', e.target.value)
-                          }
-                          className='mt-2'
-                        />
+                        <Label>Nome <span className='text-destructive'>*</span></Label>
+                        <Input value={formData.firstName} onChange={(e) => handleInputChange('firstName', e.target.value)} className={errors.firstName ? 'border-destructive' : ''} />
+                        {errors.firstName && <p className='text-xs text-destructive'>{errors.firstName}</p>}
                       </div>
                       <div className='space-y-2'>
-                        <Label htmlFor='lastName-pL8w45T'>Sobrenome</Label>
-                        <Input
-                          id='lastName-pL8w45T'
-                          placeholder='Doe'
-                          value={formData.lastName}
-                          onChange={(e) =>
-                            handleInputChange('lastName', e.target.value)
-                          }
-                          className='mt-2'
-                        />
+                        <Label>Sobrenome <span className='text-destructive'>*</span></Label>
+                        <Input value={formData.lastName} onChange={(e) => handleInputChange('lastName', e.target.value)} className={errors.lastName ? 'border-destructive' : ''} />
+                        {errors.lastName && <p className='text-xs text-destructive'>{errors.lastName}</p>}
                       </div>
                     </div>
-
                     <div className='space-y-2'>
-                      <Label htmlFor='phone-rM6n82S'>
-                        Número de Telefone (opcional)
-                      </Label>
-                      <Input
-                        id='phone-rM6n82S'
-                        type='tel'
-                        placeholder='+55 (19) 12345-6789'
-                        value={formData.phone}
-                        onChange={(e) =>
-                          handleInputChange('phone', e.target.value)
-                        }
-                        className='mt-2'
-                      />
+                      <Label>Telefone (opcional)</Label>
+                      <Input type='tel' placeholder='+55 (19) 99999-9999' value={formData.phone} onChange={(e) => handleInputChange('phone', e.target.value)} />
                     </div>
                   </div>
                 )}
 
-                {/* Step 2: Shipping Address */}
+                {/* Step 2 */}
                 {step === 2 && (
                   <div className='space-y-4'>
                     <div className='space-y-2'>
-                      <Label htmlFor='address-qP4z17X'>Endereço</Label>
-                      <Input
-                        id='address-qP4z17X'
-                        placeholder='123 Main Street'
-                        value={formData.address}
-                        onChange={(e) =>
-                          handleInputChange('address', e.target.value)
-                        }
-                        className='mt-2'
-                      />
-                    </div>
-
-                    <div className='grid gap-4 md:grid-cols-2'>
-                      <div className='space-y-2'>
-                        <Label htmlFor='city-sT5y91B'>Cidade</Label>
+                      <Label>CEP <span className='text-destructive'>*</span></Label>
+                      <div className='relative'>
                         <Input
-                          id='city-sT5y91B'
-                          placeholder='Limeira'
-                          value={formData.city}
-                          onChange={(e) =>
-                            handleInputChange('city', e.target.value)
-                          }
-                          className='mt-2'
-                        />
-                      </div>
-                      <div className='space-y-2'>
-                        <Label htmlFor='state-wX3k85M'>Estado</Label>
-                        <Input
-                          id='state-wX3k85M'
-                          placeholder='SP'
-                          value={formData.state}
-                          onChange={(e) =>
-                            handleInputChange('state', e.target.value)
-                          }
-                          className='mt-2'
-                        />
-                      </div>
-                    </div>
-
-                    <div className='grid gap-4 md:grid-cols-2'>
-                      <div className='space-y-2'>
-                        <Label htmlFor='zipCode-vZ9q46N'>CEP</Label>
-                        <Input
-                          id='zipCode-vZ9q46N'
-                          placeholder='12345-678'
+                          ref={cepRef}
+                          placeholder='00000-000'
                           value={formData.zipCode}
-                          onChange={(e) =>
-                            handleInputChange('zipCode', e.target.value)
-                          }
-                          className='mt-2'
+                          onChange={(e) => handleCepChange(e.target.value)}
+                          maxLength={9}
+                          className={errors.zipCode ? 'border-destructive' : ''}
                         />
+                        {cepLoading && (
+                          <Loader2 className='absolute right-3 top-1/2 size-4 -translate-y-1/2 animate-spin text-muted-foreground' />
+                        )}
+                      </div>
+                      {errors.zipCode && <p className='text-xs text-destructive'>{errors.zipCode}</p>}
+                    </div>
+                    <div className='grid gap-4 md:grid-cols-3'>
+                      <div className='space-y-2 md:col-span-2'>
+                        <Label>Rua <span className='text-destructive'>*</span></Label>
+                        <Input placeholder='Nome da rua / avenida' value={formData.rua} onChange={(e) => handleInputChange('rua', e.target.value)} className={errors.rua ? 'border-destructive' : ''} />
+                        {errors.rua && <p className='text-xs text-destructive'>{errors.rua}</p>}
                       </div>
                       <div className='space-y-2'>
-                        <Label htmlFor='country-bH7l52P'>País</Label>
-                        <Select
-                          value={formData.country}
-                          onValueChange={(value) =>
-                            handleInputChange('country', value)
-                          }
-                        >
-                          <SelectTrigger
-                            id='country-bH7l52P'
-                            className='mt-2 w-full'
-                          >
-                            <SelectValue />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value='BR'>Brasil</SelectItem>
-                            <SelectItem value='US'>Estados Unidos</SelectItem>
-                            <SelectItem value='CA'>Canadá</SelectItem>
-                            <SelectItem value='UK'>Reino Unido</SelectItem>
-                            <SelectItem value='AU'>Austrália</SelectItem>
-                          </SelectContent>
-                        </Select>
+                        <Label>Número <span className='text-destructive'>*</span></Label>
+                        <Input placeholder='123' value={formData.numero} onChange={(e) => handleInputChange('numero', e.target.value)} className={errors.numero ? 'border-destructive' : ''} />
+                        {errors.numero && <p className='text-xs text-destructive'>{errors.numero}</p>}
+                      </div>
+                    </div>
+                    <div className='space-y-2'>
+                      <Label>Complemento</Label>
+                      <Input placeholder='Apto, bloco, casa...' value={formData.complemento} onChange={(e) => handleInputChange('complemento', e.target.value)} />
+                    </div>
+                    <div className='grid gap-4 md:grid-cols-2'>
+                      <div className='space-y-2'>
+                        <Label>Cidade <span className='text-destructive'>*</span></Label>
+                        <Input placeholder='Limeira' value={formData.city} onChange={(e) => handleInputChange('city', e.target.value)} className={errors.city ? 'border-destructive' : ''} />
+                        {errors.city && <p className='text-xs text-destructive'>{errors.city}</p>}
+                      </div>
+                      <div className='space-y-2'>
+                        <Label>Estado <span className='text-destructive'>*</span></Label>
+                        <Input placeholder='SP' maxLength={2} value={formData.state} onChange={(e) => handleInputChange('state', e.target.value.toUpperCase())} className={errors.state ? 'border-destructive' : ''} />
+                        {errors.state && <p className='text-xs text-destructive'>{errors.state}</p>}
                       </div>
                     </div>
                   </div>
                 )}
 
-                {/* Step 3: Payment */}
+                {/* Step 3 */}
                 {step === 3 && (
                   <div className='space-y-6'>
-                    {/* Payment Method */}
-                    <div className='space-y-4'>
-                      <Label className='text-sm font-medium'>
-                        Payment method
-                      </Label>
-                      <RadioGroup defaultValue='card' className='space-y-3'>
-                        <div className='flex items-center space-x-3 rounded-lg border p-4'>
-                          <RadioGroupItem
-                            value='card'
-                            id='card-payment-cN9m74K'
-                          />
-                          <CreditCard className='size-5 text-muted-foreground' />
-                          <Label
-                            htmlFor='card-payment-cN9m74K'
-                            className='flex-1 cursor-pointer'
-                          >
-                            Cartão de Crédito
-                          </Label>
-                        </div>
-                      </RadioGroup>
-                    </div>
+                    <RadioGroup defaultValue='card' className='space-y-3'>
+                      <div className='flex items-center space-x-3 rounded-lg border p-4'>
+                        <RadioGroupItem value='card' id='card' />
+                        <CreditCard className='size-5 text-muted-foreground' />
+                        <Label htmlFor='card' className='flex-1 cursor-pointer'>Cartão de Crédito</Label>
+                      </div>
+                    </RadioGroup>
 
-                    {/* Card Details */}
                     <div className='space-y-4'>
                       <div className='space-y-2'>
-                        <Label htmlFor='cardNumber-dK5p83L'>
-                          Número do cartão
-                        </Label>
-                        <Input
-                          id='cardNumber-dK5p83L'
-                          placeholder='1234 5678 9012 3456'
-                          value={formData.cardNumber}
-                          onChange={(e) =>
-                            handleCardNumberChange(e.target.value)
-                          }
-                          maxLength={19}
-                          className='mt-2'
-                        />
+                        <Label>Número do cartão <span className='text-destructive'>*</span></Label>
+                        <Input placeholder='1234 5678 9012 3456' value={formData.cardNumber} onChange={(e) => handleCardNumberChange(e.target.value)} maxLength={19} className={errors.cardNumber ? 'border-destructive' : ''} />
+                        {errors.cardNumber && <p className='text-xs text-destructive'>{errors.cardNumber}</p>}
                       </div>
-
                       <div className='grid gap-4 md:grid-cols-3'>
                         <div className='space-y-2'>
-                          <Label htmlFor='expiryDate-fJ6r29M'>
-                            Data de expiração
-                          </Label>
-                          <Input
-                            id='expiryDate-fJ6r29M'
-                            placeholder='MM/YY'
-                            value={formData.expiryDate}
-                            onChange={(e) => handleExpiryChange(e.target.value)}
-                            maxLength={5}
-                            className='mt-2'
-                          />
+                          <Label>Validade <span className='text-destructive'>*</span></Label>
+                          <Input placeholder='MM/AA' value={formData.expiryDate} onChange={(e) => handleExpiryChange(e.target.value)} maxLength={5} className={errors.expiryDate ? 'border-destructive' : ''} />
+                          {errors.expiryDate && <p className='text-xs text-destructive'>{errors.expiryDate}</p>}
                         </div>
                         <div className='space-y-2'>
-                          <Label htmlFor='cvv-gH8s34N'>CVV</Label>
+                          <Label>CVV <span className='text-destructive'>*</span></Label>
                           <div className='relative'>
-                            <Input
-                              id='cvv-gH8s34N'
-                              type={showCvv ? 'text' : 'password'}
-                              placeholder='123'
-                              value={formData.cvv}
-                              onChange={(e) =>
-                                handleInputChange('cvv', e.target.value)
-                              }
-                              maxLength={4}
-                              className='mt-2 pe-10'
-                            />
-                            <Button
-                              type='button'
-                              variant='ghost'
-                              size='icon'
-                              className='absolute end-0 top-1/2 h-full -translate-y-1/2 cursor-pointer hover:bg-transparent'
-                              onClick={() => setShowCvv(!showCvv)}
-                            >
-                              {showCvv ? (
-                                <EyeOff className='size-4 text-muted-foreground' />
-                              ) : (
-                                <Eye className='size-4 text-muted-foreground' />
-                              )}
+                            <Input type={showCvv ? 'text' : 'password'} placeholder='123' value={formData.cvv} onChange={(e) => handleInputChange('cvv', e.target.value)} maxLength={4} className={`pe-10${errors.cvv ? ' border-destructive' : ''}`} />
+                            <Button type='button' variant='ghost' size='icon' className='absolute end-0 top-0 h-full hover:bg-transparent' onClick={() => setShowCvv(!showCvv)}>
+                              {showCvv ? <EyeOff className='size-4 text-muted-foreground' /> : <Eye className='size-4 text-muted-foreground' />}
                             </Button>
                           </div>
+                          {errors.cvv && <p className='text-xs text-destructive'>{errors.cvv}</p>}
                         </div>
                         <div className='space-y-2'>
-                          <Label htmlFor='cardName-hI9t45O'>
-                            Nome no cartão
-                          </Label>
-                          <Input
-                            id='cardName-hI9t45O'
-                            placeholder='John Doe'
-                            value={formData.cardName}
-                            onChange={(e) =>
-                              handleInputChange('cardName', e.target.value)
-                            }
-                            className='mt-2'
-                          />
+                          <Label>Nome no cartão <span className='text-destructive'>*</span></Label>
+                          <Input placeholder='JEAN F CAMPOS' value={formData.cardName} onChange={(e) => handleInputChange('cardName', e.target.value)} className={errors.cardName ? 'border-destructive' : ''} />
+                          {errors.cardName && <p className='text-xs text-destructive'>{errors.cardName}</p>}
                         </div>
                       </div>
                     </div>
 
-                    {/* Additional Options */}
-                    <div className='space-y-4'>
-                      <div className='flex items-center space-x-2'>
-                        <Checkbox
-                          id='saveInfo-jK0u56P'
-                          checked={formData.saveInfo}
-                          onCheckedChange={(checked) =>
-                            handleInputChange('saveInfo', checked as boolean)
-                          }
-                        />
-                        <Label htmlFor='saveInfo-jK0u56P' className='text-sm'>
-                          Salvar informações de pagamento para compras futuras
-                        </Label>
-                      </div>
+                    <div className='flex items-center space-x-2'>
+                      <Checkbox id='saveInfo' checked={formData.saveInfo} onCheckedChange={(v) => handleInputChange('saveInfo', v as boolean)} />
+                      <Label htmlFor='saveInfo' className='text-sm'>Salvar dados para próximas compras</Label>
                     </div>
                   </div>
                 )}
 
-                {/* Navigation Buttons */}
-                <div className='flex justify-between pt-6'>
-                  <Button
-                    type='button'
-                    variant='outline'
-                    onClick={prevStep}
-                    disabled={step === 1}
-                    className='flex cursor-pointer items-center gap-2'
-                  >
-                    <ArrowLeft className='size-4' />
-                    Back
+                <div className='flex justify-between pt-4'>
+                  <Button variant='outline' onClick={prevStep} disabled={step === 1} className='gap-2'>
+                    <ArrowLeft className='size-4' /> Voltar
                   </Button>
-
                   {step < 3 ? (
-                    <Button onClick={nextStep} className='cursor-pointer'>
-                      Continue
-                    </Button>
+                    <Button onClick={nextStep}>Continuar</Button>
                   ) : (
-                    <Button className='flex cursor-pointer items-center gap-2'>
-                      <Lock className='size-4' />
-                      Complete Order
+                    <Button onClick={handleFinalizar} disabled={submitting} className='gap-2'>
+                      {submitting ? <Loader2 className='size-4 animate-spin' /> : <Lock className='size-4' />}
+                      {submitting ? 'Processando...' : 'Finalizar Pedido'}
                     </Button>
                   )}
                 </div>
@@ -474,40 +377,30 @@ export default function Checkout() {
             </Card>
           </div>
 
-          {/* Order Summary */}
+          {/* Resumo */}
           <div className='lg:col-span-1'>
             <Card className='sticky top-8'>
               <CardHeader>
-                <CardTitle className='text-balance'>Resumo do Pedido</CardTitle>
+                <CardTitle>Resumo do Pedido</CardTitle>
               </CardHeader>
               <CardContent className='space-y-4'>
-                {/* Items */}
                 <div className='space-y-4'>
-                  {orderSummary.items.map((item) => (
-                    <div key={item.id} className='flex gap-4'>
-                      <div className='relative'>
-                        <img
-                          src={item.image}
-                          alt={item.name}
-                          className='h-16 w-16 rounded-lg object-cover'
-                        />
-                        <Badge
-                          variant='secondary'
-                          className='absolute -end-2 -top-2 size-6 rounded-full p-0 text-xs'
-                        >
-                          {item.quantity}
+                  {items.map((item) => (
+                    <div key={item.id} className='flex gap-3'>
+                      <div className='relative shrink-0'>
+                        {item.produto.imagem ? (
+                          <img src={item.produto.imagem} alt={item.produto.descricao} className='h-16 w-16 rounded-lg object-cover' />
+                        ) : (
+                          <div className='h-16 w-16 rounded-lg bg-muted' />
+                        )}
+                        <Badge variant='secondary' className='absolute -end-2 -top-2 size-6 rounded-full p-0 text-xs'>
+                          {item.quantidade}
                         </Badge>
                       </div>
                       <div className='min-w-0 flex-1'>
-                        <h4 className='truncate text-sm font-medium'>
-                          {item.name}
-                        </h4>
-                        <p className='text-xs text-muted-foreground'>
-                          {item.variant}
-                        </p>
-                        <p className='mt-1 text-sm font-medium'>
-                          R${item.price}
-                        </p>
+                        <p className='truncate text-sm font-medium'>{item.produto.descricao}</p>
+                        <p className='text-xs text-muted-foreground'>{item.produto.categoria}</p>
+                        <p className='mt-1 text-sm font-medium'>R$ {(item.produto.preco * item.quantidade).toFixed(2)}</p>
                       </div>
                     </div>
                   ))}
@@ -515,72 +408,32 @@ export default function Checkout() {
 
                 <Separator />
 
-                {/* Promo Code */}
-                <div className='space-y-2'>
-                  <Label htmlFor='promoCode-kL1m67Q' className='text-sm'>
-                    Código Promocional
-                  </Label>
-                  <div className='flex gap-2'>
-                    <Input
-                      id='promoCode-kL1m67Q'
-                      placeholder='Digite seu código promocional'
-                      value={formData.promoCode}
-                      onChange={(e) =>
-                        handleInputChange('promoCode', e.target.value)
-                      }
-                    />
-                    <Button variant='outline' className='cursor-pointer'>
-                      Aplicar
-                    </Button>
-                  </div>
-                </div>
-
-                <Separator />
-
-                {/* Pricing Breakdown */}
-                <div className='space-y-2'>
-                  <div className='flex justify-between text-sm'>
+                <div className='space-y-2 text-sm'>
+                  <div className='flex justify-between'>
                     <span className='text-muted-foreground'>Subtotal</span>
-                    <span>R${subtotal.toFixed(2)}</span>
+                    <span>R$ {subtotal.toFixed(2)}</span>
                   </div>
-                  <div className='flex justify-between text-sm'>
-                    <span className='flex items-center gap-1 text-muted-foreground'>
-                      <Truck className='size-3' />
-                      Frete
-                    </span>
-                    <span>R${orderSummary.shipping.toFixed(2)}</span>
+                  <div className='flex justify-between'>
+                    <span className='flex items-center gap-1 text-muted-foreground'><Truck className='size-3' /> Frete</span>
+                    <span>{frete === 0 ? <span className='text-green-600'>Grátis</span> : `R$ ${frete.toFixed(2)}`}</span>
                   </div>
-                  <div className='flex justify-between text-sm'>
-                    <span className='text-muted-foreground'>Impostos</span>
-                    <span>R${orderSummary.tax.toFixed(2)}</span>
-                  </div>
-                  {orderSummary.promoDiscount > 0 && (
-                    <div className='flex justify-between text-sm text-green-600'>
-                      <span className='flex items-center gap-1'>
-                        <Tag className='size-3' />
-                        Desconto
-                      </span>
-                      <span>-R${orderSummary.promoDiscount.toFixed(2)}</span>
-                    </div>
-                  )}
                 </div>
 
                 <Separator />
 
                 <div className='flex justify-between font-semibold'>
                   <span>Total</span>
-                  <span>R${total.toFixed(2)}</span>
+                  <span>R$ {total.toFixed(2)}</span>
                 </div>
 
-                {/* Trust Indicators */}
-                <div className='space-y-3 pt-4'>
+                <div className='space-y-2 pt-2'>
                   <div className='flex items-center gap-2 text-xs text-muted-foreground'>
                     <Shield className='size-4 text-green-600' />
                     <span>Pagamento com criptografia SSL</span>
                   </div>
                   <div className='flex items-center gap-2 text-xs text-muted-foreground'>
                     <Truck className='size-4 text-blue-600' />
-                    <span>Frete grátis em pedidos acima de R$75,00</span>
+                    <span>Frete grátis em pedidos acima de R$ 75,00</span>
                   </div>
                   <div className='flex items-center gap-2 text-xs text-muted-foreground'>
                     <Gift className='size-4 text-purple-600' />

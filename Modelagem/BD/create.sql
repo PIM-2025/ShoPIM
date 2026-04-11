@@ -5,7 +5,7 @@
 /* Project name:                                                          */
 /* Author:                                                                */
 /* Script type:           Database creation script                        */
-/* Created on:            2026-04-11 10:40                                */
+/* Created on:            2026-04-11 16:20                                */
 /* ---------------------------------------------------------------------- */
 
 
@@ -21,7 +21,7 @@ CREATE SEQUENCE SEQ_USERS
     nocycle
     noorder;
 
-CREATE SEQUENCE SEQ_ADRESS
+CREATE SEQUENCE SEQ_ADDRESS
     START WITH 1
     INCREMENT BY 1
     MINVALUE 1
@@ -62,6 +62,22 @@ CREATE SEQUENCE SEQ_CONVERSA
     noorder;
 
 CREATE SEQUENCE SEQ_MENSAGEM
+    START WITH 1
+    INCREMENT BY 1
+    MINVALUE 1
+    MAXVALUE 999999999
+    nocycle
+    noorder;
+
+CREATE SEQUENCE SEQ_PEDIDO
+    START WITH 1
+    INCREMENT BY 1
+    MINVALUE 1
+    MAXVALUE 999999999
+    nocycle
+    noorder;
+
+CREATE SEQUENCE SEQ_ITEM_PEDIDO
     START WITH 1
     INCREMENT BY 1
     MINVALUE 1
@@ -170,6 +186,33 @@ CREATE TABLE MENSAGEM (
 );
 
 /* ---------------------------------------------------------------------- */
+/* Add table "PEDIDO"                                                     */
+/* ---------------------------------------------------------------------- */
+
+CREATE TABLE PEDIDO (
+    ID NUMBER(9) CONSTRAINT NN_PEDIDO_ID NOT NULL,
+    ID_USER NUMBER(9) CONSTRAINT NN_PEDIDO_ID_USER NOT NULL,
+    ID_ADDRESS NUMBER(9),
+    STATUS VARCHAR2(20) CONSTRAINT NN_PEDIDO_STATUS NOT NULL,
+    DATA_PEDIDO TIMESTAMP CONSTRAINT NN_PEDIDO_DATA_PEDIDO NOT NULL,
+    TOTAL NUMBER(9,2) CONSTRAINT NN_PEDIDO_TOTAL NOT NULL,
+    CONSTRAINT PK_PEDIDO PRIMARY KEY (ID)
+);
+
+/* ---------------------------------------------------------------------- */
+/* Add table "ITEM_PEDIDO"                                                */
+/* ---------------------------------------------------------------------- */
+
+CREATE TABLE ITEM_PEDIDO (
+    ID NUMBER(9) CONSTRAINT NN_ITEM_PEDIDO_ID NOT NULL,
+    ID_PEDIDO NUMBER(9) CONSTRAINT NN_ITEM_PEDIDO_ID_PEDIDO NOT NULL,
+    ID_PRODUTO NUMBER(9) CONSTRAINT NN_ITEM_PEDIDO_ID_PRODUTO NOT NULL,
+    QUANTIDADE NUMBER(5) CONSTRAINT NN_ITEM_PEDIDO_QUANTIDADE NOT NULL,
+    PRECO_UNITARIO NUMBER(9,2) CONSTRAINT NN_ITEM_PEDIDO_PRECO_UNITARIO NOT NULL,
+    CONSTRAINT PK_ITEM_PEDIDO PRIMARY KEY (ID)
+);
+
+/* ---------------------------------------------------------------------- */
 /* Add foreign key constraints                                            */
 /* ---------------------------------------------------------------------- */
 
@@ -187,3 +230,15 @@ ALTER TABLE CART ADD CONSTRAINT PRODUCT_CART
 
 ALTER TABLE MENSAGEM ADD CONSTRAINT CONVERSA_MENSAGEM 
     FOREIGN KEY (CONVERSA_ID) REFERENCES CONVERSA (ID) ON DELETE CASCADE;
+
+ALTER TABLE PEDIDO ADD CONSTRAINT USERS_PEDIDO 
+    FOREIGN KEY (ID_USER) REFERENCES USERS (ID_USER) ON DELETE CASCADE;
+
+ALTER TABLE PEDIDO ADD CONSTRAINT ADDRESS_PEDIDO 
+    FOREIGN KEY (ID_ADDRESS) REFERENCES ADDRESS (ID_ADDRESS);
+
+ALTER TABLE ITEM_PEDIDO ADD CONSTRAINT PEDIDO_ITEM_PEDIDO 
+    FOREIGN KEY (ID_PEDIDO) REFERENCES PEDIDO (ID) ON DELETE CASCADE;
+
+ALTER TABLE ITEM_PEDIDO ADD CONSTRAINT PRODUCT_ITEM_PEDIDO 
+    FOREIGN KEY (ID_PRODUTO) REFERENCES PRODUCT (ID_PRODUTO) ON DELETE CASCADE;

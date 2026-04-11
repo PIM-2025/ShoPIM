@@ -15,6 +15,9 @@ namespace ShoPIM.Data
         public DbSet<Cart> Cart { get; set; }
         public DbSet<Conversa> Conversa { get; set; }
         public DbSet<Mensagem> Mensagem { get; set; }
+        public DbSet<Pedido> Pedido { get; set; }
+        public DbSet<ItemPedido> ItemPedido { get; set; }
+        public DbSet<Configuracao> Configuracao { get; set; }
         #endregion
 
         #region OnModelCreating
@@ -39,6 +42,7 @@ namespace ShoPIM.Data
                 entity.Property(a => a.Id)
                     .HasColumnName("ID_ADDRESS");
 
+                entity.Property(a => a.Complemento).HasColumnName("COMPLEMENTO");
                 entity.HasOne(a => a.User)
                     .WithMany(u => u.Addresses)
                     .HasForeignKey(a => a.IdUser)
@@ -95,6 +99,48 @@ namespace ShoPIM.Data
                     .WithMany(c => c.Mensagens)
                     .HasForeignKey(m => m.ConversaId)
                     .HasConstraintName("CONVERSA_MENSAGEM");
+            });
+
+            // PEDIDO
+            modelBuilder.Entity<Pedido>(entity =>
+            {
+                entity.ToTable("PEDIDO");
+                entity.HasKey(p => p.Id);
+                entity.Property(p => p.Id).HasColumnName("ID").ValueGeneratedNever();
+                entity.Property(p => p.IdUsuario).HasColumnName("ID_USER");
+                entity.Property(p => p.IdAddress).HasColumnName("ID_ADDRESS");
+                entity.Property(p => p.Status).HasColumnName("STATUS");
+                entity.Property(p => p.DataPedido).HasColumnName("DATA_PEDIDO");
+                entity.Property(p => p.Total).HasColumnName("TOTAL").HasPrecision(10, 2);
+                entity.HasOne(p => p.Usuario)
+                    .WithMany()
+                    .HasForeignKey(p => p.IdUsuario)
+                    .HasConstraintName("USERS_PEDIDO");
+                entity.HasOne(p => p.Endereco)
+                    .WithMany()
+                    .HasForeignKey(p => p.IdAddress)
+                    .HasConstraintName("PEDIDO_ADDRESS")
+                    .IsRequired(false);
+            });
+
+            // ITEM_PEDIDO
+            modelBuilder.Entity<ItemPedido>(entity =>
+            {
+                entity.ToTable("ITEM_PEDIDO");
+                entity.HasKey(i => i.Id);
+                entity.Property(i => i.Id).HasColumnName("ID").ValueGeneratedNever();
+                entity.Property(i => i.IdPedido).HasColumnName("ID_PEDIDO");
+                entity.Property(i => i.IdProduto).HasColumnName("ID_PRODUTO");
+                entity.Property(i => i.Quantidade).HasColumnName("QUANTIDADE");
+                entity.Property(i => i.PrecoUnitario).HasColumnName("PRECO_UNITARIO").HasPrecision(10, 2);
+                entity.HasOne(i => i.Pedido)
+                    .WithMany(p => p.Itens)
+                    .HasForeignKey(i => i.IdPedido)
+                    .HasConstraintName("PEDIDO_ITEM");
+                entity.HasOne(i => i.Produto)
+                    .WithMany()
+                    .HasForeignKey(i => i.IdProduto)
+                    .HasConstraintName("PRODUCT_ITEM_PEDIDO");
             });
 
             // CART

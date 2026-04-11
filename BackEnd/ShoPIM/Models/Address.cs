@@ -34,6 +34,10 @@ namespace ShoPIM.Models
         [MaxLength(40)]
         public string? Cep { get; set; }
 
+        [Column("COMPLEMENTO")]
+        [MaxLength(100)]
+        public string? Complemento { get; set; }
+
         [Column("ID_USER")]
         public int? IdUser { get; set; }
 

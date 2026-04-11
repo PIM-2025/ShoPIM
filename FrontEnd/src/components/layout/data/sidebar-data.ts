@@ -1,26 +1,19 @@
 import {
-  Construction,
   LayoutDashboard,
   Monitor,
-  Bug,
-  ListTodo,
-  FileX,
   HelpCircle,
-  Lock,
   Bell,
   Palette,
-  ServerOff,
   Settings,
   Wrench,
   UserCog,
-  UserX,
   Users,
   MessagesSquare,
-  ShieldCheck,
   AudioWaveform,
   Command,
   GalleryVerticalEnd,
   Package,
+  ShoppingCart,
   UsersRound,
 } from 'lucide-react'
 import { type SidebarData } from '../types'
@@ -58,14 +51,13 @@ export const sidebarData: SidebarData = {
           icon: LayoutDashboard,
         },
         {
-          title: 'Tarefas',
-          url: '/tasks',
-          icon: ListTodo,
+          title: 'Pedidos',
+          url: '/pedidos',
+          icon: ShoppingCart,
         },
         {
           title: 'Conversas',
           url: '/chats',
-          badge: '3',
           icon: MessagesSquare,
         },
         {
@@ -82,68 +74,6 @@ export const sidebarData: SidebarData = {
           title: 'Clientes',
           url: '/clientes',
           icon: UsersRound,
-        }
-      ],
-    },
-    {
-      title: 'Páginas',
-      items: [
-        {
-          title: 'Autenticação',
-          icon: ShieldCheck,
-          items: [
-            {
-              title: 'Entrar',
-              url: '/sign-in',
-            },
-            {
-              title: 'Entrar (2 Col)',
-              url: '/sign-in-2',
-            },
-            {
-              title: 'Cadastrar',
-              url: '/sign-up',
-            },
-            {
-              title: 'Esqueceu a Senha',
-              url: '/forgot-password',
-            },
-            {
-              title: 'OTP',              
-              url: '/otp',
-            },
-          ],
-        },
-        {
-          title: 'Erros',
-          icon: Bug,
-          items: [
-            {
-              title: 'Não Autorizado',
-              url: '/errors/unauthorized',
-              icon: Lock,
-            },
-            {
-              title: 'Proibido',
-              url: '/errors/forbidden',
-              icon: UserX,
-            },
-            {
-              title: 'Não Encontrado',
-              url: '/errors/not-found',
-              icon: FileX,
-            },
-            {
-              title: 'Erro Interno do Servidor',
-              url: '/errors/internal-server-error',
-              icon: ServerOff,
-            },
-            {
-              title: 'Erro de Manutenção',
-              url: '/errors/maintenance-error',
-              icon: Construction,
-            },
-          ],
         },
       ],
     },

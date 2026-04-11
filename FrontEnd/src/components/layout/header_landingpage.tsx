@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { Fragment } from 'react'
 import { Link } from '@tanstack/react-router'
-import { ShoppingCart, User, ChevronDown, Menu, X, Search } from 'lucide-react'
+import { ShoppingCart, User, ChevronDown, Menu, X, Search, Package } from 'lucide-react'
 import logoDark from '@/assets/logo_dark.png'
 import logoLight from '@/assets/logo_light.png'
 import { useAuthStore } from '@/stores/auth-store'
@@ -357,6 +357,21 @@ export function HeaderLanding({
                       </div>
                     </div>
                   </div>
+
+                  {auth.user && !auth.user.role?.includes('admin') && (
+                    <>
+                      <Separator className='my-2' />
+                      <SheetClose asChild>
+                        <Link
+                          to='/minhas-compras'
+                          className='flex items-center gap-2.5 rounded-md px-3 py-2.5 text-sm font-medium transition-colors hover:bg-accent'
+                        >
+                          <Package size={16} className='text-muted-foreground' />
+                          Meus Pedidos
+                        </Link>
+                      </SheetClose>
+                    </>
+                  )}
 
                   <Separator className='my-2' />
 

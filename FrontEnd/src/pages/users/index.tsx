@@ -1,11 +1,11 @@
 import { useQuery } from '@tanstack/react-query'
+import { getClientes } from '@/service/clienteService'
 import { ConfigDrawer } from '@/components/config-drawer'
 import { Header } from '@/components/layout/header'
 import { Main } from '@/components/layout/main'
 import { ProfileDropdown } from '@/components/profile-dropdown'
 import { Search } from '@/components/search'
 import { ThemeSwitch } from '@/components/theme-switch'
-import { getClientes } from '@/service/clienteService'
 import { UsersDialogs } from './components/users-dialogs'
 import { UsersPrimaryButtons } from './components/users-primary-buttons'
 import { UsersProvider } from './components/users-provider'
@@ -14,7 +14,13 @@ import { UsersTable } from './components/users-table'
 export function Users() {
   const { data: users = [], isLoading } = useQuery({
     queryKey: ['users'],
-    queryFn: getClientes,
+    queryFn: async () => {
+      const clientes = await getClientes()
+      return clientes.map((c) => ({
+        ...c,
+        dataCadastro: c.dataCadastro ? new Date(c.dataCadastro) : null,
+      }))
+    },
   })
 
   return (
@@ -32,7 +38,9 @@ export function Users() {
         <div className='flex flex-wrap items-end justify-between gap-2'>
           <div>
             <h2 className='text-2xl font-bold tracking-tight'>Usuários</h2>
-            <p className='text-muted-foreground'>Gerencie os usuários do sistema.</p>
+            <p className='text-muted-foreground'>
+              Gerencie os usuários do sistema.
+            </p>
           </div>
           <UsersPrimaryButtons />
         </div>

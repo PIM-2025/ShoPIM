@@ -7,6 +7,9 @@ using ShoPIM.Hubs;
 using System.Text;
 using System.Text.Json.Serialization;
 
+// Garante que o driver Oracle interprete strings como UTF-8 (evita "JoÃ£o" → "João")
+Environment.SetEnvironmentVariable("NLS_LANG", "AMERICAN_AMERICA.AL32UTF8");
+
 var builder = WebApplication.CreateBuilder(args);
 
 // CORS — permite o frontend acessar o backend (AllowCredentials necessário para SignalR)
@@ -51,8 +54,20 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         };
     });
 
-builder.Services.AddSignalR();
-builder.Services.AddControllers();
+builder.Services.AddSignalR()
+    .AddJsonProtocol(options =>
+    {
+        options.PayloadSerializerOptions.Encoder =
+            System.Text.Encodings.Web.JavaScriptEncoder.UnsafeRelaxedJsonEscaping;
+    });
+
+builder.Services.AddControllers().AddJsonOptions(options =>
+{
+    options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
+    options.JsonSerializerOptions.Encoder =
+        System.Text.Encodings.Web.JavaScriptEncoder.UnsafeRelaxedJsonEscaping;
+});
+
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseOracle(builder.Configuration.GetConnectionString("OracleConnection"))
 );
@@ -68,11 +83,6 @@ builder.Services.AddSwaggerGen(c =>
         return $"{api.RelativePath}_{methodIndex}";
     });
     c.SwaggerDoc("v1", new OpenApiInfo { Title = "ShoPIM API", Version = "v1" });
-});
-
-builder.Services.AddControllers().AddJsonOptions(options =>
-{
-    options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
 });
 
 var app = builder.Build();

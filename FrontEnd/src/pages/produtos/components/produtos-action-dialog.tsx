@@ -86,8 +86,9 @@ export function ProdutosActionDialog({
       form.reset()
       onOpenChange(false)
     },
-    onError: () => {
-      toast.error('Erro ao salvar produto.')
+    onError: (err: unknown) => {
+      const msg = (err as { response?: { data?: { message?: string } } })?.response?.data?.message
+      toast.error(msg ?? 'Erro ao salvar produto.')
     },
   })
 

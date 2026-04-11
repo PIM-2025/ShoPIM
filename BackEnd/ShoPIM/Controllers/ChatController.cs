@@ -1,6 +1,8 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using ShoPIM.Data;
+using ShoPIM.Hubs;
 using ShoPIM.Models;
 
 namespace ShoPIM.Controllers
@@ -10,10 +12,12 @@ namespace ShoPIM.Controllers
     public class ChatController : ControllerBase
     {
         private readonly AppDbContext _context;
+        private readonly IHubContext<ChatHub> _hub;
 
-        public ChatController(AppDbContext context)
+        public ChatController(AppDbContext context, IHubContext<ChatHub> hub)
         {
             _context = context;
+            _hub = hub;
         }
 
         #region GET: api/chat/conversas (admin — todas as conversas)
@@ -89,6 +93,11 @@ namespace ShoPIM.Controllers
 
             conversa.Status = "fechada";
             await _context.SaveChangesAsync();
+
+            // Notifica o widget do cliente em tempo real
+            await _hub.Clients
+                .Group($"conversa_{id}")
+                .SendAsync("ConversaFechada", id);
 
             return NoContent();
         }

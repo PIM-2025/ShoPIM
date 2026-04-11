@@ -65,12 +65,16 @@ namespace ShoPIM.Controllers
             if (id != product.Id)
                 return BadRequest(new { message = "ID divergente." });
 
-            var exists = await _context.Product.AnyAsync(p => p.Id == id);
-            if (!exists) return NotFound(new { message = "Produto não encontrado." });
+            var existing = await _context.Product.FindAsync(id);
+            if (existing == null) return NotFound(new { message = "Produto não encontrado." });
 
-            _context.Entry(product).State = EntityState.Modified;
+            existing.Descricao = product.Descricao;
+            existing.Preco = product.Preco;
+            existing.Categoria = product.Categoria;
+            existing.Quantidade = product.Quantidade;
+            existing.Imagem = product.Imagem;
+
             await _context.SaveChangesAsync();
-
             return NoContent();
         }
         #endregion

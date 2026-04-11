@@ -4,6 +4,7 @@ import { z } from 'zod'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { createCliente, updateCliente } from '@/service/clienteService'
 import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
 import {
@@ -25,20 +26,23 @@ import {
 import { Input } from '@/components/ui/input'
 import { PasswordInput } from '@/components/password-input'
 import { SelectDropdown } from '@/components/select-dropdown'
-import { createCliente, updateCliente } from '@/service/clienteService'
 import { roleOptions, statusOptions } from '../data/data'
 import { type User } from '../data/schema'
 
 const addSchema = z.object({
   nome: z.string().min(1, 'Nome é obrigatório.'),
-  email: z.email({ error: (iss) => (iss.input === '' ? 'E-mail é obrigatório.' : undefined) }),
+  email: z.email({
+    error: (iss) => (iss.input === '' ? 'E-mail é obrigatório.' : undefined),
+  }),
   cpf: z.string().optional(),
   senha: z.string().min(6, 'Senha deve ter pelo menos 6 caracteres.'),
 })
 
 const editSchema = z.object({
   nome: z.string().min(1, 'Nome é obrigatório.'),
-  email: z.email({ error: (iss) => (iss.input === '' ? 'E-mail é obrigatório.' : undefined) }),
+  email: z.email({
+    error: (iss) => (iss.input === '' ? 'E-mail é obrigatório.' : undefined),
+  }),
   cpf: z.string().optional(),
   ativo: z.string().min(1, 'Status é obrigatório.'),
   role: z.string().min(1, 'Perfil é obrigatório.'),
@@ -53,7 +57,11 @@ type UsersActionDialogProps = {
   onOpenChange: (open: boolean) => void
 }
 
-export function UsersActionDialog({ currentRow, open, onOpenChange }: UsersActionDialogProps) {
+export function UsersActionDialog({
+  currentRow,
+  open,
+  onOpenChange,
+}: UsersActionDialogProps) {
   const isEdit = !!currentRow
   const queryClient = useQueryClient()
 
@@ -77,7 +85,12 @@ export function UsersActionDialog({ currentRow, open, onOpenChange }: UsersActio
 
   const addMutation = useMutation({
     mutationFn: (values: AddForm) =>
-      createCliente({ nome: values.nome, email: values.email, senha: values.senha, cpf: values.cpf }),
+      createCliente({
+        nome: values.nome,
+        email: values.email,
+        senha: values.senha,
+        cpf: values.cpf,
+      }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['users'] })
       toast.success('Usuário criado com sucesso!')
@@ -85,7 +98,8 @@ export function UsersActionDialog({ currentRow, open, onOpenChange }: UsersActio
       onOpenChange(false)
     },
     onError: (err: unknown) => {
-      const msg = (err as { response?: { data?: { message?: string } } })?.response?.data?.message
+      const msg = (err as { response?: { data?: { message?: string } } })
+        ?.response?.data?.message
       toast.error(msg ?? 'Erro ao criar usuário.')
     },
   })
@@ -120,9 +134,13 @@ export function UsersActionDialog({ currentRow, open, onOpenChange }: UsersActio
     <Dialog open={open} onOpenChange={handleClose}>
       <DialogContent className='sm:max-w-lg'>
         <DialogHeader className='text-start'>
-          <DialogTitle>{isEdit ? 'Editar Usuário' : 'Novo Usuário'}</DialogTitle>
+          <DialogTitle>
+            {isEdit ? 'Editar Usuário' : 'Novo Usuário'}
+          </DialogTitle>
           <DialogDescription>
-            {isEdit ? 'Atualize os dados do usuário.' : 'Preencha os dados do novo usuário.'}{' '}
+            {isEdit
+              ? 'Atualize os dados do usuário.'
+              : 'Preencha os dados do novo usuário.'}{' '}
             Clique em salvar quando terminar.
           </DialogDescription>
         </DialogHeader>
@@ -141,7 +159,12 @@ export function UsersActionDialog({ currentRow, open, onOpenChange }: UsersActio
                   <FormItem className='grid grid-cols-6 items-center space-y-0 gap-x-4 gap-y-1'>
                     <FormLabel className='col-span-2 text-end'>Nome</FormLabel>
                     <FormControl>
-                      <Input placeholder='João da Silva' className='col-span-4' autoComplete='off' {...field} />
+                      <Input
+                        placeholder='João da Silva'
+                        className='col-span-4'
+                        autoComplete='off'
+                        {...field}
+                      />
                     </FormControl>
                     <FormMessage className='col-span-4 col-start-3' />
                   </FormItem>
@@ -152,9 +175,15 @@ export function UsersActionDialog({ currentRow, open, onOpenChange }: UsersActio
                 name='email'
                 render={({ field }) => (
                   <FormItem className='grid grid-cols-6 items-center space-y-0 gap-x-4 gap-y-1'>
-                    <FormLabel className='col-span-2 text-end'>E-mail</FormLabel>
+                    <FormLabel className='col-span-2 text-end'>
+                      E-mail
+                    </FormLabel>
                     <FormControl>
-                      <Input placeholder='joao@email.com' className='col-span-4' {...field} />
+                      <Input
+                        placeholder='joao@email.com'
+                        className='col-span-4'
+                        {...field}
+                      />
                     </FormControl>
                     <FormMessage className='col-span-4 col-start-3' />
                   </FormItem>
@@ -167,7 +196,12 @@ export function UsersActionDialog({ currentRow, open, onOpenChange }: UsersActio
                   <FormItem className='grid grid-cols-6 items-center space-y-0 gap-x-4 gap-y-1'>
                     <FormLabel className='col-span-2 text-end'>CPF</FormLabel>
                     <FormControl>
-                      <Input placeholder='00000000000' className='col-span-4' autoComplete='off' {...field} />
+                      <Input
+                        placeholder='00000000000'
+                        className='col-span-4'
+                        autoComplete='off'
+                        {...field}
+                      />
                     </FormControl>
                     <FormMessage className='col-span-4 col-start-3' />
                   </FormItem>
@@ -178,13 +212,18 @@ export function UsersActionDialog({ currentRow, open, onOpenChange }: UsersActio
                 name='ativo'
                 render={({ field }) => (
                   <FormItem className='grid grid-cols-6 items-center space-y-0 gap-x-4 gap-y-1'>
-                    <FormLabel className='col-span-2 text-end'>Status</FormLabel>
+                    <FormLabel className='col-span-2 text-end'>
+                      Status
+                    </FormLabel>
                     <SelectDropdown
                       defaultValue={field.value}
                       onValueChange={field.onChange}
                       placeholder='Selecione'
                       className='col-span-4'
-                      items={statusOptions.map(({ label, value }) => ({ label, value }))}
+                      items={statusOptions.map(({ label, value }) => ({
+                        label,
+                        value,
+                      }))}
                     />
                     <FormMessage className='col-span-4 col-start-3' />
                   </FormItem>
@@ -195,13 +234,18 @@ export function UsersActionDialog({ currentRow, open, onOpenChange }: UsersActio
                 name='role'
                 render={({ field }) => (
                   <FormItem className='grid grid-cols-6 items-center space-y-0 gap-x-4 gap-y-1'>
-                    <FormLabel className='col-span-2 text-end'>Perfil</FormLabel>
+                    <FormLabel className='col-span-2 text-end'>
+                      Perfil
+                    </FormLabel>
                     <SelectDropdown
                       defaultValue={field.value}
                       onValueChange={field.onChange}
                       placeholder='Selecione'
                       className='col-span-4'
-                      items={roleOptions.map(({ label, value }) => ({ label, value }))}
+                      items={roleOptions.map(({ label, value }) => ({
+                        label,
+                        value,
+                      }))}
                     />
                     <FormMessage className='col-span-4 col-start-3' />
                   </FormItem>
@@ -223,7 +267,12 @@ export function UsersActionDialog({ currentRow, open, onOpenChange }: UsersActio
                   <FormItem className='grid grid-cols-6 items-center space-y-0 gap-x-4 gap-y-1'>
                     <FormLabel className='col-span-2 text-end'>Nome</FormLabel>
                     <FormControl>
-                      <Input placeholder='João da Silva' className='col-span-4' autoComplete='off' {...field} />
+                      <Input
+                        placeholder='João da Silva'
+                        className='col-span-4'
+                        autoComplete='off'
+                        {...field}
+                      />
                     </FormControl>
                     <FormMessage className='col-span-4 col-start-3' />
                   </FormItem>
@@ -234,9 +283,15 @@ export function UsersActionDialog({ currentRow, open, onOpenChange }: UsersActio
                 name='email'
                 render={({ field }) => (
                   <FormItem className='grid grid-cols-6 items-center space-y-0 gap-x-4 gap-y-1'>
-                    <FormLabel className='col-span-2 text-end'>E-mail</FormLabel>
+                    <FormLabel className='col-span-2 text-end'>
+                      E-mail
+                    </FormLabel>
                     <FormControl>
-                      <Input placeholder='joao@email.com' className='col-span-4' {...field} />
+                      <Input
+                        placeholder='joao@email.com'
+                        className='col-span-4'
+                        {...field}
+                      />
                     </FormControl>
                     <FormMessage className='col-span-4 col-start-3' />
                   </FormItem>
@@ -249,7 +304,12 @@ export function UsersActionDialog({ currentRow, open, onOpenChange }: UsersActio
                   <FormItem className='grid grid-cols-6 items-center space-y-0 gap-x-4 gap-y-1'>
                     <FormLabel className='col-span-2 text-end'>CPF</FormLabel>
                     <FormControl>
-                      <Input placeholder='00000000000' className='col-span-4' autoComplete='off' {...field} />
+                      <Input
+                        placeholder='00000000000'
+                        className='col-span-4'
+                        autoComplete='off'
+                        {...field}
+                      />
                     </FormControl>
                     <FormMessage className='col-span-4 col-start-3' />
                   </FormItem>
@@ -262,7 +322,12 @@ export function UsersActionDialog({ currentRow, open, onOpenChange }: UsersActio
                   <FormItem className='grid grid-cols-6 items-center space-y-0 gap-x-4 gap-y-1'>
                     <FormLabel className='col-span-2 text-end'>Senha</FormLabel>
                     <FormControl>
-                      <PasswordInput placeholder='Mínimo 6 caracteres' className='col-span-4' {...field} />
+                      <div className='col-span-4'>
+                        <PasswordInput
+                          placeholder='Mínimo 6 caracteres'
+                          {...field}
+                        />
+                      </div>
                     </FormControl>
                     <FormMessage className='col-span-4 col-start-3' />
                   </FormItem>
@@ -278,7 +343,9 @@ export function UsersActionDialog({ currentRow, open, onOpenChange }: UsersActio
             form='user-form'
             disabled={addMutation.isPending || editMutation.isPending}
           >
-            {addMutation.isPending || editMutation.isPending ? 'Salvando...' : 'Salvar'}
+            {addMutation.isPending || editMutation.isPending
+              ? 'Salvando...'
+              : 'Salvar'}
           </Button>
         </DialogFooter>
       </DialogContent>

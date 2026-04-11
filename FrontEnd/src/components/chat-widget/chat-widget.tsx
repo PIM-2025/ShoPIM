@@ -16,6 +16,16 @@ import {
 
 const STORAGE_KEY = 'shopim_conversa_id'
 
+// Mensagem virtual de sistema (id negativo fixo para não colidir com reais)
+const MSG_ENCERRADA: Mensagem = {
+  id: -999999,
+  conversaId: 0,
+  conteudo: '— Atendimento encerrado pelo suporte —',
+  remetenteTipo: 'admin',
+  remetenteNome: 'Sistema',
+  enviadoEm: new Date().toISOString(),
+}
+
 export function ChatWidget() {
   const { auth } = useAuthStore()
   const usuario = auth.user
@@ -31,26 +41,44 @@ export function ChatWidget() {
   const [inputMsg, setInputMsg] = useState('')
   const [nomeCliente, setNomeCliente] = useState<string>(usuario?.name ?? '')
   const [iniciado, setIniciado] = useState(false)
+  const [encerrada, setEncerrada] = useState(false)
 
   const bottomRef = useRef<HTMLDivElement>(null)
 
-  // Registra handler SignalR uma única vez por montagem
+  // Registra handlers SignalR uma única vez por montagem
   useEffect(() => {
     const conn = getConnection()
-    const handler = (msg: Mensagem) => {
+
+    const onMensagem = (msg: Mensagem) => {
       setMensagens((prev) => {
-        // Remove temp otimista com mesmo conteúdo/remetente, se existir
         const semTemp = prev.filter(
-          (m) => !(m.id < 0 && m.conteudo === msg.conteudo && m.remetenteTipo === msg.remetenteTipo)
+          (m) => !(m.id < 0 && m.id !== -999999 && m.conteudo === msg.conteudo && m.remetenteTipo === msg.remetenteTipo)
         )
-        // Evita duplicata (ID já presente)
         if (semTemp.some((m) => m.id === msg.id)) return semTemp
         return [...semTemp, msg]
       })
     }
+
+    const onFechada = () => {
+      // Adiciona mensagem de sistema e marca como encerrada
+      setMensagens((prev) => {
+        if (prev.some((m) => m.id === MSG_ENCERRADA.id)) return prev
+        return [...prev, { ...MSG_ENCERRADA, enviadoEm: new Date().toISOString() }]
+      })
+      setEncerrada(true)
+      // Remove do storage para que novo envio crie nova conversa
+      localStorage.removeItem(STORAGE_KEY)
+    }
+
     conn.off('ReceberMensagem')
-    conn.on('ReceberMensagem', handler)
-    return () => { conn.off('ReceberMensagem', handler) }
+    conn.off('ConversaFechada')
+    conn.on('ReceberMensagem', onMensagem)
+    conn.on('ConversaFechada', onFechada)
+
+    return () => {
+      conn.off('ReceberMensagem', onMensagem)
+      conn.off('ConversaFechada', onFechada)
+    }
   }, [])
 
   // Carrega histórico e conecta ao abrir, se já tiver uma conversa
@@ -79,14 +107,12 @@ export function ChatWidget() {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' })
   }, [mensagens])
 
-  // Inicia conversa (primeira mensagem)
+  // Inicia conversa (primeira mensagem ou reabertura após encerramento)
   const handleIniciar = async () => {
     const nome = usuario?.name ?? inputNome.trim()
     const texto = inputMsg.trim()
-    console.log('[ChatWidget] handleIniciar', { nome, texto, usuario, conversaId, connecting, precisaNome })
     if (!nome || !texto) return
 
-    // Otimista: mostra a mensagem imediatamente
     const tempId = -Date.now()
     const tempMsg: Mensagem = {
       id: tempId,
@@ -96,23 +122,28 @@ export function ChatWidget() {
       remetenteNome: nome,
       enviadoEm: new Date().toISOString(),
     }
-    setMensagens([tempMsg])
+
+    if (encerrada) {
+      // Mantém histórico anterior + mensagem de reabertura
+      setMensagens((prev) => [...prev, tempMsg])
+    } else {
+      setMensagens([tempMsg])
+    }
     setInputMsg('')
     setConnecting(true)
+
     try {
       await startConnection()
-
       const conversa = await criarConversa(nome, usuario?.id)
       localStorage.setItem(STORAGE_KEY, String(conversa.id))
       setConversaId(conversa.id)
       setNomeCliente(nome)
-
+      setEncerrada(false)
+      setIniciado(true)
       await entrarConversa(conversa.id)
       await enviarMensagem(conversa.id, texto, 'cliente', nome)
-      setIniciado(true)
     } catch (e) {
       console.error('Chat: erro ao iniciar', e)
-      // Reverte otimista em caso de erro
       setMensagens((prev) => prev.filter((m) => m.id !== tempId))
     } finally {
       setConnecting(false)
@@ -122,10 +153,8 @@ export function ChatWidget() {
   // Envia mensagem numa conversa existente
   const handleEnviar = async () => {
     const texto = inputMsg.trim()
-    console.log('[ChatWidget] handleEnviar', { texto, conversaId, connecting })
     if (!texto || !conversaId) return
 
-    // Otimista: mostra a mensagem imediatamente
     const tempId = -Date.now()
     const tempMsg: Mensagem = {
       id: tempId,
@@ -148,15 +177,26 @@ export function ChatWidget() {
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault()
-      conversaId ? handleEnviar() : handleIniciar()
+      if (encerrada || !conversaId) {
+        handleIniciar()
+      } else {
+        handleEnviar()
+      }
     }
   }
 
-  const precisaNome = (!usuario || !usuario.name) && !conversaId
+  const handleSubmit = () => {
+    if (encerrada || !conversaId) {
+      handleIniciar()
+    } else {
+      handleEnviar()
+    }
+  }
+
+  const precisaNome = (!usuario || !usuario.name) && !conversaId && !encerrada
 
   return (
     <div className='fixed bottom-6 right-6 z-50 flex flex-col items-end gap-3'>
-      {/* Janela do chat */}
       {isOpen && (
         <div className='flex h-[420px] w-80 flex-col overflow-hidden rounded-2xl border border-border bg-background shadow-2xl'>
           {/* Header */}
@@ -164,7 +204,7 @@ export function ChatWidget() {
             <div>
               <p className='text-sm font-semibold text-primary-foreground'>Suporte ShoPIM</p>
               <p className='text-xs text-primary-foreground/70'>
-                {connecting ? 'Conectando...' : 'Online'}
+                {connecting ? 'Conectando...' : encerrada ? 'Encerrado' : 'Online'}
               </p>
             </div>
             <button
@@ -189,37 +229,47 @@ export function ChatWidget() {
                 <Loader2 size={20} className='animate-spin text-muted-foreground' />
               </div>
             )}
-            {mensagens.map((msg) => (
-              <div
-                key={msg.id}
-                className={cn(
-                  'max-w-[80%] rounded-2xl px-3 py-2 text-sm shadow-sm',
-                  msg.remetenteTipo === 'cliente'
-                    ? 'self-end rounded-br-none bg-primary text-primary-foreground'
-                    : 'self-start rounded-bl-none bg-muted'
-                )}
-              >
-                {msg.remetenteTipo === 'admin' && (
-                  <p className='mb-0.5 text-[10px] font-medium text-muted-foreground'>
-                    {msg.remetenteNome}
+            {mensagens.map((msg) => {
+              // Mensagem de sistema (encerramento)
+              if (msg.id === -999999 || msg.remetenteNome === 'Sistema') {
+                return (
+                  <p key={msg.id} className='text-center text-[11px] text-muted-foreground italic py-1'>
+                    {msg.conteudo}
                   </p>
-                )}
-                <p>{msg.conteudo}</p>
-                <p
+                )
+              }
+              return (
+                <div
+                  key={msg.id}
                   className={cn(
-                    'mt-0.5 text-right text-[10px]',
+                    'max-w-[80%] rounded-2xl px-3 py-2 text-sm shadow-sm',
                     msg.remetenteTipo === 'cliente'
-                      ? 'text-primary-foreground/60'
-                      : 'text-muted-foreground'
+                      ? 'self-end rounded-br-none bg-primary text-primary-foreground'
+                      : 'self-start rounded-bl-none bg-muted'
                   )}
                 >
-                  {new Date(msg.enviadoEm).toLocaleTimeString('pt-BR', {
-                    hour: '2-digit',
-                    minute: '2-digit',
-                  })}
-                </p>
-              </div>
-            ))}
+                  {msg.remetenteTipo === 'admin' && (
+                    <p className='mb-0.5 text-[10px] font-medium text-muted-foreground'>
+                      {msg.remetenteNome}
+                    </p>
+                  )}
+                  <p>{msg.conteudo}</p>
+                  <p
+                    className={cn(
+                      'mt-0.5 text-right text-[10px]',
+                      msg.remetenteTipo === 'cliente'
+                        ? 'text-primary-foreground/60'
+                        : 'text-muted-foreground'
+                    )}
+                  >
+                    {new Date(msg.enviadoEm).toLocaleTimeString('pt-BR', {
+                      hour: '2-digit',
+                      minute: '2-digit',
+                    })}
+                  </p>
+                </div>
+              )
+            })}
             <div ref={bottomRef} />
           </div>
 
@@ -236,7 +286,11 @@ export function ChatWidget() {
             )}
             <div className='flex gap-2'>
               <Input
-                placeholder='Digite sua mensagem...'
+                placeholder={
+                  encerrada
+                    ? 'Digite para iniciar novo atendimento...'
+                    : 'Digite sua mensagem...'
+                }
                 value={inputMsg}
                 onChange={(e) => setInputMsg(e.target.value)}
                 onKeyDown={handleKeyDown}
@@ -247,7 +301,7 @@ export function ChatWidget() {
                 size='icon'
                 className='h-8 w-8 shrink-0'
                 disabled={connecting || !inputMsg.trim() || (precisaNome && !inputNome.trim())}
-                onClick={conversaId ? handleEnviar : handleIniciar}
+                onClick={handleSubmit}
               >
                 {connecting ? (
                   <Loader2 size={14} className='animate-spin' />

@@ -1,5 +1,5 @@
-import { useNavigate, useRouterState } from '@tanstack/react-router'
-import { LayoutDashboard, ShoppingBag, Store } from 'lucide-react'
+import { useNavigate, useRouterState, Link } from '@tanstack/react-router'
+import { LayoutDashboard, Store, ShoppingBag } from 'lucide-react'
 import { useAuthStore } from '@/stores/auth-store'
 import useDialogState from '@/hooks/use-dialog-state'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
@@ -70,10 +70,14 @@ export function ProfileDropdown() {
               )}
             </DropdownMenuItem>
           )}
-          <DropdownMenuItem onClick={() => navigate({ to: '/minhas-compras' })}>
-            <ShoppingBag className='mr-2 h-4 w-4' />
-            Meus Pedidos
-          </DropdownMenuItem>
+          {isAdmin && !onAdminArea && (
+            <DropdownMenuItem asChild>
+              <Link to='/minhas-compras'>
+                <ShoppingBag className='mr-2 h-4 w-4' />
+                Minhas Compras
+              </Link>
+            </DropdownMenuItem>
+          )}
           <DropdownMenuSeparator />
           <DropdownMenuItem variant='destructive' onClick={() => setOpen(true)}>
             Sair

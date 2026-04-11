@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { getTodosPedidos } from '@/service/pedidoService'
 import { ConfigDrawer } from '@/components/config-drawer'
@@ -7,12 +8,14 @@ import { ProfileDropdown } from '@/components/profile-dropdown'
 import { Search } from '@/components/search'
 import { ThemeSwitch } from '@/components/theme-switch'
 import { PedidosTable } from './components/pedidos-table'
+import { PedidoItensSheet } from './components/pedido-itens-sheet'
 
 export function Pedidos() {
   const { data: pedidos = [], isLoading } = useQuery({
     queryKey: ['pedidos-admin'],
     queryFn: getTodosPedidos,
   })
+  const [pedidoItensId, setPedidoItensId] = useState<number | null>(null)
 
   return (
     <>
@@ -38,9 +41,15 @@ export function Pedidos() {
             Carregando pedidos...
           </div>
         ) : (
-          <PedidosTable data={pedidos} />
+          <PedidosTable data={pedidos} onVerItens={setPedidoItensId} />
         )}
       </Main>
+
+      <PedidoItensSheet
+        pedidoId={pedidoItensId}
+        open={pedidoItensId !== null}
+        onClose={() => setPedidoItensId(null)}
+      />
     </>
   )
 }

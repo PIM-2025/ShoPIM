@@ -1,4 +1,4 @@
-export type Categoria = 'eletronicos' | 'roupas' | 'acessorios'
+export type Categoria = 'eletronicos' | 'roupas' | 'acessorios' | 'ofertas' | 'novidades'
 
 export interface Produto {
   id: number

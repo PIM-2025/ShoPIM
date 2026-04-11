@@ -1,8 +1,6 @@
 import {
   LayoutDashboard,
-  Monitor,
   HelpCircle,
-  Bell,
   Palette,
   Settings,
   Wrench,
@@ -15,6 +13,7 @@ import {
   Package,
   ShoppingCart,
   UsersRound,
+  Store,
 } from 'lucide-react'
 import { type SidebarData } from '../types'
 
@@ -95,19 +94,14 @@ export const sidebarData: SidebarData = {
               icon: Wrench,
             },
             {
+              title: 'Estabelecimento',
+              url: '/settings/estabelecimento',
+              icon: Store,
+            },
+            {
               title: 'Aparência',
               url: '/settings/appearance',
               icon: Palette,
-            },
-            {
-              title: 'Notificações',
-              url: '/settings/notifications',
-              icon: Bell,
-            },
-            {
-              title: 'Exibição',
-              url: '/settings/display',
-              icon: Monitor,
             },
           ],
         },

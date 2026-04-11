@@ -24,7 +24,7 @@ export function Card({ id, title, price, image, categoria, quantidade }: CardPro
     <div className="relative bg-zinc-100 dark:bg-zinc-800 border border-border rounded-2xl p-4 w-full transition duration-300 hover:shadow-2xl hover:-translate-y-1 dark:hover:shadow-white/10">
 
       {/* IMAGEM */}
-      <div className="w-full h-40 rounded-xl flex items-center justify-center">
+      <div className="w-full h-36 sm:h-40 rounded-xl flex items-center justify-center overflow-hidden">
         <img
           src={image}
           alt={title}
@@ -40,21 +40,21 @@ export function Card({ id, title, price, image, categoria, quantidade }: CardPro
       )}
 
       {/* TÍTULO */}
-      <h2 className="text-lg font-semibold mt-3 text-foreground">
+      <h2 className="text-sm sm:text-base font-semibold mt-3 text-foreground line-clamp-2 leading-snug min-h-[2.5rem]">
         {title}
       </h2>
 
       {/* PREÇO */}
-      <p className="text-muted-foreground">
+      <p className="text-sm text-muted-foreground mt-1">
         R$ {price.toFixed(2)}
       </p>
 
       {/* BOTÕES */}
-      <div className="flex gap-2 mt-4">
+      <div className="flex gap-2 mt-3">
         <button
           disabled={esgotado}
           onClick={() => navigate({ to: '/produto/$id', params: { id: String(id) } })}
-          className="flex-[3] bg-primary text-primary-foreground py-2 rounded-lg hover:opacity-90 transition disabled:opacity-40 disabled:cursor-not-allowed"
+          className="flex-[3] bg-primary text-primary-foreground py-1.5 sm:py-2 text-sm rounded-lg hover:opacity-90 transition disabled:opacity-40 disabled:cursor-not-allowed"
         >
           Comprar
         </button>
@@ -67,7 +67,7 @@ export function Card({ id, title, price, image, categoria, quantidade }: CardPro
             toast.success(`${title} adicionado ao carrinho!`)
           }}
         >
-          <ShoppingCart size={18} />
+          <ShoppingCart size={16} />
         </button>
       </div>
 

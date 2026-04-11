@@ -13,9 +13,11 @@ const ordens: { value: OrdemTipo; label: string }[] = [
 ]
 
 const categoriasMenu: { slug: Categoria; label: string }[] = [
-  { slug: 'roupas', label: 'Roupas' },
   { slug: 'eletronicos', label: 'Eletrônicos' },
+  { slug: 'roupas', label: 'Roupas' },
   { slug: 'acessorios', label: 'Acessórios' },
+  { slug: 'ofertas', label: 'Ofertas' },
+  { slug: 'novidades', label: 'Novidades' },
 ]
 
 export function CategoriaProdutosPage() {
@@ -28,6 +30,27 @@ export function CategoriaProdutosPage() {
   return (
     <>
       <HeaderLanding />
+
+      {/* Mobile — barra de coleções rolável (substitui o sidebar) */}
+      <div className='md:hidden border-b overflow-x-auto'>
+        <div className='flex gap-2 px-4 py-3' style={{ width: 'max-content', minWidth: '100%' }}>
+          {categoriasMenu.map((c) => (
+            <Link
+              key={c.slug}
+              to='/categoria/$slug'
+              params={{ slug: c.slug }}
+              className={cn(
+                'whitespace-nowrap rounded-full border px-4 py-1.5 text-sm font-medium transition-colors',
+                categoria === c.slug
+                  ? 'border-primary bg-primary text-primary-foreground'
+                  : 'border-border hover:bg-muted'
+              )}
+            >
+              {c.label}
+            </Link>
+          ))}
+        </div>
+      </div>
 
       <div className='flex min-h-screen'>
         {/* Sidebar */}

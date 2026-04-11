@@ -54,6 +54,7 @@ export const usersColumns: ColumnDef<User>[] = [
     cell: ({ row }) => (
       <div className='ps-2 text-nowrap'>{row.getValue('email')}</div>
     ),
+    meta: { className: 'max-md:hidden' },
   },
   {
     accessorKey: 'cpf',
@@ -61,6 +62,7 @@ export const usersColumns: ColumnDef<User>[] = [
     cell: ({ row }) => (
       <div>{row.getValue('cpf') ?? <span className='text-muted-foreground'>—</span>}</div>
     ),
+    meta: { className: 'max-md:hidden' },
     enableSorting: false,
   },
   {
@@ -72,6 +74,7 @@ export const usersColumns: ColumnDef<User>[] = [
       const date = raw instanceof Date ? raw : new Date(raw)
       return <div>{isNaN(date.getTime()) ? '—' : date.toLocaleDateString('pt-BR')}</div>
     },
+    meta: { className: 'max-md:hidden' },
   },
   {
     accessorKey: 'ativo',
@@ -98,6 +101,7 @@ export const usersColumns: ColumnDef<User>[] = [
       const label = roleOptions.find((r) => r.value === String(role))?.label ?? String(role)
       return <div className='text-sm'>{label}</div>
     },
+    meta: { className: 'max-md:hidden' },
     enableSorting: false,
   },
   {

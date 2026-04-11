@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { Fragment } from 'react'
 import { Link } from '@tanstack/react-router'
-import { ShoppingCart, User, ChevronDown, Menu, X, Search, Package } from 'lucide-react'
+import { ShoppingCart, User, ChevronDown, Menu, X, Search, Package, Tag, Sparkles } from 'lucide-react'
 import logoDark from '@/assets/logo_dark.png'
 import logoLight from '@/assets/logo_light.png'
 import { useAuthStore } from '@/stores/auth-store'
@@ -175,6 +175,21 @@ export function HeaderLanding({
                 </div>
               )}
             </div>
+
+            <Link
+              to='/categoria/$slug'
+              params={{ slug: 'ofertas' }}
+              className='rounded-md px-3 py-2 text-sm font-medium text-muted-foreground transition-colors hover:bg-accent hover:text-foreground'
+            >
+              Ofertas
+            </Link>
+            <Link
+              to='/categoria/$slug'
+              params={{ slug: 'novidades' }}
+              className='rounded-md px-3 py-2 text-sm font-medium text-muted-foreground transition-colors hover:bg-accent hover:text-foreground'
+            >
+              Novidades
+            </Link>
           </div>
         </div>
 
@@ -275,6 +290,8 @@ export function HeaderLanding({
             </Link>
           )}
 
+          {!mobileSearchOpen && <ThemeSwitch />}
+
           {!mobileSearchOpen && (
             <Separator orientation='vertical' className='h-5 opacity-50' />
           )}
@@ -358,7 +375,28 @@ export function HeaderLanding({
                     </div>
                   </div>
 
-                  {auth.user && !auth.user.role?.includes('admin') && (
+                  <SheetClose asChild>
+                    <Link
+                      to='/categoria/$slug'
+                      params={{ slug: 'ofertas' }}
+                      className='flex items-center gap-2.5 rounded-md px-3 py-2.5 text-sm font-medium transition-colors hover:bg-accent'
+                    >
+                      <Tag size={16} className='text-muted-foreground' />
+                      Ofertas
+                    </Link>
+                  </SheetClose>
+                  <SheetClose asChild>
+                    <Link
+                      to='/categoria/$slug'
+                      params={{ slug: 'novidades' }}
+                      className='flex items-center gap-2.5 rounded-md px-3 py-2.5 text-sm font-medium transition-colors hover:bg-accent'
+                    >
+                      <Sparkles size={16} className='text-muted-foreground' />
+                      Novidades
+                    </Link>
+                  </SheetClose>
+
+                  {auth.user && (
                     <>
                       <Separator className='my-2' />
                       <SheetClose asChild>
@@ -373,12 +411,6 @@ export function HeaderLanding({
                     </>
                   )}
 
-                  <Separator className='my-2' />
-
-                  <div className='flex items-center justify-between rounded-md px-3 py-2.5'>
-                    <span className='text-sm font-medium'>Tema</span>
-                    <ThemeSwitch />
-                  </div>
                 </nav>
               </SheetContent>
             </Sheet>

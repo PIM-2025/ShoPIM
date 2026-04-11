@@ -1,8 +1,8 @@
-import { type ColumnDef } from '@tanstack/react-table'
+import { type ColumnDef, type Row } from '@tanstack/react-table'
 import { useQueryClient } from '@tanstack/react-query'
 import { format } from 'date-fns'
 import { ptBR } from 'date-fns/locale'
-import { MoreHorizontal } from 'lucide-react'
+import { Eye, MoreHorizontal } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -35,7 +35,13 @@ const STATUS_CLASS: Record<string, string> = {
 
 const STATUS_OPTIONS = ['pendente', 'processando', 'enviado', 'entregue', 'cancelado']
 
-function ActionsCell({ row }: { row: { original: PedidoAdmin } }) {
+function ActionsCell({
+  row,
+  onVerItens,
+}: {
+  row: Row<PedidoAdmin>
+  onVerItens: (id: number) => void
+}) {
   const pedido = row.original
   const queryClient = useQueryClient()
 
@@ -52,6 +58,11 @@ function ActionsCell({ row }: { row: { original: PedidoAdmin } }) {
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align='end'>
+        <DropdownMenuItem onClick={() => onVerItens(pedido.id)}>
+          <Eye className='mr-2 size-4' />
+          Ver itens
+        </DropdownMenuItem>
+        <DropdownMenuSeparator />
         <DropdownMenuLabel>Alterar status</DropdownMenuLabel>
         <DropdownMenuSeparator />
         {STATUS_OPTIONS.filter((s) => s !== pedido.status).map((s) => (
@@ -64,7 +75,14 @@ function ActionsCell({ row }: { row: { original: PedidoAdmin } }) {
   )
 }
 
-export const pedidosColumns: ColumnDef<PedidoAdmin>[] = [
+export function createPedidosColumns(
+  onVerItens: (id: number) => void
+): ColumnDef<PedidoAdmin>[] {
+  return createColumns(onVerItens)
+}
+
+function createColumns(onVerItens: (id: number) => void): ColumnDef<PedidoAdmin>[] {
+  return [
   {
     accessorKey: 'id',
     header: ({ column }) => <DataTableColumnHeader column={column} title='Pedido' />,
@@ -103,6 +121,7 @@ export const pedidosColumns: ColumnDef<PedidoAdmin>[] = [
         </span>
       )
     },
+    meta: { className: 'max-md:hidden' },
   },
   {
     accessorKey: 'status',
@@ -121,6 +140,7 @@ export const pedidosColumns: ColumnDef<PedidoAdmin>[] = [
     accessorKey: 'totalItens',
     header: ({ column }) => <DataTableColumnHeader column={column} title='Itens' />,
     cell: ({ row }) => <span>{row.getValue('totalItens')}</span>,
+    meta: { className: 'max-md:hidden' },
   },
   {
     accessorKey: 'total',
@@ -133,6 +153,7 @@ export const pedidosColumns: ColumnDef<PedidoAdmin>[] = [
   },
   {
     id: 'actions',
-    cell: ActionsCell,
+    cell: ({ row }) => <ActionsCell row={row} onVerItens={onVerItens} />,
   },
-]
+  ]
+}

@@ -35,12 +35,13 @@ const FILTROS: { value: FiltroCategoria; label: string }[] = [
 function CardSkeleton() {
   return (
     <div className='rounded-2xl border border-border bg-zinc-100 p-4 dark:bg-zinc-800'>
-      <Skeleton className='h-40 w-full rounded-xl' />
-      <Skeleton className='mt-3 h-5 w-3/4' />
-      <Skeleton className='mt-2 h-4 w-1/3' />
-      <div className='mt-4 flex gap-2'>
-        <Skeleton className='h-9 flex-[3] rounded-lg' />
-        <Skeleton className='h-9 flex-[1] rounded-lg' />
+      <Skeleton className='h-36 w-full rounded-xl sm:h-40' />
+      <Skeleton className='mt-3 h-4 w-3/4' />
+      <Skeleton className='mt-1.5 h-4 w-1/2' />
+      <Skeleton className='mt-1.5 h-3 w-1/3' />
+      <div className='mt-3 flex gap-2'>
+        <Skeleton className='h-8 flex-[3] rounded-lg' />
+        <Skeleton className='h-8 flex-[1] rounded-lg' />
       </div>
     </div>
   )
@@ -135,45 +136,49 @@ export default function App() {
         </div>
 
         {/* Filtros rápidos de categoria + ordenação */}
-        <div className='mb-6 flex flex-wrap items-center justify-between gap-3'>
+        <div className='mb-6 flex flex-col gap-2 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between'>
           {/* Categorias */}
-          <div className='flex flex-wrap gap-2'>
-            {FILTROS.map((f) => (
-              <button
-                key={f.value}
-                onClick={() => setFiltroCategoria(f.value)}
-                className={cn(
-                  'rounded-full border px-3 py-1 text-sm font-medium transition',
-                  filtroCategoria === f.value
-                    ? 'border-orange-600 bg-orange-600 text-white'
-                    : 'border-border bg-zinc-100 text-muted-foreground hover:border-orange-600 hover:text-foreground dark:bg-zinc-800'
-                )}
-              >
-                {f.label}
-              </button>
-            ))}
+          <div className='overflow-x-auto pb-1'>
+            <div className='flex w-max gap-2'>
+              {FILTROS.map((f) => (
+                <button
+                  key={f.value}
+                  onClick={() => setFiltroCategoria(f.value)}
+                  className={cn(
+                    'whitespace-nowrap rounded-full border px-3 py-1 text-sm font-medium transition',
+                    filtroCategoria === f.value
+                      ? 'border-orange-600 bg-orange-600 text-white'
+                      : 'border-border bg-zinc-100 text-muted-foreground hover:border-orange-600 hover:text-foreground dark:bg-zinc-800'
+                  )}
+                >
+                  {f.label}
+                </button>
+              ))}
+            </div>
           </div>
 
           {/* Ordenação */}
-          <div className='flex gap-2'>
-            {ORDENS.map((o) => (
-              <button
-                key={o.value}
-                onClick={() => setOrdem(o.value)}
-                className={cn(
-                  'rounded-full border px-3 py-1 text-sm transition',
-                  ordem === o.value
-                    ? 'border-orange-600 bg-orange-600 text-white'
-                    : 'border-border bg-zinc-100 text-muted-foreground hover:border-orange-600 hover:text-foreground dark:bg-zinc-800'
-                )}
-              >
-                {o.label}
-              </button>
-            ))}
+          <div className='overflow-x-auto pb-1'>
+            <div className='flex w-max gap-2'>
+              {ORDENS.map((o) => (
+                <button
+                  key={o.value}
+                  onClick={() => setOrdem(o.value)}
+                  className={cn(
+                    'whitespace-nowrap rounded-full border px-3 py-1 text-sm transition',
+                    ordem === o.value
+                      ? 'border-orange-600 bg-orange-600 text-white'
+                      : 'border-border bg-zinc-100 text-muted-foreground hover:border-orange-600 hover:text-foreground dark:bg-zinc-800'
+                  )}
+                >
+                  {o.label}
+                </button>
+              ))}
+            </div>
           </div>
         </div>
 
-        <div className='grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4'>
+        <div className='grid grid-cols-2 gap-3 sm:gap-6 md:grid-cols-3 lg:grid-cols-4'>
           {loading ? (
             Array.from({ length: 8 }).map((_, i) => <CardSkeleton key={i} />)
           ) : filtered.length === 0 ? (

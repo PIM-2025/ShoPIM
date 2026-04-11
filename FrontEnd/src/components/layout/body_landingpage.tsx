@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react"
+import { cn } from "@/lib/utils"
 
 import promoRoupa from "@/assets/promoRoupa.png"
 import freteGratis from "@/assets/frete-gratis.png"
@@ -23,42 +24,65 @@ const images = [
 export function CarouselBody() {
   const apiRef = useRef<any>(null)
   const [apiReady, setApiReady] = useState(false)
+  const [current, setCurrent] = useState(0)
 
   useEffect(() => {
-    if (!apiReady) return
+    if (!apiReady || !apiRef.current) return
+    const api = apiRef.current
 
-    const interval = setInterval(() => {
-      apiRef.current?.scrollNext()
-    }, 8000)
+    const onSelect = () => setCurrent(api.selectedScrollSnap())
+    api.on('select', onSelect)
+    onSelect()
 
-    return () => clearInterval(interval)
+    const interval = setInterval(() => api.scrollNext(), 8000)
+
+    return () => {
+      clearInterval(interval)
+      api.off('select', onSelect)
+    }
   }, [apiReady])
 
   return (
-    <Carousel
-      opts={{ loop: true }}
-      setApi={(api) => {
-        apiRef.current = api
-        setApiReady(true)
-      }}
-      className="w-screen relative"
-    >
-      <CarouselContent>
-        {images.map((src, index) => (
-          <CarouselItem key={index}>
-            <div className="w-full h-[180px] sm:h-[240px] md:h-auto overflow-hidden bg-black flex items-center justify-center">
-              <img
-                src={src}
-                alt={`Imagem ${index + 1}`}
-                className="w-full h-full object-cover md:object-contain md:h-auto"
-              />
-            </div>
-          </CarouselItem>
-        ))}
-      </CarouselContent>
+    <div className="relative">
+      <Carousel
+        opts={{ loop: true }}
+        setApi={(api) => {
+          apiRef.current = api
+          setApiReady(true)
+        }}
+        className="w-screen"
+      >
+        <CarouselContent>
+          {images.map((src, index) => (
+            <CarouselItem key={index}>
+              <div className="w-full aspect-[16/9] sm:aspect-[21/9] overflow-hidden bg-black flex items-center justify-center">
+                <img
+                  src={src}
+                  alt={`Imagem ${index + 1}`}
+                  className="w-full h-full object-cover"
+                />
+              </div>
+            </CarouselItem>
+          ))}
+        </CarouselContent>
 
-      <CarouselPrevious className="left-3 top-1/2 -translate-y-1/2 z-10" />
-      <CarouselNext className="right-3 top-1/2 -translate-y-1/2 z-10" />
-    </Carousel>
+        <CarouselPrevious className="left-3 top-1/2 -translate-y-1/2 z-10 hidden sm:flex" />
+        <CarouselNext className="right-3 top-1/2 -translate-y-1/2 z-10 hidden sm:flex" />
+      </Carousel>
+
+      {/* Dots */}
+      <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-1.5">
+        {images.map((_, i) => (
+          <button
+            key={i}
+            onClick={() => apiRef.current?.scrollTo(i)}
+            className={cn(
+              "h-1.5 rounded-full transition-all duration-300",
+              i === current ? "w-5 bg-white" : "w-1.5 bg-white/50 hover:bg-white/75"
+            )}
+          />
+        ))}
+      </div>
+    </div>
   )
 }

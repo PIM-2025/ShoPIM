@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import {
   type ColumnFiltersState,
   type PaginationState,
@@ -24,7 +24,7 @@ import {
 } from '@/components/ui/table'
 import { DataTablePagination, DataTableToolbar } from '@/components/data-table'
 import { type PedidoAdmin } from '@/service/pedidoService'
-import { pedidosColumns as columns } from './pedidos-columns'
+import { createPedidosColumns } from './pedidos-columns'
 
 const statusOptions = [
   { label: 'Pendente', value: 'pendente' },
@@ -34,7 +34,14 @@ const statusOptions = [
   { label: 'Cancelado', value: 'cancelado' },
 ]
 
-export function PedidosTable({ data }: { data: PedidoAdmin[] }) {
+export function PedidosTable({
+  data,
+  onVerItens,
+}: {
+  data: PedidoAdmin[]
+  onVerItens: (id: number) => void
+}) {
+  const columns = useMemo(() => createPedidosColumns(onVerItens), [onVerItens])
   const [rowSelection, setRowSelection] = useState({})
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
   const [sorting, setSorting] = useState<SortingState>([])
@@ -100,7 +107,17 @@ export function PedidosTable({ data }: { data: PedidoAdmin[] }) {
           <TableBody>
             {table.getRowModel().rows?.length ? (
               table.getRowModel().rows.map((row) => (
-                <TableRow key={row.id} data-state={row.getIsSelected() && 'selected'} className='group/row'>
+                <TableRow
+                  key={row.id}
+                  data-state={row.getIsSelected() && 'selected'}
+                  className='group/row cursor-pointer'
+                  onClick={(e) => {
+                    // Não abre o sheet ao clicar no checkbox ou no menu de ações
+                    const target = e.target as HTMLElement
+                    if (target.closest('[role="checkbox"]') || target.closest('[data-radix-collection-item]') || target.closest('button')) return
+                    onVerItens(row.original.id)
+                  }}
+                >
                   {row.getVisibleCells().map((cell) => (
                     <TableCell
                       key={cell.id}

@@ -71,6 +71,7 @@ export const produtosColumns: ColumnDef<Produto>[] = [
         </div>
       )
     },
+    meta: { className: 'max-md:hidden' },
     filterFn: (row, id, value) => value.includes(row.getValue(id)),
     enableSorting: false,
   },
@@ -78,6 +79,7 @@ export const produtosColumns: ColumnDef<Produto>[] = [
     accessorKey: 'quantidade',
     header: ({ column }) => <DataTableColumnHeader column={column} title='Estoque' />,
     cell: ({ row }) => <div className='ps-2'>{row.getValue('quantidade')}</div>,
+    meta: { className: 'max-md:hidden' },
   },
   {
     accessorKey: 'imagem',
@@ -90,6 +92,7 @@ export const produtosColumns: ColumnDef<Produto>[] = [
         <span className='text-muted-foreground text-xs'>—</span>
       )
     },
+    meta: { className: 'max-md:hidden' },
     enableSorting: false,
   },
   {

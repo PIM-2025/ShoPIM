@@ -34,6 +34,15 @@ export function Overview({ data }: Props) {
         <Tooltip
           formatter={(value) => [Number(value ?? 0), 'Clientes']}
           cursor={{ fill: 'hsl(var(--muted))' }}
+          contentStyle={{
+            backgroundColor: 'hsl(var(--popover))',
+            border: '1px solid hsl(var(--border))',
+            borderRadius: '6px',
+            color: 'hsl(var(--popover-foreground))',
+            fontSize: '12px',
+          }}
+          itemStyle={{ color: 'hsl(var(--popover-foreground))' }}
+          labelStyle={{ color: 'hsl(var(--popover-foreground))' }}
         />
         <Bar
           dataKey='total'

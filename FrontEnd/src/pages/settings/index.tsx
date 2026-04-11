@@ -1,5 +1,5 @@
 import { Outlet } from '@tanstack/react-router'
-import { Monitor, Palette, Wrench, UserCog, Store } from 'lucide-react'
+import { Palette, Wrench, UserCog, Store } from 'lucide-react'
 import { Separator } from '@/components/ui/separator'
 import { ConfigDrawer } from '@/components/config-drawer'
 import { Header } from '@/components/layout/header'

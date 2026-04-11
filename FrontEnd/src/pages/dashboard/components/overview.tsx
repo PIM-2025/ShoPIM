@@ -1,5 +1,12 @@
-import { Bar, BarChart, ResponsiveContainer, XAxis, YAxis, Tooltip } from 'recharts'
 import type { ClienteMes } from '@/service/dashboardService'
+import {
+  Bar,
+  BarChart,
+  ResponsiveContainer,
+  XAxis,
+  YAxis,
+  Tooltip,
+} from 'recharts'
 
 interface Props {
   data: ClienteMes[]
@@ -25,7 +32,7 @@ export function Overview({ data }: Props) {
           tickFormatter={(v) => String(v)}
         />
         <Tooltip
-          formatter={(value: number) => [value, 'Clientes']}
+          formatter={(value) => [Number(value ?? 0), 'Clientes']}
           cursor={{ fill: 'hsl(var(--muted))' }}
         />
         <Bar

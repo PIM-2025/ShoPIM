@@ -1,12 +1,19 @@
+import { format } from 'date-fns'
 import { useQuery } from '@tanstack/react-query'
 import { Link } from '@tanstack/react-router'
-import { format } from 'date-fns'
+import { getPedido } from '@/service/pedidoService'
 import { ptBR } from 'date-fns/locale'
-import { CheckCircle2, Circle, Loader2, MapPin, Package, ShoppingBag, Truck } from 'lucide-react'
+import {
+  CheckCircle2,
+  Loader2,
+  MapPin,
+  Package,
+  ShoppingBag,
+  Truck,
+} from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Separator } from '@/components/ui/separator'
-import { getPedido } from '@/service/pedidoService'
 
 const ETAPAS = [
   { status: 'pendente', label: 'Pedido recebido', icon: ShoppingBag },
@@ -40,7 +47,9 @@ export function PedidoTracking({ id }: Props) {
     return (
       <div className='flex min-h-[60vh] flex-col items-center justify-center gap-4'>
         <p className='text-muted-foreground'>Pedido não encontrado.</p>
-        <Button asChild><Link to='/'>Voltar ao início</Link></Button>
+        <Button asChild>
+          <Link to='/'>Voltar ao início</Link>
+        </Button>
       </div>
     )
   }
@@ -58,7 +67,12 @@ export function PedidoTracking({ id }: Props) {
         </div>
         <h1 className='text-2xl font-bold'>Pedido #{pedido.id}</h1>
         <p className='mt-1 text-muted-foreground'>
-          Realizado em {format(new Date(pedido.dataPedido), "d 'de' MMMM 'de' yyyy 'às' HH:mm", { locale: ptBR })}
+          Realizado em{' '}
+          {format(
+            new Date(pedido.dataPedido),
+            "d 'de' MMMM 'de' yyyy 'às' HH:mm",
+            { locale: ptBR }
+          )}
         </p>
       </div>
 
@@ -74,19 +88,28 @@ export function PedidoTracking({ id }: Props) {
               const atual = idx === etapaAtual
               const Icon = etapa.icon
               return (
-                <div key={etapa.status} className='flex flex-1 flex-col items-center'>
-                  <div className={`flex h-10 w-10 items-center justify-center rounded-full border-2 transition-colors ${
-                    concluido
-                      ? 'border-primary bg-primary text-primary-foreground'
-                      : 'border-muted bg-muted text-muted-foreground'
-                  } ${atual ? 'ring-2 ring-primary ring-offset-2' : ''}`}>
+                <div
+                  key={etapa.status}
+                  className='flex flex-1 flex-col items-center'
+                >
+                  <div
+                    className={`flex h-10 w-10 items-center justify-center rounded-full border-2 transition-colors ${
+                      concluido
+                        ? 'border-primary bg-primary text-primary-foreground'
+                        : 'border-muted bg-muted text-muted-foreground'
+                    } ${atual ? 'ring-2 ring-primary ring-offset-2' : ''}`}
+                  >
                     <Icon className='h-4 w-4' />
                   </div>
-                  <p className={`mt-2 text-center text-xs ${concluido ? 'font-medium' : 'text-muted-foreground'}`}>
+                  <p
+                    className={`mt-2 text-center text-xs ${concluido ? 'font-medium' : 'text-muted-foreground'}`}
+                  >
                     {etapa.label}
                   </p>
                   {idx < ETAPAS.length - 1 && (
-                    <div className={`absolute mt-5 h-0.5 w-full max-w-[80px] translate-x-[60%] transition-colors ${idx < etapaAtual ? 'bg-primary' : 'bg-muted'}`} />
+                    <div
+                      className={`absolute mt-5 h-0.5 w-full max-w-[80px] translate-x-[60%] transition-colors ${idx < etapaAtual ? 'bg-primary' : 'bg-muted'}`}
+                    />
                   )}
                 </div>
               )
@@ -104,15 +127,23 @@ export function PedidoTracking({ id }: Props) {
           {pedido.itens.map((item, idx) => (
             <div key={idx} className='flex items-center gap-4'>
               {item.imagem ? (
-                <img src={item.imagem} alt={item.descricao} className='h-14 w-14 rounded-lg object-cover' />
+                <img
+                  src={item.imagem}
+                  alt={item.descricao}
+                  className='h-14 w-14 rounded-lg object-cover'
+                />
               ) : (
                 <div className='h-14 w-14 rounded-lg bg-muted' />
               )}
               <div className='flex-1'>
                 <p className='text-sm font-medium'>{item.descricao}</p>
-                <p className='text-xs text-muted-foreground'>Qtd: {item.quantidade}</p>
+                <p className='text-xs text-muted-foreground'>
+                  Qtd: {item.quantidade}
+                </p>
               </div>
-              <p className='text-sm font-medium'>R$ {(item.precoUnitario * item.quantidade).toFixed(2)}</p>
+              <p className='text-sm font-medium'>
+                R$ {(item.precoUnitario * item.quantidade).toFixed(2)}
+              </p>
             </div>
           ))}
           <Separator />
@@ -132,8 +163,15 @@ export function PedidoTracking({ id }: Props) {
             </CardTitle>
           </CardHeader>
           <CardContent className='text-sm text-muted-foreground'>
-            <p>{pedido.endereco.rua}, {pedido.endereco.numero}{pedido.endereco.complemento ? ` — ${pedido.endereco.complemento}` : ''}</p>
-            <p>{pedido.endereco.cidade} — {pedido.endereco.estado}</p>
+            <p>
+              {pedido.endereco.rua}, {pedido.endereco.numero}
+              {pedido.endereco.complemento
+                ? ` — ${pedido.endereco.complemento}`
+                : ''}
+            </p>
+            <p>
+              {pedido.endereco.cidade} — {pedido.endereco.estado}
+            </p>
             <p>CEP: {pedido.endereco.cep}</p>
           </CardContent>
         </Card>

@@ -142,74 +142,34 @@ namespace ShoPIM.Controllers
                 .Include(p => p.Itens).ThenInclude(i => i.Produto)
                 .Include(p => p.Endereco)
                 .Where(p => p.Id == id)
+                .Select(p => new
+                {
+                    p.Id,
+                    p.Status,
+                    p.DataPedido,
+                    p.Total,
+                    Endereco = p.Endereco == null ? null : new
+                    {
+                        p.Endereco.Rua,
+                        p.Endereco.Numero,
+                        p.Endereco.Complemento,
+                        p.Endereco.Cidade,
+                        p.Endereco.Estado,
+                        p.Endereco.Cep,
+                    },
+                    Itens = p.Itens.Select(i => new
+                    {
+                        i.IdProduto,
+                        i.Quantidade,
+                        i.PrecoUnitario,
+                        Descricao = i.Produto!.Descricao,
+                        Imagem = i.Produto.Imagem,
+                    })
+                })
                 .FirstOrDefaultAsync();
 
             if (pedido == null) return NotFound();
-
-            return Ok(new
-            {
-                pedido.Id,
-                pedido.Status,
-                pedido.DataPedido,
-                pedido.Total,
-                Endereco = pedido.Endereco == null ? null : new
-                {
-                    pedido.Endereco.Rua,
-                    pedido.Endereco.Numero,
-                    pedido.Endereco.Complemento,
-                    pedido.Endereco.Cidade,
-                    pedido.Endereco.Estado,
-                    pedido.Endereco.Cep,
-                },
-                Itens = pedido.Itens.Select(i => new
-                {
-                    i.IdProduto,
-                    i.Quantidade,
-                    i.PrecoUnitario,
-                    Descricao = i.Produto!.Descricao,
-                    Imagem = i.Produto.Imagem,
-                })
-            });
-        }
-        #endregion
-
-        #region GET: api/pedido/todos — admin
-        [HttpGet("todos")]
-        public async Task<ActionResult> GetTodosPedidos()
-        {
-            var pedidos = await _context.Pedido
-                .Include(p => p.Usuario)
-                .Include(p => p.Itens)
-                .OrderByDescending(p => p.DataPedido)
-                .ToListAsync();
-
-            return Ok(pedidos.Select(p => new
-            {
-                p.Id,
-                p.Status,
-                p.DataPedido,
-                p.Total,
-                TotalItens = p.Itens.Sum(i => i.Quantidade),
-                Cliente = p.Usuario == null ? null : new
-                {
-                    p.Usuario.Id,
-                    p.Usuario.Nome,
-                    p.Usuario.Email,
-                }
-            }));
-        }
-        #endregion
-
-        #region PATCH: api/pedido/{id}/status — admin
-        [HttpPatch("{id}/status")]
-        public async Task<ActionResult> AtualizarStatus(int id, [FromBody] AtualizarStatusRequest request)
-        {
-            var pedido = await _context.Pedido.FindAsync(id);
-            if (pedido == null) return NotFound();
-
-            pedido.Status = request.Status;
-            await _context.SaveChangesAsync();
-            return NoContent();
+            return Ok(pedido);
         }
         #endregion
 
@@ -233,11 +193,6 @@ namespace ShoPIM.Controllers
             });
         }
         #endregion
-    }
-
-    public class AtualizarStatusRequest
-    {
-        public string Status { get; set; } = string.Empty;
     }
 
     public class CriarPedidoRequest

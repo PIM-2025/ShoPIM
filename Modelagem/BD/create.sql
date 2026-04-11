@@ -5,7 +5,7 @@
 /* Project name:                                                          */
 /* Author:                                                                */
 /* Script type:           Database creation script                        */
-/* Created on:            2026-04-10 08:50                                */
+/* Created on:            2026-04-11 10:40                                */
 /* ---------------------------------------------------------------------- */
 
 
@@ -46,6 +46,22 @@ CREATE SEQUENCE SEQ_PRODUCT
     noorder;
 
 CREATE SEQUENCE SEQ_CART
+    START WITH 1
+    INCREMENT BY 1
+    MINVALUE 1
+    MAXVALUE 999999999
+    nocycle
+    noorder;
+
+CREATE SEQUENCE SEQ_CONVERSA
+    START WITH 1
+    INCREMENT BY 1
+    MINVALUE 1
+    MAXVALUE 999999999
+    nocycle
+    noorder;
+
+CREATE SEQUENCE SEQ_MENSAGEM
     START WITH 1
     INCREMENT BY 1
     MINVALUE 1
@@ -127,6 +143,33 @@ CREATE TABLE CART (
 );
 
 /* ---------------------------------------------------------------------- */
+/* Add table "CONVERSA"                                                   */
+/* ---------------------------------------------------------------------- */
+
+CREATE TABLE CONVERSA (
+    ID NUMBER(9) CONSTRAINT NN_CONVERSA_ID NOT NULL,
+    NOME_CLIENTE VARCHAR2(200) CONSTRAINT NN_CONVERSA_NOME_CLIENTE NOT NULL,
+    CLIENTE_ID NUMBER(9),
+    STATUS VARCHAR2(20) CONSTRAINT NN_CONVERSA_STATUS NOT NULL,
+    CRIADO_EM TIMESTAMP CONSTRAINT NN_CONVERSA_CRIADO_EM NOT NULL,
+    CONSTRAINT PK_CONVERSA PRIMARY KEY (ID)
+);
+
+/* ---------------------------------------------------------------------- */
+/* Add table "MENSAGEM"                                                   */
+/* ---------------------------------------------------------------------- */
+
+CREATE TABLE MENSAGEM (
+    ID NUMBER(9) CONSTRAINT NN_MENSAGEM_ID NOT NULL,
+    CONVERSA_ID NUMBER(9) CONSTRAINT NN_MENSAGEM_CONVERSA_ID NOT NULL,
+    CONTEUDO VARCHAR2(4000) CONSTRAINT NN_MENSAGEM_CONTEUDO NOT NULL,
+    REMETENTE_TIPO VARCHAR2(20) CONSTRAINT NN_MENSAGEM_REMETENTE_TIPO NOT NULL,
+    REMETENTE_NOME VARCHAR2(200) CONSTRAINT NN_MENSAGEM_REMETENTE_NOME NOT NULL,
+    ENVIADO_EM TIMESTAMP CONSTRAINT NN_MENSAGEM_ENVIADO_EM NOT NULL,
+    CONSTRAINT PK_MENSAGEM PRIMARY KEY (ID)
+);
+
+/* ---------------------------------------------------------------------- */
 /* Add foreign key constraints                                            */
 /* ---------------------------------------------------------------------- */
 
@@ -141,3 +184,6 @@ ALTER TABLE CART ADD CONSTRAINT USERS_CART
 
 ALTER TABLE CART ADD CONSTRAINT PRODUCT_CART 
     FOREIGN KEY (ID_PRODUTO) REFERENCES PRODUCT (ID_PRODUTO);
+
+ALTER TABLE MENSAGEM ADD CONSTRAINT CONVERSA_MENSAGEM 
+    FOREIGN KEY (CONVERSA_ID) REFERENCES CONVERSA (ID) ON DELETE CASCADE;

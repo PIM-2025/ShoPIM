@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
+import { Fragment } from 'react'
 import { Link } from '@tanstack/react-router'
 import { ShoppingCart, User, ChevronDown, Menu, X, Search } from 'lucide-react'
 import logoDark from '@/assets/logo_dark.png'
@@ -17,6 +18,7 @@ import {
 import { ProfileDropdown } from '@/components/profile-dropdown'
 import { SearchBar } from '@/components/search_landing'
 import { ThemeSwitch } from '@/components/theme-switch'
+import { ChatWidget } from '@/components/chat-widget/chat-widget'
 
 type Category = {
   label: string
@@ -124,6 +126,7 @@ export function HeaderLanding({
   const scrolled = offset > 10
 
   return (
+    <Fragment>
     <header
       className={cn(
         'sticky top-0 z-50 w-full border-b border-transparent transition-all duration-300',
@@ -368,5 +371,7 @@ export function HeaderLanding({
         </div>
       </div>
     </header>
+    <ChatWidget />
+    </Fragment>
   )
 }

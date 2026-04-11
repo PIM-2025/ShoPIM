@@ -3,12 +3,13 @@ using Microsoft.OpenApi;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using ShoPIM.Data;
+using ShoPIM.Hubs;
 using System.Text;
 using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// CORS — permite o frontend acessar o backend
+// CORS — permite o frontend acessar o backend (AllowCredentials necessário para SignalR)
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("FrontendPolicy", policy =>
@@ -18,7 +19,8 @@ builder.Services.AddCors(options =>
             "https://shopim.vercel.app"
         )
         .AllowAnyHeader()
-        .AllowAnyMethod();
+        .AllowAnyMethod()
+        .AllowCredentials();
     });
 });
 
@@ -35,8 +37,21 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             ValidateIssuer = false,
             ValidateAudience = false,
         };
+        // Necessário para SignalR: lê o token do query string em conexões WebSocket
+        options.Events = new JwtBearerEvents
+        {
+            OnMessageReceived = context =>
+            {
+                var accessToken = context.Request.Query["access_token"];
+                var path = context.HttpContext.Request.Path;
+                if (!string.IsNullOrEmpty(accessToken) && path.StartsWithSegments("/chatHub"))
+                    context.Token = accessToken;
+                return Task.CompletedTask;
+            }
+        };
     });
 
+builder.Services.AddSignalR();
 builder.Services.AddControllers();
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseOracle(builder.Configuration.GetConnectionString("OracleConnection"))
@@ -70,8 +85,9 @@ app.UseSwaggerUI(c =>
 });
 
 app.UseHttpsRedirection();
-app.UseCors("FrontendPolicy"); // <-- CORS antes do Authorization
+app.UseCors("FrontendPolicy");
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
+app.MapHub<ChatHub>("/chatHub");
 app.Run();

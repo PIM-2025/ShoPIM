@@ -59,6 +59,37 @@ namespace ShoPIM.Controllers
         }
         #endregion
 
+        #region PUT: api/users/{id}
+        [HttpPut("{id}")]
+        public async Task<ActionResult> UpdateUser(int id, [FromBody] UpdateUserRequest request)
+        {
+            var user = await _context.Users.FindAsync(id);
+            if (user == null) return NotFound(new { message = "Usuário não encontrado." });
+
+            user.Nome = request.Nome;
+            user.Email = request.Email;
+            user.Cpf = request.Cpf;
+            user.Ativo = request.Ativo;
+            user.Role = request.Role;
+
+            await _context.SaveChangesAsync();
+            return NoContent();
+        }
+        #endregion
+
+        #region DELETE: api/users/{id}
+        [HttpDelete("{id}")]
+        public async Task<ActionResult> DeleteUser(int id)
+        {
+            var user = await _context.Users.FindAsync(id);
+            if (user == null) return NotFound(new { message = "Usuário não encontrado." });
+
+            _context.Users.Remove(user);
+            await _context.SaveChangesAsync();
+            return NoContent();
+        }
+        #endregion
+
         #region POST: api/users/cadastro
         [HttpPost("cadastro")]
         public async Task<ActionResult> Cadastro([FromBody] CadastroRequest request)
@@ -239,6 +270,15 @@ namespace ShoPIM.Controllers
     {
         public string Token { get; set; } = string.Empty;
         public string NovaSenha { get; set; } = string.Empty;
+    }
+
+    public class UpdateUserRequest
+    {
+        public string Nome { get; set; } = string.Empty;
+        public string Email { get; set; } = string.Empty;
+        public string? Cpf { get; set; }
+        public int Ativo { get; set; }
+        public int Role { get; set; }
     }
     #endregion
 }

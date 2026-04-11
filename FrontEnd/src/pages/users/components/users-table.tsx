@@ -1,5 +1,7 @@
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import {
+  type ColumnFiltersState,
+  type PaginationState,
   type SortingState,
   type VisibilityState,
   flexRender,
@@ -12,7 +14,6 @@ import {
   useReactTable,
 } from '@tanstack/react-table'
 import { cn } from '@/lib/utils'
-import { type NavigateFn, useTableUrlState } from '@/hooks/use-table-url-state'
 import {
   Table,
   TableBody,
@@ -22,61 +23,25 @@ import {
   TableRow,
 } from '@/components/ui/table'
 import { DataTablePagination, DataTableToolbar } from '@/components/data-table'
-import { roles } from '../data/data'
+import { roleOptions, statusOptions } from '../data/data'
 import { type User } from '../data/schema'
-import { DataTableBulkActions } from './data-table-bulk-actions'
 import { usersColumns as columns } from './users-columns'
 
-type DataTableProps = {
-  data: User[]
-  search: Record<string, unknown>
-  navigate: NavigateFn
-}
-
-export function UsersTable({ data, search, navigate }: DataTableProps) {
-  // Local UI-only states
+export function UsersTable({ data }: { data: User[] }) {
   const [rowSelection, setRowSelection] = useState({})
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
   const [sorting, setSorting] = useState<SortingState>([])
-
-  // Local state management for table (uncomment to use local-only state, not synced with URL)
-  // const [columnFilters, onColumnFiltersChange] = useState<ColumnFiltersState>([])
-  // const [pagination, onPaginationChange] = useState<PaginationState>({ pageIndex: 0, pageSize: 10 })
-
-  // Synced with URL states (keys/defaults mirror users route search schema)
-  const {
-    columnFilters,
-    onColumnFiltersChange,
-    pagination,
-    onPaginationChange,
-    ensurePageInRange,
-  } = useTableUrlState({
-    search,
-    navigate,
-    pagination: { defaultPage: 1, defaultPageSize: 10 },
-    globalFilter: { enabled: false },
-    columnFilters: [
-      // username per-column text filter
-      { columnId: 'username', searchKey: 'username', type: 'string' },
-      { columnId: 'status', searchKey: 'status', type: 'array' },
-      { columnId: 'role', searchKey: 'role', type: 'array' },
-    ],
-  })
+  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
+  const [pagination, setPagination] = useState<PaginationState>({ pageIndex: 0, pageSize: 10 })
 
   // eslint-disable-next-line react-hooks/incompatible-library
   const table = useReactTable({
     data,
     columns,
-    state: {
-      sorting,
-      pagination,
-      rowSelection,
-      columnFilters,
-      columnVisibility,
-    },
+    state: { sorting, pagination, rowSelection, columnFilters, columnVisibility },
     enableRowSelection: true,
-    onPaginationChange,
-    onColumnFiltersChange,
+    onPaginationChange: setPagination,
+    onColumnFiltersChange: setColumnFilters,
     onRowSelectionChange: setRowSelection,
     onSortingChange: setSorting,
     onColumnVisibilityChange: setColumnVisibility,
@@ -88,36 +53,22 @@ export function UsersTable({ data, search, navigate }: DataTableProps) {
     getFacetedUniqueValues: getFacetedUniqueValues(),
   })
 
-  useEffect(() => {
-    ensurePageInRange(table.getPageCount())
-  }, [table, ensurePageInRange])
-
   return (
-    <div
-      className={cn(
-        'max-sm:has-[div[role="toolbar"]]:mb-16', // Add margin bottom to the table on mobile when the toolbar is visible
-        'flex flex-1 flex-col gap-4'
-      )}
-    >
+    <div className='flex flex-1 flex-col gap-4'>
       <DataTableToolbar
         table={table}
-        searchPlaceholder='Filter users...'
-        searchKey='username'
+        searchPlaceholder='Filtrar usuários...'
+        searchKey='nome'
         filters={[
           {
-            columnId: 'status',
+            columnId: 'ativo',
             title: 'Status',
-            options: [
-              { label: 'Active', value: 'active' },
-              { label: 'Inactive', value: 'inactive' },
-              { label: 'Invited', value: 'invited' },
-              { label: 'Suspended', value: 'suspended' },
-            ],
+            options: statusOptions.map(({ label, value }) => ({ label, value })),
           },
           {
             columnId: 'role',
-            title: 'Role',
-            options: roles.map((role) => ({ ...role })),
+            title: 'Perfil',
+            options: roleOptions.map(({ label, value }) => ({ label, value })),
           },
         ]}
       />
@@ -126,37 +77,28 @@ export function UsersTable({ data, search, navigate }: DataTableProps) {
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id} className='group/row'>
-                {headerGroup.headers.map((header) => {
-                  return (
-                    <TableHead
-                      key={header.id}
-                      colSpan={header.colSpan}
-                      className={cn(
-                        'bg-background group-hover/row:bg-muted group-data-[state=selected]/row:bg-muted',
-                        header.column.columnDef.meta?.className,
-                        header.column.columnDef.meta?.thClassName
-                      )}
-                    >
-                      {header.isPlaceholder
-                        ? null
-                        : flexRender(
-                            header.column.columnDef.header,
-                            header.getContext()
-                          )}
-                    </TableHead>
-                  )
-                })}
+                {headerGroup.headers.map((header) => (
+                  <TableHead
+                    key={header.id}
+                    colSpan={header.colSpan}
+                    className={cn(
+                      'bg-background group-hover/row:bg-muted group-data-[state=selected]/row:bg-muted',
+                      header.column.columnDef.meta?.className,
+                      header.column.columnDef.meta?.thClassName
+                    )}
+                  >
+                    {header.isPlaceholder
+                      ? null
+                      : flexRender(header.column.columnDef.header, header.getContext())}
+                  </TableHead>
+                ))}
               </TableRow>
             ))}
           </TableHeader>
           <TableBody>
             {table.getRowModel().rows?.length ? (
               table.getRowModel().rows.map((row) => (
-                <TableRow
-                  key={row.id}
-                  data-state={row.getIsSelected() && 'selected'}
-                  className='group/row'
-                >
+                <TableRow key={row.id} data-state={row.getIsSelected() && 'selected'} className='group/row'>
                   {row.getVisibleCells().map((cell) => (
                     <TableCell
                       key={cell.id}
@@ -166,21 +108,15 @@ export function UsersTable({ data, search, navigate }: DataTableProps) {
                         cell.column.columnDef.meta?.tdClassName
                       )}
                     >
-                      {flexRender(
-                        cell.column.columnDef.cell,
-                        cell.getContext()
-                      )}
+                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
                     </TableCell>
                   ))}
                 </TableRow>
               ))
             ) : (
               <TableRow>
-                <TableCell
-                  colSpan={columns.length}
-                  className='h-24 text-center'
-                >
-                  No results.
+                <TableCell colSpan={columns.length} className='h-24 text-center'>
+                  Nenhum usuário encontrado.
                 </TableCell>
               </TableRow>
             )}
@@ -188,7 +124,6 @@ export function UsersTable({ data, search, navigate }: DataTableProps) {
         </Table>
       </div>
       <DataTablePagination table={table} className='mt-auto' />
-      <DataTableBulkActions table={table} />
     </div>
   )
 }

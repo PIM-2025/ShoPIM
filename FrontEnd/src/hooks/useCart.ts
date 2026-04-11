@@ -120,6 +120,31 @@ export function useCart(idUsuario: number | null) {
     produto?: CartItem['produto']
   ) => {
     if (idUsuario) {
+      // Optimistic update: reflete na UI imediatamente sem esperar o servidor
+      if (produto) {
+        const existente = items.find((i) => i.idProduto === idProduto)
+        if (existente) {
+          setItems(
+            items.map((i) =>
+              i.idProduto === idProduto
+                ? { ...i, quantidade: i.quantidade + quantidade }
+                : i
+            )
+          )
+        } else {
+          const tempItem: CartItem = {
+            id: -Date.now(),
+            idUsuario,
+            idProduto,
+            quantidade,
+            dataAdicao: new Date().toISOString(),
+            produto,
+          }
+          setItems([...items, tempItem])
+        }
+      }
+
+      // Sincroniza com o servidor em background
       await adicionarItem(idUsuario, idProduto, quantidade)
       const updated = await getCart(idUsuario)
       setItems(updated)
@@ -141,7 +166,15 @@ export function useCart(idUsuario: number | null) {
   const atualizar = async (item: CartItem, increment: boolean) => {
     const novaQtd = Math.max(1, item.quantidade + (increment ? 1 : -1))
 
+    // Optimistic update: reflete na UI imediatamente
+    setItems(
+      items.map((i) =>
+        i.idProduto === item.idProduto ? { ...i, quantidade: novaQtd } : i
+      )
+    )
+
     if (idUsuario) {
+      // Sincroniza com o servidor em background
       await atualizarQuantidade(item.id, novaQtd)
     } else {
       const local = getLocalCart()
@@ -149,23 +182,19 @@ export function useCart(idUsuario: number | null) {
       if (found) found.quantidade = novaQtd
       saveLocalCart(local)
     }
-
-    setItems(
-      items.map((i) =>
-        i.idProduto === item.idProduto ? { ...i, quantidade: novaQtd } : i
-      )
-    )
   }
 
   const remover = async (item: CartItem) => {
+    // Optimistic update: remove da UI imediatamente
+    setItems(items.filter((i) => i.idProduto !== item.idProduto))
+
     if (idUsuario) {
+      // Sincroniza com o servidor em background
       await removerItem(item.id)
     } else {
       const local = getLocalCart().filter((i) => i.idProduto !== item.idProduto)
       saveLocalCart(local)
     }
-
-    setItems(items.filter((i) => i.idProduto !== item.idProduto))
   }
 
   return { items, loading, adicionar, atualizar, remover }

@@ -4,7 +4,7 @@ import { Badge } from '@/components/ui/badge'
 import { Checkbox } from '@/components/ui/checkbox'
 import { DataTableColumnHeader } from '@/components/data-table'
 import { LongText } from '@/components/long-text'
-import { callTypes, roles } from '../data/data'
+import { roleOptions, statusOptions, statusStyles } from '../data/data'
 import { type User } from '../data/schema'
 import { DataTableRowActions } from './data-table-row-actions'
 
@@ -18,31 +18,27 @@ export const usersColumns: ColumnDef<User>[] = [
           (table.getIsSomePageRowsSelected() && 'indeterminate')
         }
         onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-        aria-label='Select all'
+        aria-label='Selecionar todos'
         className='translate-y-[2px]'
       />
     ),
-    meta: {
-      className: cn('max-md:sticky start-0 z-10 rounded-tl-[inherit]'),
-    },
     cell: ({ row }) => (
       <Checkbox
         checked={row.getIsSelected()}
         onCheckedChange={(value) => row.toggleSelected(!!value)}
-        aria-label='Select row'
+        aria-label='Selecionar linha'
         className='translate-y-[2px]'
       />
     ),
+    meta: { className: cn('max-md:sticky start-0 z-10 rounded-tl-[inherit]') },
     enableSorting: false,
     enableHiding: false,
   },
   {
-    accessorKey: 'username',
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title='Username' />
-    ),
+    accessorKey: 'nome',
+    header: ({ column }) => <DataTableColumnHeader column={column} title='Nome' />,
     cell: ({ row }) => (
-      <LongText className='max-w-36 ps-3'>{row.getValue('username')}</LongText>
+      <LongText className='max-w-40 ps-3'>{row.getValue('nome')}</LongText>
     ),
     meta: {
       className: cn(
@@ -53,83 +49,56 @@ export const usersColumns: ColumnDef<User>[] = [
     enableHiding: false,
   },
   {
-    id: 'fullName',
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title='Name' />
-    ),
-    cell: ({ row }) => {
-      const { firstName, lastName } = row.original
-      const fullName = `${firstName} ${lastName}`
-      return <LongText className='max-w-36'>{fullName}</LongText>
-    },
-    meta: { className: 'w-36' },
-  },
-  {
     accessorKey: 'email',
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title='Email' />
-    ),
+    header: ({ column }) => <DataTableColumnHeader column={column} title='E-mail' />,
     cell: ({ row }) => (
-      <div className='w-fit ps-2 text-nowrap'>{row.getValue('email')}</div>
+      <div className='ps-2 text-nowrap'>{row.getValue('email')}</div>
     ),
   },
   {
-    accessorKey: 'phoneNumber',
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title='Phone Number' />
+    accessorKey: 'cpf',
+    header: ({ column }) => <DataTableColumnHeader column={column} title='CPF' />,
+    cell: ({ row }) => (
+      <div>{row.getValue('cpf') ?? <span className='text-muted-foreground'>—</span>}</div>
     ),
-    cell: ({ row }) => <div>{row.getValue('phoneNumber')}</div>,
     enableSorting: false,
   },
   {
-    accessorKey: 'status',
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title='Status' />
-    ),
+    accessorKey: 'dataCadastro',
+    header: ({ column }) => <DataTableColumnHeader column={column} title='Cadastro' />,
     cell: ({ row }) => {
-      const { status } = row.original
-      const badgeColor = callTypes.get(status)
+      const raw = row.getValue<Date | null>('dataCadastro')
+      if (!raw) return <span className='text-muted-foreground'>—</span>
+      const date = raw instanceof Date ? raw : new Date(raw)
+      return <div>{isNaN(date.getTime()) ? '—' : date.toLocaleDateString('pt-BR')}</div>
+    },
+  },
+  {
+    accessorKey: 'ativo',
+    header: ({ column }) => <DataTableColumnHeader column={column} title='Status' />,
+    cell: ({ row }) => {
+      const ativo: number = row.getValue('ativo')
+      const label = statusOptions.find((s) => s.value === String(ativo))?.label ?? String(ativo)
+      const badgeColor = statusStyles.get(ativo)
       return (
-        <div className='flex space-x-2'>
-          <Badge variant='outline' className={cn('capitalize', badgeColor)}>
-            {row.getValue('status')}
-          </Badge>
-        </div>
+        <Badge variant='outline' className={cn('capitalize', badgeColor)}>
+          {label}
+        </Badge>
       )
     },
-    filterFn: (row, id, value) => {
-      return value.includes(row.getValue(id))
-    },
-    enableHiding: false,
+    filterFn: (row, id, value) => value.includes(String(row.getValue(id))),
     enableSorting: false,
+    enableHiding: false,
   },
   {
     accessorKey: 'role',
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title='Role' />
-    ),
+    header: ({ column }) => <DataTableColumnHeader column={column} title='Perfil' />,
     cell: ({ row }) => {
-      const { role } = row.original
-      const userType = roles.find(({ value }) => value === role)
-
-      if (!userType) {
-        return null
-      }
-
-      return (
-        <div className='flex items-center gap-x-2'>
-          {userType.icon && (
-            <userType.icon size={16} className='text-muted-foreground' />
-          )}
-          <span className='text-sm capitalize'>{row.getValue('role')}</span>
-        </div>
-      )
-    },
-    filterFn: (row, id, value) => {
-      return value.includes(row.getValue(id))
+      const role: number = row.getValue('role')
+      const label = roleOptions.find((r) => r.value === String(role))?.label ?? String(role)
+      return <div className='text-sm'>{label}</div>
     },
     enableSorting: false,
-    enableHiding: false,
   },
   {
     id: 'actions',

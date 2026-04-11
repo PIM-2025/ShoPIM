@@ -1,10 +1,7 @@
 ﻿using BCrypt.Net;
-using MailKit.Net.Smtp;
-using MailKit.Security;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
-using MimeKit;
 using ShoPIM.Data;
 using ShoPIM.Models;
 using System.Collections.Concurrent;
@@ -163,36 +160,33 @@ namespace ShoPIM.Controllers
         #region Enviar e-mail de reset
         private async Task EnviarEmailResetAsync(string destinatario, string nome, string token)
         {
-            var smtpHost  = _config["Email:Smtp"]!;
-            var smtpPort  = int.Parse(_config["Email:Port"]!);
-            var smtpUser  = _config["Email:User"]!;
-            var smtpPass  = _config["Email:Password"]!;
-            var remetente = _config["Email:NomeRemetente"] ?? "ShoPIM";
+            var apiKey = _config["Brevo:ApiKey"]
+                ?? throw new InvalidOperationException("Brevo:ApiKey não configurado.");
 
-            var msg = new MimeMessage();
-            msg.From.Add(new MailboxAddress(remetente, smtpUser));
-            msg.To.Add(MailboxAddress.Parse(destinatario));
-            msg.Subject = "Seu código de redefinição de senha - ShoPIM";
+            var html = $"""
+                <div style="font-family:sans-serif;max-width:480px;margin:auto;padding:32px;border:1px solid #e5e7eb;border-radius:12px">
+                  <h2 style="margin:0 0 8px;font-size:20px">Redefinição de senha</h2>
+                  <p style="color:#6b7280;margin:0 0 24px">Olá, <strong>{nome}</strong>. Use o código abaixo para redefinir sua senha:</p>
+                  <div style="background:#f4f4f5;border-radius:8px;padding:20px;text-align:center;letter-spacing:8px;font-size:32px;font-weight:700;color:#ea580c">
+                    {token}
+                  </div>
+                  <p style="color:#6b7280;margin:24px 0 0;font-size:13px">O código é válido por <strong>1 hora</strong>. Se você não solicitou a redefinição, ignore este e-mail.</p>
+                </div>
+                """;
 
-            msg.Body = new TextPart("html")
+            using var http = new HttpClient();
+            http.DefaultRequestHeaders.Add("api-key", apiKey);
+
+            var body = new
             {
-                Text = $"""
-                    <div style="font-family:sans-serif;max-width:480px;margin:auto;padding:32px;border:1px solid #e5e7eb;border-radius:12px">
-                      <h2 style="margin:0 0 8px;font-size:20px">Redefinição de senha</h2>
-                      <p style="color:#6b7280;margin:0 0 24px">Olá, <strong>{nome}</strong>. Use o código abaixo para redefinir sua senha:</p>
-                      <div style="background:#f4f4f5;border-radius:8px;padding:20px;text-align:center;letter-spacing:8px;font-size:32px;font-weight:700;color:#ea580c">
-                        {token}
-                      </div>
-                      <p style="color:#6b7280;margin:24px 0 0;font-size:13px">O código é válido por <strong>1 hora</strong>. Se você não solicitou a redefinição, ignore este e-mail.</p>
-                    </div>
-                    """
+                sender = new { name = "ShoPIM", email = "noreply@shopim.com.br" },
+                to = new[] { new { email = destinatario, name = nome } },
+                subject = "Seu código de redefinição de senha - ShoPIM",
+                htmlContent = html
             };
 
-            using var smtp = new SmtpClient();
-            await smtp.ConnectAsync(smtpHost, smtpPort, SecureSocketOptions.StartTls);
-            await smtp.AuthenticateAsync(smtpUser, smtpPass);
-            await smtp.SendAsync(msg);
-            await smtp.DisconnectAsync(true);
+            var response = await http.PostAsJsonAsync("https://api.brevo.com/v3/smtp/email", body);
+            response.EnsureSuccessStatusCode();
         }
         #endregion
 

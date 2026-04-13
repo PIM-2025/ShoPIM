@@ -53,53 +53,53 @@ O repositório está dividido em duas pastas principais:
 ---
 
 ## 📝 Requisitos Funcionais
-# 📦 Produtos
+### 📦 Produtos
 - [x] RF01: O sistema deve permitir a listagem de produtos
 - [ ] RF02: O sistema deve permitir visualizar detalhes do produto
 - [ ] RF03: O sistema deve permitir buscar produtos por nome
       
-# 🛒 Carrinho
+### 🛒 Carrinho
 - [x] RF04: O sistema deve permitir adicionar produtos ao carrinho
 - [x] RF05: O sistema deve permitir remover produtos do carrinho
 - [x] RF06: O sistema deve permitir alterar quantidade de itens
       
-# 👤 Usuário
+### 👤 Usuário
 - [x] RF07: O sistema deve permitir o cadastro de usuários
 - [x] RF08: O sistema deve permitir o login de usuários
 - [x] RF09: O sistema deve permitir logout
       
-# 📦 Pedidos
+### 📦 Pedidos
 - [ ] RF10: O sistema deve permitir criar pedidos
 - [ ] RF11: O sistema deve permitir visualizar histórico de pedidos
 - [ ] RF12: O sistema deve atualizar o status do pedido (ex: em processamento)
       
-# 🔗 Integração
+### 🔗 Integração
 - [x] RF13: O frontend deve consumir dados da API backend
 - [x] RF14: O sistema deve validar dados enviados entre frontend e backend
 
 ## ⚙️ Requisitos Não Funcionais
-# 🚀 Performance
+### 🚀 Performance
 - [ ] RNF01: O sistema deve responder requisições em até 2 segundos
 - [x] RNF02: A interface deve carregar rapidamente (uso do Vite)
 
-# 🔒 Segurança
+### 🔒 Segurança
 - [ ] RNF03: O sistema deve garantir autenticação segura (JWT, por exemplo)
 - [x] RNF04: Dados sensíveis devem ser protegidos
 
-# 🧱 Arquitetura
+### 🧱 Arquitetura
 - [x] RNF05: O sistema deve seguir arquitetura Client-Server
 - [x] RNF06: O backend deve seguir padrão MVC
 - [x] RNF07: O sistema deve ser modular (frontend separado do backend)
 
-# 📱 Usabilidade
+### 📱 Usabilidade
 - [x] RNF08: A interface deve ser responsiva (Tailwind CSS)
 - [x] RNF09: O sistema deve ser intuitivo para o usuário
 
-# 🔄 Escalabilidade
+### 🔄 Escalabilidade
 - [x] RNF10: O backend deve suportar aumento de usuários
 - [x] RNF11: O sistema deve permitir futuras integrações (ex: pagamento)
 
-# 🧪 Manutenibilidade
+### 🧪 Manutenibilidade
 - [x] RNF12: O código deve ser tipado (TypeScript)
 - [x] RNF13: O sistema deve ser de fácil manutenção (uso de ORM)
 

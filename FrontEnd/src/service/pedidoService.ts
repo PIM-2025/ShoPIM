@@ -19,7 +19,7 @@ export interface EnderecoEntrega {
 
 export interface Pedido {
   id: number
-  status: 'pendente' | 'processando' | 'enviado' | 'entregue' | 'cancelado'
+  status: 'pendente' | 'processando' | 'enviado' | 'concluído' | 'cancelado'
   dataPedido: string
   total: number
   totalItens?: number

@@ -7,4 +7,5 @@ export interface Produto {
   categoria: string
   quantidade: number // era 'emEstoque'
   imagem: string
+  descricaoDetalhada?: string
 }

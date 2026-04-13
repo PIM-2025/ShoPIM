@@ -25,6 +25,19 @@ export interface UltimoPedido {
   cliente: { nome: string; email: string } | null
 }
 
+export interface ProdutoMaisVendido {
+  idProduto: number
+  descricao: string
+  imagem: string | null
+  totalUnidades: number
+  receitaGerada: number
+}
+
+export interface PedidoStatus {
+  status: string
+  total: number
+}
+
 export interface DashboardStats {
   totalClientes: number
   totalProdutos: number
@@ -37,6 +50,8 @@ export interface DashboardStats {
   ultimosClientes: UltimoCliente[]
   receitaPorMes: ReceitaMes[]
   ultimosPedidos: UltimoPedido[]
+  produtosMaisVendidos: ProdutoMaisVendido[]
+  pedidosPorStatus: PedidoStatus[]
 }
 
 export async function getDashboardStats(): Promise<DashboardStats> {

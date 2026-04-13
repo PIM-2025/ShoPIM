@@ -83,6 +83,16 @@ builder.Services.AddSwaggerGen(c =>
         return $"{api.RelativePath}_{methodIndex}";
     });
     c.SwaggerDoc("v1", new OpenApiInfo { Title = "ShoPIM API", Version = "v1" });
+
+    // Suporte a JWT no Swagger UI
+    c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+    {
+        Description = "Insira o token JWT no formato: Bearer {token}",
+        Name = "Authorization",
+        In = ParameterLocation.Header,
+        Type = SecuritySchemeType.ApiKey,
+        Scheme = "Bearer"
+    });
 });
 
 var app = builder.Build();

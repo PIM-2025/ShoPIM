@@ -1,9 +1,18 @@
-import { useNavigate } from '@tanstack/react-router'
-import { Produto } from '@/types/produtos'
-import { ShoppingCart } from 'lucide-react'
+import { useState } from 'react'
+import { useNavigate, Link } from '@tanstack/react-router'
+import { ShoppingCart, Minus, Plus, PackageX, ChevronRight, Tag, Hash } from 'lucide-react'
 import { toast } from 'sonner'
 import { useAuthStore } from '@/stores/auth-store'
 import { useCart } from '@/hooks/useCart'
+import { Produto } from '@/types/produtos'
+
+const CATEGORIA_LABEL: Record<string, string> = {
+  eletronicos: 'Eletrônicos',
+  roupas: 'Roupas',
+  acessorios: 'Acessórios',
+  ofertas: 'Ofertas',
+  novidades: 'Novidades',
+}
 
 interface ProdutoDetalheProps {
   produto: Produto
@@ -16,8 +25,13 @@ export function ProdutoDetalhe({ produto }: ProdutoDetalheProps) {
   const navigate = useNavigate()
   const esgotado = produto.quantidade === 0
 
+  const [quantidade, setQuantidade] = useState(1)
+
+  const decr = () => setQuantidade((q) => Math.max(1, q - 1))
+  const incr = () => setQuantidade((q) => Math.min(produto.quantidade, q + 1))
+
   const handleAdicionarCarrinho = async () => {
-    await adicionar(produto.id, 1, {
+    await adicionar(produto.id, quantidade, {
       id: produto.id,
       descricao: produto.descricao,
       preco: produto.preco,
@@ -32,69 +46,136 @@ export function ProdutoDetalhe({ produto }: ProdutoDetalheProps) {
     navigate({ to: '/cart' })
   }
 
+  const categoriaLabel = CATEGORIA_LABEL[produto.categoria] ?? produto.categoria
+
   return (
-    <div className='grid grid-cols-1 gap-6 md:grid-cols-3'>
-      {/* IMAGEM */}
-      <div className='md:col-span-1'>
-        <div className='flex items-center justify-center rounded-xl border border-border bg-zinc-100 p-6 dark:bg-zinc-900'>
+    <div className='space-y-2'>
+      {/* Breadcrumb */}
+      <nav className='flex items-center gap-1 text-xs text-muted-foreground'>
+        <Link to='/' className='hover:text-foreground transition'>Início</Link>
+        <ChevronRight size={12} />
+        <Link
+          to='/categoria/$slug'
+          params={{ slug: produto.categoria }}
+          className='hover:text-foreground transition capitalize'
+        >
+          {categoriaLabel}
+        </Link>
+        <ChevronRight size={12} />
+        <span className='truncate max-w-[200px] text-foreground'>{produto.descricao}</span>
+      </nav>
+
+      {/* Layout principal */}
+      <div className='grid grid-cols-1 gap-8 pt-2 md:grid-cols-2'>
+
+        {/* ── Imagem ── */}
+        <div className='relative flex items-center justify-center rounded-2xl border border-border bg-zinc-100 p-8 dark:bg-zinc-900 min-h-[320px]'>
+          {esgotado && (
+            <span className='absolute left-3 top-3 flex items-center gap-1 rounded-full bg-destructive/10 px-2.5 py-1 text-xs font-medium text-destructive'>
+              <PackageX size={12} />
+              Esgotado
+            </span>
+          )}
           <img
             src={produto.imagem}
             alt={produto.descricao}
-            className={`max-h-[320px] object-contain transition ${esgotado ? 'opacity-40' : ''}`}
+            className={`max-h-[320px] w-full object-contain transition duration-300 ${esgotado ? 'opacity-40 grayscale' : ''}`}
           />
         </div>
-      </div>
 
-      {/* INFO */}
-      <div className='space-y-4 md:col-span-1'>
-        <p className='text-sm text-muted-foreground capitalize'>
-          {produto.categoria}
-        </p>
+        {/* ── Informações + compra ── */}
+        <div className='flex flex-col gap-5'>
 
-        <h1 className='text-2xl font-bold text-foreground'>
-          {produto.descricao}
-        </h1>
+          {/* Categoria */}
+          <span className='flex w-fit items-center gap-1.5 rounded-full border border-border bg-muted px-3 py-1 text-xs font-medium capitalize text-muted-foreground'>
+            <Tag size={11} />
+            {categoriaLabel}
+          </span>
 
-        <div className='text-3xl font-bold text-foreground'>
-          R$ {produto.preco.toFixed(2)}
-        </div>
+          {/* Nome */}
+          <h1 className='text-2xl font-bold leading-snug text-foreground md:text-3xl'>
+            {produto.descricao}
+          </h1>
 
-        <p
-          className={`text-sm font-medium ${esgotado ? 'text-destructive' : 'text-green-600 dark:text-green-400'}`}
-        >
-          {esgotado
-            ? 'Produto esgotado'
-            : `Em estoque (${produto.quantidade} unidades)`}
-        </p>
-      </div>
+          {/* Preço */}
+          <div>
+            <p className='text-4xl font-extrabold text-foreground'>
+              R$ {produto.preco.toFixed(2)}
+            </p>
+            <p className='mt-1 text-xs text-muted-foreground'>à vista</p>
+          </div>
 
-      {/* COMPRA */}
-      <div className='md:col-span-1'>
-        <div className='space-y-4 rounded-xl border border-border bg-background p-6'>
-          <p className='text-2xl font-bold'>R$ {produto.preco.toFixed(2)}</p>
-
-          <p
-            className={`text-sm font-medium ${esgotado ? 'text-destructive' : 'text-green-600 dark:text-green-400'}`}
-          >
-            {esgotado ? 'Esgotado' : 'Em estoque'}
+          {/* Disponibilidade */}
+          <p className={`flex items-center gap-1.5 text-sm font-medium ${esgotado ? 'text-destructive' : 'text-green-600 dark:text-green-400'}`}>
+            <span className={`inline-block h-2 w-2 rounded-full ${esgotado ? 'bg-destructive' : 'bg-green-500'}`} />
+            {esgotado ? 'Produto esgotado' : `Em estoque · ${produto.quantidade} unidades disponíveis`}
           </p>
 
-          <button
-            disabled={esgotado}
-            onClick={handleAdicionarCarrinho}
-            className='flex w-full items-center justify-center gap-2 rounded-lg bg-primary py-2.5 text-sm font-medium text-primary-foreground transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-40'
-          >
-            <ShoppingCart size={16} />
-            Adicionar ao carrinho
-          </button>
+          <div className='h-px bg-border' />
 
-          <button
-            disabled={esgotado}
-            onClick={handleComprarAgora}
-            className='w-full rounded-lg bg-orange-600 py-2.5 text-sm font-medium text-white transition hover:bg-orange-700 disabled:cursor-not-allowed disabled:opacity-40'
-          >
-            Comprar agora
-          </button>
+          {/* Quantidade */}
+          {!esgotado && (
+            <div className='flex items-center gap-3'>
+              <span className='text-sm text-muted-foreground'>Quantidade</span>
+              <div className='flex items-center rounded-lg border border-border'>
+                <button
+                  onClick={decr}
+                  disabled={quantidade <= 1}
+                  className='flex h-9 w-9 items-center justify-center rounded-l-lg transition hover:bg-muted disabled:opacity-40'
+                >
+                  <Minus size={14} />
+                </button>
+                <span className='w-10 text-center text-sm font-medium tabular-nums'>
+                  {quantidade}
+                </span>
+                <button
+                  onClick={incr}
+                  disabled={quantidade >= produto.quantidade}
+                  className='flex h-9 w-9 items-center justify-center rounded-r-lg transition hover:bg-muted disabled:opacity-40'
+                >
+                  <Plus size={14} />
+                </button>
+              </div>
+            </div>
+          )}
+
+          {/* Botões */}
+          <div className='flex flex-col gap-3'>
+            <button
+              disabled={esgotado}
+              onClick={handleAdicionarCarrinho}
+              className='flex w-full items-center justify-center gap-2 rounded-xl bg-primary py-3 text-sm font-semibold text-primary-foreground transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-40'
+            >
+              <ShoppingCart size={16} />
+              Adicionar ao carrinho
+            </button>
+
+            <button
+              disabled={esgotado}
+              onClick={handleComprarAgora}
+              className='w-full rounded-xl bg-orange-600 py-3 text-sm font-semibold text-white transition hover:bg-orange-700 disabled:cursor-not-allowed disabled:opacity-40'
+            >
+              Comprar agora
+            </button>
+          </div>
+
+          <div className='h-px bg-border' />
+
+          {/* Detalhes do produto */}
+          <dl className='space-y-2 text-sm'>
+            <div className='flex gap-2'>
+              <dt className='flex items-center gap-1.5 text-muted-foreground'>
+                <Tag size={13} /> Categoria
+              </dt>
+              <dd className='font-medium capitalize'>{categoriaLabel}</dd>
+            </div>
+            <div className='flex gap-2'>
+              <dt className='flex items-center gap-1.5 text-muted-foreground'>
+                <Hash size={13} /> Código
+              </dt>
+              <dd className='font-medium'>#{produto.id}</dd>
+            </div>
+          </dl>
         </div>
       </div>
     </div>

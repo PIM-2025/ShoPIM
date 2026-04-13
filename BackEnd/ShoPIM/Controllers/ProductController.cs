@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ShoPIM.Data;
 using ShoPIM.Models;
@@ -41,6 +42,7 @@ namespace ShoPIM.Controllers
         #endregion
 
         #region POST: api/product
+        [Authorize(Roles = "1")]
         [HttpPost]
         public async Task<ActionResult> CreateProduct([FromBody] Product product)
         {
@@ -59,6 +61,7 @@ namespace ShoPIM.Controllers
         #endregion
 
         #region PUT: api/product/{id}
+        [Authorize(Roles = "1")]
         [HttpPut("{id}")]
         public async Task<ActionResult> UpdateProduct(int id, [FromBody] Product product)
         {
@@ -73,6 +76,7 @@ namespace ShoPIM.Controllers
             existing.Categoria = product.Categoria;
             existing.Quantidade = product.Quantidade;
             existing.Imagem = product.Imagem;
+            existing.DescricaoDetalhada = product.DescricaoDetalhada;
 
             await _context.SaveChangesAsync();
             return NoContent();
@@ -80,6 +84,7 @@ namespace ShoPIM.Controllers
         #endregion
 
         #region DELETE: api/product/{id}
+        [Authorize(Roles = "1")]
         [HttpDelete("{id}")]
         public async Task<ActionResult> DeleteProduct(int id)
         {

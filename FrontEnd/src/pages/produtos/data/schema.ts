@@ -7,6 +7,7 @@ export const produtoSchema = z.object({
   categoria: z.string(),
   quantidade: z.coerce.number(),
   imagem: z.string().optional().default(''),
+  descricaoDetalhada: z.string().optional().default(''),
 })
 
 export type Produto = z.infer<typeof produtoSchema>

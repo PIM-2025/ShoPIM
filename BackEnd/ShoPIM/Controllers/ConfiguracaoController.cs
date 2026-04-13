@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ShoPIM.Data;
@@ -36,6 +37,7 @@ namespace ShoPIM.Controllers
             });
         }
 
+        [Authorize(Roles = "1")]
         [HttpPut]
         public async Task<ActionResult> Salvar([FromBody] SalvarConfiguracaoRequest request)
         {

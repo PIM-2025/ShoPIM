@@ -4,7 +4,13 @@
       "Bash(xargs grep:*)",
       "Bash(npm install:*)",
       "Bash(npx tsc:*)",
-      "Bash(xargs cat:*)"
+      "Bash(xargs cat:*)",
+      "Bash(wc -l /c/Users/jeanf/OneDrive/Documentos/Projetos/ShoPIM/BackEnd/ShoPIM/Controllers/*.cs /c/Users/jeanf/OneDrive/Documentos/Projetos/ShoPIM/BackEnd/ShoPIM/Models/*.cs)",
+      "Bash(xargs wc:*)",
+      "Bash(wc:*)",
+      "Bash(xargs ls:*)",
+      "Bash(grep -E \"\\\\.\\(cs|java|tsx|ts\\)$\")",
+      "Bash(dotnet build:*)"
     ]
   }
 }

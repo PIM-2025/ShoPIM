@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
@@ -21,6 +22,7 @@ namespace ShoPIM.Controllers
         }
 
         #region GET: api/chat/conversas (admin — todas as conversas)
+        [Authorize(Roles = "1")]
         [HttpGet("conversas")]
         public async Task<ActionResult<IEnumerable<object>>> GetConversas()
         {
@@ -47,6 +49,7 @@ namespace ShoPIM.Controllers
         #endregion
 
         #region GET: api/chat/conversas/{id}/mensagens
+        [Authorize]
         [HttpGet("conversas/{id}/mensagens")]
         public async Task<ActionResult<IEnumerable<Mensagem>>> GetMensagens(int id)
         {
@@ -85,6 +88,7 @@ namespace ShoPIM.Controllers
         #endregion
 
         #region PUT: api/chat/conversas/{id}/fechar
+        [Authorize(Roles = "1")]
         [HttpPut("conversas/{id}/fechar")]
         public async Task<ActionResult> FecharConversa(int id)
         {

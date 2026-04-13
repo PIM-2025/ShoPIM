@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ShoPIM.Data;
@@ -5,6 +6,7 @@ using System.Globalization;
 
 namespace ShoPIM.Controllers
 {
+    [Authorize(Roles = "1")]
     [Route("api/[controller]")]
     [ApiController]
     public class DashboardController : ControllerBase
@@ -100,6 +102,32 @@ namespace ShoPIM.Controllers
                 Cliente = p.Usuario == null ? null : new { p.Usuario.Nome, p.Usuario.Email }
             }).ToList();
 
+            // Top 5 produtos mais vendidos (por unidades)
+            var produtosMaisVendidos = await _context.ItemPedido
+                .Include(i => i.Produto)
+                .GroupBy(i => new { i.IdProduto, i.Produto!.Descricao, i.Produto.Imagem })
+                .Select(g => new
+                {
+                    idProduto = g.Key.IdProduto,
+                    descricao = g.Key.Descricao,
+                    imagem = g.Key.Imagem,
+                    totalUnidades = g.Sum(i => i.Quantidade),
+                    receitaGerada = g.Sum(i => i.Quantidade * i.PrecoUnitario),
+                })
+                .OrderByDescending(x => x.totalUnidades)
+                .Take(5)
+                .ToListAsync();
+
+            // Distribuição de pedidos por status — loop sequencial (DbContext não é thread-safe)
+            var statusPossiveis = new[] { "pendente", "processando", "enviado", "concluído", "cancelado" };
+            var pedidosPorStatus = new List<object>();
+            foreach (var s in statusPossiveis)
+            {
+                var total = await _context.Pedido.CountAsync(p => p.Status == s);
+                if (total > 0)
+                    pedidosPorStatus.Add(new { status = s, total });
+            }
+
             return Ok(new
             {
                 totalClientes,
@@ -112,7 +140,9 @@ namespace ShoPIM.Controllers
                 clientesPorMes,
                 ultimosClientes,
                 receitaPorMes,
-                ultimosPedidos
+                ultimosPedidos,
+                produtosMaisVendidos,
+                pedidosPorStatus,
             });
         }
     }

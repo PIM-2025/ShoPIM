@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ShoPIM.Data;
@@ -17,6 +18,7 @@ namespace ShoPIM.Controllers
         }
 
         #region POST: api/pedido — finaliza compra a partir do carrinho
+        [Authorize]
         [HttpPost]
         public async Task<ActionResult> CriarPedido([FromBody] CriarPedidoRequest request)
         {
@@ -105,6 +107,7 @@ namespace ShoPIM.Controllers
         #endregion
 
         #region GET: api/pedido/meus/{idUsuario}
+        [Authorize]
         [HttpGet("meus/{idUsuario}")]
         public async Task<ActionResult> GetMeusPedidos(int idUsuario)
         {
@@ -135,6 +138,7 @@ namespace ShoPIM.Controllers
         #endregion
 
         #region GET: api/pedido/{id}
+        [Authorize]
         [HttpGet("{id}")]
         public async Task<ActionResult> GetPedido(int id)
         {
@@ -174,6 +178,7 @@ namespace ShoPIM.Controllers
         #endregion
 
         #region GET: api/pedido/todos — admin
+        [Authorize(Roles = "1")]
         [HttpGet("todos")]
         public async Task<ActionResult> GetTodosPedidos()
         {
@@ -201,6 +206,7 @@ namespace ShoPIM.Controllers
         #endregion
 
         #region PATCH: api/pedido/{id}/status — admin
+        [Authorize(Roles = "1")]
         [HttpPatch("{id}/status")]
         public async Task<ActionResult> AtualizarStatus(int id, [FromBody] AtualizarStatusRequest request)
         {
@@ -214,6 +220,7 @@ namespace ShoPIM.Controllers
         #endregion
 
         #region GET: api/pedido/endereco/{idUsuario}
+        [Authorize]
         [HttpGet("endereco/{idUsuario}")]
         public async Task<ActionResult> GetEndereco(int idUsuario)
         {

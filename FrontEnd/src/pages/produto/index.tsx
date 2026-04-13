@@ -5,7 +5,16 @@ import { Produto } from '@/types/produtos'
 import { HeaderLanding } from '@/components/layout/header_landingpage'
 import { Rodape } from '@/components/layout/rodape'
 import { ProdutoDetalhe } from '@/components/layout/produtos_detalhe'
+import { Avaliacoes } from '@/components/layout/Avaliacoes'
+import { Perguntas } from '@/components/layout/Perguntas'
 import { Skeleton } from '@/components/ui/skeleton'
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from '@/components/ui/tabs'
+import { FileText, MessageCircle, Star } from 'lucide-react'
 
 function ProdutoDetalheSkeleton() {
   return (
@@ -53,7 +62,46 @@ export function ProdutoDetalhePage() {
             Produto não encontrado.
           </p>
         ) : (
-          <ProdutoDetalhe produto={produto} />
+          <>
+            <ProdutoDetalhe produto={produto} />
+
+            <Tabs defaultValue='descricao' className='mt-10'>
+              <TabsList className='mb-6'>
+                <TabsTrigger value='descricao' className='flex items-center gap-1.5'>
+                  <FileText size={14} />
+                  Descrição
+                </TabsTrigger>
+                <TabsTrigger value='perguntas' className='flex items-center gap-1.5'>
+                  <MessageCircle size={14} />
+                  Perguntas
+                </TabsTrigger>
+                <TabsTrigger value='avaliacoes' className='flex items-center gap-1.5'>
+                  <Star size={14} />
+                  Avaliações
+                </TabsTrigger>
+              </TabsList>
+
+              <TabsContent value='descricao'>
+                {produto.descricaoDetalhada ? (
+                  <div className='prose prose-sm dark:prose-invert max-w-none whitespace-pre-wrap rounded-xl border border-border p-6 text-sm leading-relaxed'>
+                    {produto.descricaoDetalhada}
+                  </div>
+                ) : (
+                  <p className='text-sm text-muted-foreground'>
+                    Nenhuma descrição detalhada cadastrada para este produto.
+                  </p>
+                )}
+              </TabsContent>
+
+              <TabsContent value='perguntas'>
+                <Perguntas idProduto={produto.id} />
+              </TabsContent>
+
+              <TabsContent value='avaliacoes'>
+                <Avaliacoes idProduto={produto.id} />
+              </TabsContent>
+            </Tabs>
+          </>
         )}
       </main>
 

@@ -31,6 +31,44 @@ ALTER TABLE ITEM_PEDIDO DROP CONSTRAINT PEDIDO_ITEM_PEDIDO;
 
 ALTER TABLE ITEM_PEDIDO DROP CONSTRAINT PRODUCT_ITEM_PEDIDO;
 
+ALTER TABLE AVALIACAO DROP CONSTRAINT FK_AVAL_PRODUTO;
+
+ALTER TABLE AVALIACAO DROP CONSTRAINT FK_AVAL_USER;
+
+ALTER TABLE PERGUNTA DROP CONSTRAINT FK_PERG_PRODUTO;
+
+ALTER TABLE PERGUNTA DROP CONSTRAINT FK_PERG_USER;
+
+/* ---------------------------------------------------------------------- */
+/* Drop table "AVALIACAO"                                                 */
+/* ---------------------------------------------------------------------- */
+
+/* Drop constraints */
+
+ALTER TABLE AVALIACAO DROP CONSTRAINT NN_AVALIACAO_ID;
+
+ALTER TABLE AVALIACAO DROP CONSTRAINT NN_AVALIACAO_ID_PRODUTO;
+
+ALTER TABLE AVALIACAO DROP CONSTRAINT NN_AVALIACAO_ID_USER;
+
+ALTER TABLE AVALIACAO DROP CONSTRAINT NN_AVALIACAO_NOTA;
+
+ALTER TABLE AVALIACAO DROP CONSTRAINT NN_AVALIACAO_CRIADO_EM;
+
+ALTER TABLE AVALIACAO DROP CONSTRAINT UQ_AVAL_USER_PRODUTO;
+
+ALTER TABLE AVALIACAO DROP CONSTRAINT CK_AVAL_NOTA;
+
+ALTER TABLE AVALIACAO DROP CONSTRAINT PK_AVALIACAO;
+
+DROP TABLE AVALIACAO;
+
+/* ---------------------------------------------------------------------- */
+/* Drop table "PERGUNTA"                                                  */
+/* ---------------------------------------------------------------------- */
+
+DROP TABLE PERGUNTA;
+
 /* ---------------------------------------------------------------------- */
 /* Drop table "CONFIGURACAO"                                              */
 /* ---------------------------------------------------------------------- */
@@ -228,3 +266,7 @@ DROP SEQUENCE SEQ_MENSAGEM;
 DROP SEQUENCE SEQ_PEDIDO;
 
 DROP SEQUENCE SEQ_ITEM_PEDIDO;
+
+DROP SEQUENCE SEQ_AVALIACAO;
+
+DROP SEQUENCE SEQ_PERGUNTA;

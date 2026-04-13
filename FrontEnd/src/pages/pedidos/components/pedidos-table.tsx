@@ -30,7 +30,7 @@ const statusOptions = [
   { label: 'Pendente', value: 'pendente' },
   { label: 'Processando', value: 'processando' },
   { label: 'Enviado', value: 'enviado' },
-  { label: 'Entregue', value: 'entregue' },
+  { label: 'Concluído', value: 'concluído' },
   { label: 'Cancelado', value: 'cancelado' },
 ]
 

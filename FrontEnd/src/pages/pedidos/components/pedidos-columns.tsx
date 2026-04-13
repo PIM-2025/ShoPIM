@@ -21,7 +21,7 @@ const STATUS_LABEL: Record<string, string> = {
   pendente: 'Pendente',
   processando: 'Processando',
   enviado: 'Enviado',
-  entregue: 'Entregue',
+  concluído: 'Concluído',
   cancelado: 'Cancelado',
 }
 
@@ -29,11 +29,11 @@ const STATUS_CLASS: Record<string, string> = {
   pendente: 'border-yellow-300 bg-yellow-100/30 text-yellow-800 dark:text-yellow-300',
   processando: 'border-blue-300 bg-blue-100/30 text-blue-800 dark:text-blue-300',
   enviado: 'border-purple-300 bg-purple-100/30 text-purple-800 dark:text-purple-300',
-  entregue: 'border-green-300 bg-green-100/30 text-green-800 dark:text-green-300',
+  concluído: 'border-green-300 bg-green-100/30 text-green-800 dark:text-green-300',
   cancelado: 'border-red-300 bg-red-100/30 text-red-800 dark:text-red-300',
 }
 
-const STATUS_OPTIONS = ['pendente', 'processando', 'enviado', 'entregue', 'cancelado']
+const STATUS_OPTIONS = ['pendente', 'processando', 'enviado', 'concluído', 'cancelado']
 
 function ActionsCell({
   row,

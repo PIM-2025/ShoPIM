@@ -1,10 +1,12 @@
 ﻿using BCrypt.Net;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using ShoPIM.Data;
 using ShoPIM.Models;
 using System.Collections.Concurrent;
+using System.ComponentModel.DataAnnotations;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
@@ -32,6 +34,7 @@ namespace ShoPIM.Controllers
         #endregion
 
         #region GET: api/users
+        [Authorize(Roles = "1")]
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Users>>> GetUsers()
         {
@@ -43,6 +46,7 @@ namespace ShoPIM.Controllers
         #endregion
 
         #region GET: api/users/{id}
+        [Authorize]
         [HttpGet("{id}")]
         public async Task<ActionResult<Users>> GetUser(long id)
         {
@@ -57,6 +61,7 @@ namespace ShoPIM.Controllers
         #endregion
 
         #region PUT: api/users/{id}
+        [Authorize(Roles = "1")]
         [HttpPut("{id}")]
         public async Task<ActionResult> UpdateUser(int id, [FromBody] UpdateUserRequest request)
         {
@@ -75,6 +80,7 @@ namespace ShoPIM.Controllers
         #endregion
 
         #region DELETE: api/users/{id}
+        [Authorize(Roles = "1")]
         [HttpDelete("{id}")]
         public async Task<ActionResult> DeleteUser(int id)
         {
@@ -243,34 +249,62 @@ namespace ShoPIM.Controllers
     #region Classes de request
     public class CadastroRequest
     {
+        [Required(ErrorMessage = "Nome é obrigatório.")]
+        [MaxLength(100, ErrorMessage = "Nome deve ter no máximo 100 caracteres.")]
         public string Nome { get; set; } = string.Empty;
+
+        [Required(ErrorMessage = "E-mail é obrigatório.")]
+        [EmailAddress(ErrorMessage = "E-mail inválido.")]
         public string Email { get; set; } = string.Empty;
+
+        [Required(ErrorMessage = "Senha é obrigatória.")]
+        [MinLength(6, ErrorMessage = "Senha deve ter no mínimo 6 caracteres.")]
         public string Senha { get; set; } = string.Empty;
+
+        [StringLength(14, ErrorMessage = "CPF inválido.")]
         public string? Cpf { get; set; }
     }
 
     public class LoginRequest
     {
+        [Required(ErrorMessage = "E-mail é obrigatório.")]
+        [EmailAddress(ErrorMessage = "E-mail inválido.")]
         public string Email { get; set; } = string.Empty;
+
+        [Required(ErrorMessage = "Senha é obrigatória.")]
         public string Senha { get; set; } = string.Empty;
     }
 
     public class ForgotPasswordRequest
     {
+        [Required(ErrorMessage = "E-mail é obrigatório.")]
+        [EmailAddress(ErrorMessage = "E-mail inválido.")]
         public string Email { get; set; } = string.Empty;
     }
 
     public class ResetPasswordRequest
     {
+        [Required(ErrorMessage = "Código é obrigatório.")]
         public string Token { get; set; } = string.Empty;
+
+        [Required(ErrorMessage = "Nova senha é obrigatória.")]
+        [MinLength(6, ErrorMessage = "Senha deve ter no mínimo 6 caracteres.")]
         public string NovaSenha { get; set; } = string.Empty;
     }
 
     public class UpdateUserRequest
     {
+        [Required(ErrorMessage = "Nome é obrigatório.")]
+        [MaxLength(100, ErrorMessage = "Nome deve ter no máximo 100 caracteres.")]
         public string Nome { get; set; } = string.Empty;
+
+        [Required(ErrorMessage = "E-mail é obrigatório.")]
+        [EmailAddress(ErrorMessage = "E-mail inválido.")]
         public string Email { get; set; } = string.Empty;
+
+        [StringLength(14, ErrorMessage = "CPF inválido.")]
         public string? Cpf { get; set; }
+
         public int Ativo { get; set; }
         public int Role { get; set; }
     }

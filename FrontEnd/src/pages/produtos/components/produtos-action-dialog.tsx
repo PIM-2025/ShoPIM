@@ -24,6 +24,7 @@ import {
   FormMessage,
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
+import { Textarea } from '@/components/ui/textarea'
 import { SelectDropdown } from '@/components/select-dropdown'
 import { categorias } from '../data/data'
 import { type Produto } from '../data/schema'
@@ -36,6 +37,7 @@ const formSchema = z.object({
     .number()
     .min(0, 'Quantidade deve ser maior ou igual a 0.'),
   imagem: z.string().optional().default(''),
+  descricaoDetalhada: z.string().optional().default(''),
 })
 
 type ProdutoFormInput = z.input<typeof formSchema>
@@ -64,8 +66,9 @@ export function ProdutosActionDialog({
           categoria: currentRow.categoria,
           quantidade: currentRow.quantidade,
           imagem: currentRow.imagem ?? '',
+          descricaoDetalhada: currentRow.descricaoDetalhada ?? '',
         }
-      : { descricao: '', preco: 0, categoria: '', quantidade: 0, imagem: '' },
+      : { descricao: '', preco: 0, categoria: '', quantidade: 0, imagem: '', descricaoDetalhada: '' },
   })
 
   const mutation = useMutation<void, Error, ProdutoForm>({
@@ -75,9 +78,10 @@ export function ProdutosActionDialog({
           ...values,
           id: currentRow!.id,
           imagem: values.imagem ?? '',
+          descricaoDetalhada: values.descricaoDetalhada ?? '',
         })
       } else {
-        await createProduto({ ...values, imagem: values.imagem ?? '' })
+        await createProduto({ ...values, imagem: values.imagem ?? '', descricaoDetalhada: values.descricaoDetalhada ?? '' })
       }
     },
     onSuccess: () => {
@@ -219,6 +223,26 @@ export function ProdutosActionDialog({
                       placeholder='https://...'
                       className='col-span-4'
                       autoComplete='off'
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage className='col-span-4 col-start-3' />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name='descricaoDetalhada'
+              render={({ field }) => (
+                <FormItem className='grid grid-cols-6 items-start space-y-0 gap-x-4 gap-y-1'>
+                  <FormLabel className='col-span-2 pt-2 text-end'>
+                    Descrição detalhada
+                  </FormLabel>
+                  <FormControl>
+                    <Textarea
+                      placeholder='Detalhes do produto, especificações, características...'
+                      className='col-span-4 resize-none'
+                      rows={4}
                       {...field}
                     />
                   </FormControl>

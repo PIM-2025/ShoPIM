@@ -29,5 +29,9 @@ namespace ShoPIM.Models
 
         [Column("IMAGEM")]
         public string? Imagem { get; set; }
+
+        [Column("DESCRICAO_DETALHADA")]
+        [MaxLength(4000)]
+        public string? DescricaoDetalhada { get; set; }
     }
 }

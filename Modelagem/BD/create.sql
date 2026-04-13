@@ -85,6 +85,22 @@ CREATE SEQUENCE SEQ_ITEM_PEDIDO
     nocycle
     noorder;
 
+CREATE SEQUENCE SEQ_AVALIACAO
+    START WITH 1
+    INCREMENT BY 1
+    MINVALUE 1
+    MAXVALUE 999999999
+    nocycle
+    noorder;
+
+CREATE SEQUENCE SEQ_PERGUNTA
+    START WITH 1
+    INCREMENT BY 1
+    MINVALUE 1
+    MAXVALUE 999999999
+    nocycle
+    noorder;
+
 /* ---------------------------------------------------------------------- */
 /* Add tables                                                             */
 /* ---------------------------------------------------------------------- */
@@ -143,6 +159,7 @@ CREATE TABLE PRODUCT (
     CATEGORIA VARCHAR2(255),
     QUANTIDADE NUMBER(9),
     IMAGEM VARCHAR2(255),
+    DESCRICAO_DETALHADA VARCHAR2(4000),
     CONSTRAINT PK_PRODUCT PRIMARY KEY (ID_PRODUTO)
 );
 
@@ -230,6 +247,37 @@ CREATE TABLE CONFIGURACAO (
 );
 
 /* ---------------------------------------------------------------------- */
+/* Add table "PERGUNTA"                                                   */
+/* ---------------------------------------------------------------------- */
+
+CREATE TABLE PERGUNTA (
+    ID          NUMBER(9)      NOT NULL,
+    ID_PRODUTO  NUMBER(9)      NOT NULL,
+    ID_USER     NUMBER(9),
+    TEXTO       VARCHAR2(2000) NOT NULL,
+    RESPOSTA    VARCHAR2(2000),
+    RESPONDIDO_EM TIMESTAMP,
+    CRIADO_EM   TIMESTAMP      NOT NULL,
+    CONSTRAINT PK_PERGUNTA PRIMARY KEY (ID)
+);
+
+/* ---------------------------------------------------------------------- */
+/* Add table "AVALIACAO"                                                  */
+/* ---------------------------------------------------------------------- */
+
+CREATE TABLE AVALIACAO (
+    ID          NUMBER(9)     CONSTRAINT NN_AVALIACAO_ID NOT NULL,
+    ID_PRODUTO  NUMBER(9)     CONSTRAINT NN_AVALIACAO_ID_PRODUTO NOT NULL,
+    ID_USER     NUMBER(9)     CONSTRAINT NN_AVALIACAO_ID_USER NOT NULL,
+    NOTA        NUMBER(1)     CONSTRAINT NN_AVALIACAO_NOTA NOT NULL,
+    COMENTARIO  VARCHAR2(1000),
+    CRIADO_EM   TIMESTAMP     CONSTRAINT NN_AVALIACAO_CRIADO_EM NOT NULL,
+    CONSTRAINT PK_AVALIACAO PRIMARY KEY (ID),
+    CONSTRAINT UQ_AVAL_USER_PRODUTO UNIQUE (ID_USER, ID_PRODUTO),
+    CONSTRAINT CK_AVAL_NOTA CHECK (NOTA BETWEEN 1 AND 5)
+);
+
+/* ---------------------------------------------------------------------- */
 /* Add foreign key constraints                                            */
 /* ---------------------------------------------------------------------- */
 
@@ -257,5 +305,17 @@ ALTER TABLE PEDIDO ADD CONSTRAINT PEDIDO_ADDRESS
 ALTER TABLE ITEM_PEDIDO ADD CONSTRAINT PEDIDO_ITEM_PEDIDO 
     FOREIGN KEY (ID_PEDIDO) REFERENCES PEDIDO (ID) ON DELETE CASCADE;
 
-ALTER TABLE ITEM_PEDIDO ADD CONSTRAINT PRODUCT_ITEM_PEDIDO 
+ALTER TABLE ITEM_PEDIDO ADD CONSTRAINT PRODUCT_ITEM_PEDIDO
     FOREIGN KEY (ID_PRODUTO) REFERENCES PRODUCT (ID_PRODUTO) ON DELETE CASCADE;
+
+ALTER TABLE AVALIACAO ADD CONSTRAINT FK_AVAL_PRODUTO
+    FOREIGN KEY (ID_PRODUTO) REFERENCES PRODUCT (ID_PRODUTO) ON DELETE CASCADE;
+
+ALTER TABLE AVALIACAO ADD CONSTRAINT FK_AVAL_USER
+    FOREIGN KEY (ID_USER) REFERENCES USERS (ID_USER) ON DELETE CASCADE;
+
+ALTER TABLE PERGUNTA ADD CONSTRAINT FK_PERG_PRODUTO
+    FOREIGN KEY (ID_PRODUTO) REFERENCES PRODUCT (ID_PRODUTO) ON DELETE CASCADE;
+
+ALTER TABLE PERGUNTA ADD CONSTRAINT FK_PERG_USER
+    FOREIGN KEY (ID_USER) REFERENCES USERS (ID_USER) ON DELETE SET NULL;

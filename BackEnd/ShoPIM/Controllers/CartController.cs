@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ShoPIM.Data;
 using ShoPIM.Models;
@@ -6,6 +7,7 @@ using ShoPIM.Models.DTOs;
 
 namespace ShoPIM.Controllers
 {
+    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class CartController : ControllerBase

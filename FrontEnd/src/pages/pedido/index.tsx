@@ -19,10 +19,10 @@ const ETAPAS = [
   { status: 'pendente', label: 'Pedido recebido', icon: ShoppingBag },
   { status: 'processando', label: 'Em processamento', icon: Package },
   { status: 'enviado', label: 'Enviado', icon: Truck },
-  { status: 'entregue', label: 'Entregue', icon: CheckCircle2 },
+  { status: 'concluído', label: 'Concluído', icon: CheckCircle2 },
 ]
 
-const STATUS_ORDER = ['pendente', 'processando', 'enviado', 'entregue']
+const STATUS_ORDER = ['pendente', 'processando', 'enviado', 'concluído']
 
 interface Props {
   id: number

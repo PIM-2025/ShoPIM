@@ -18,6 +18,8 @@ namespace ShoPIM.Data
         public DbSet<Pedido> Pedido { get; set; }
         public DbSet<ItemPedido> ItemPedido { get; set; }
         public DbSet<Configuracao> Configuracao { get; set; }
+        public DbSet<Avaliacao> Avaliacao { get; set; }
+        public DbSet<Pergunta> Pergunta { get; set; }
         #endregion
 
         #region OnModelCreating
@@ -141,6 +143,50 @@ namespace ShoPIM.Data
                     .WithMany()
                     .HasForeignKey(i => i.IdProduto)
                     .HasConstraintName("PRODUCT_ITEM_PEDIDO");
+            });
+
+            // AVALIACAO
+            modelBuilder.Entity<Avaliacao>(entity =>
+            {
+                entity.ToTable("AVALIACAO");
+                entity.HasKey(a => a.Id);
+                entity.Property(a => a.Id).HasColumnName("ID").ValueGeneratedNever();
+                entity.Property(a => a.IdProduto).HasColumnName("ID_PRODUTO");
+                entity.Property(a => a.IdUser).HasColumnName("ID_USER");
+                entity.Property(a => a.Nota).HasColumnName("NOTA");
+                entity.Property(a => a.Comentario).HasColumnName("COMENTARIO");
+                entity.Property(a => a.CriadoEm).HasColumnName("CRIADO_EM");
+                entity.HasOne(a => a.Produto)
+                    .WithMany()
+                    .HasForeignKey(a => a.IdProduto)
+                    .HasConstraintName("FK_AVAL_PRODUTO");
+                entity.HasOne(a => a.Usuario)
+                    .WithMany()
+                    .HasForeignKey(a => a.IdUser)
+                    .HasConstraintName("FK_AVAL_USER");
+            });
+
+            // PERGUNTA
+            modelBuilder.Entity<Pergunta>(entity =>
+            {
+                entity.ToTable("PERGUNTA");
+                entity.HasKey(p => p.Id);
+                entity.Property(p => p.Id).HasColumnName("ID").ValueGeneratedNever();
+                entity.Property(p => p.IdProduto).HasColumnName("ID_PRODUTO");
+                entity.Property(p => p.IdUser).HasColumnName("ID_USER");
+                entity.Property(p => p.Texto).HasColumnName("TEXTO");
+                entity.Property(p => p.Resposta).HasColumnName("RESPOSTA");
+                entity.Property(p => p.RespondidoEm).HasColumnName("RESPONDIDO_EM");
+                entity.Property(p => p.CriadoEm).HasColumnName("CRIADO_EM");
+                entity.HasOne(p => p.Produto)
+                    .WithMany()
+                    .HasForeignKey(p => p.IdProduto)
+                    .HasConstraintName("FK_PERG_PRODUTO");
+                entity.HasOne(p => p.Usuario)
+                    .WithMany()
+                    .HasForeignKey(p => p.IdUser)
+                    .HasConstraintName("FK_PERG_USER")
+                    .IsRequired(false);
             });
 
             // CART

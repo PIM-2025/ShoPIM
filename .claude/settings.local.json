@@ -10,7 +10,24 @@
       "Bash(wc:*)",
       "Bash(xargs ls:*)",
       "Bash(grep -E \"\\\\.\\(cs|java|tsx|ts\\)$\")",
-      "Bash(dotnet build:*)"
+      "Bash(dotnet build:*)",
+      "Bash(xargs basename:*)",
+      "WebFetch(domain:unsplash.com)",
+      "WebFetch(domain:source.unsplash.com)",
+      "WebSearch",
+      "WebFetch(domain:www.amazon.com.br)",
+      "WebFetch(domain:www.nike.com)",
+      "WebFetch(domain:www.samsung.com)",
+      "WebFetch(domain:www.dell.com)",
+      "WebFetch(domain:www.sony.com)",
+      "WebFetch(domain:www.gsmarena.com)",
+      "WebFetch(domain:www.amazon.com)",
+      "WebFetch(domain:www.kickscrew.com)",
+      "WebFetch(domain:www.ray-ban.com)",
+      "WebFetch(domain:www.havaianas.com)",
+      "WebFetch(domain:www.goat.com)",
+      "WebFetch(domain:adidas.com)",
+      "WebFetch(domain:www.levi.com.br)"
     ]
   }
 }

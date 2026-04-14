@@ -5,33 +5,66 @@ import { Produto } from '@/types/produtos'
 import { HeaderLanding } from '@/components/layout/header_landingpage'
 import { Rodape } from '@/components/layout/rodape'
 import { ProdutoDetalhe } from '@/components/layout/produtos_detalhe'
-import { Avaliacoes } from '@/components/layout/Avaliacoes'
 import { Perguntas } from '@/components/layout/Perguntas'
 import { Skeleton } from '@/components/ui/skeleton'
-import {
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
-} from '@/components/ui/tabs'
-import { FileText, MessageCircle, Star } from 'lucide-react'
+import { ChevronDown, ChevronUp, MessageCircle } from 'lucide-react'
+
+const DESCRICAO_LIMITE = 500
 
 function ProdutoDetalheSkeleton() {
   return (
-    <div className='grid grid-cols-1 gap-6 p-6 md:grid-cols-3'>
-      <div className='md:col-span-1'>
-        <Skeleton className='h-[300px] w-full rounded-xl' />
-      </div>
-      <div className='space-y-4 md:col-span-1'>
+    <div className='grid grid-cols-1 gap-6 p-6 md:grid-cols-2'>
+      <Skeleton className='h-[360px] w-full rounded-xl' />
+      <div className='space-y-4'>
         <Skeleton className='h-8 w-3/4' />
         <Skeleton className='h-4 w-1/2' />
         <Skeleton className='h-4 w-1/3' />
-        <Skeleton className='h-10 w-1/2' />
-      </div>
-      <div className='md:col-span-1'>
-        <Skeleton className='h-[200px] w-full rounded-xl' />
+        <Skeleton className='h-10 w-full' />
+        <Skeleton className='h-10 w-full' />
       </div>
     </div>
+  )
+}
+
+function SecaoDescricao({ descricao }: { descricao: string | undefined }) {
+  const [expandido, setExpandido] = useState(false)
+  const longa = (descricao?.length ?? 0) > DESCRICAO_LIMITE
+  const textoExibido =
+    longa && !expandido ? descricao!.slice(0, DESCRICAO_LIMITE) + '…' : descricao
+
+  return (
+    <section>
+      <h2 className='mb-4 text-xl font-bold text-foreground'>Descrição do produto</h2>
+      {descricao ? (
+        <div className='rounded-xl border border-border bg-muted/20 p-6'>
+          <p className='whitespace-pre-wrap text-sm leading-relaxed text-foreground/80'>
+            {textoExibido}
+          </p>
+          {longa && (
+            <button
+              onClick={() => setExpandido((e) => !e)}
+              className='mt-4 flex items-center gap-1 text-sm font-medium text-primary hover:underline'
+            >
+              {expandido ? (
+                <>
+                  <ChevronUp size={15} />
+                  Recolher descrição
+                </>
+              ) : (
+                <>
+                  <ChevronDown size={15} />
+                  Ver descrição completa
+                </>
+              )}
+            </button>
+          )}
+        </div>
+      ) : (
+        <p className='text-sm text-muted-foreground'>
+          Nenhuma descrição detalhada cadastrada para este produto.
+        </p>
+      )}
+    </section>
   )
 }
 
@@ -62,46 +95,23 @@ export function ProdutoDetalhePage() {
             Produto não encontrado.
           </p>
         ) : (
-          <>
+          <div className='space-y-10'>
             <ProdutoDetalhe produto={produto} />
 
-            <Tabs defaultValue='descricao' className='mt-10'>
-              <TabsList className='mb-6'>
-                <TabsTrigger value='descricao' className='flex items-center gap-1.5'>
-                  <FileText size={14} />
-                  Descrição
-                </TabsTrigger>
-                <TabsTrigger value='perguntas' className='flex items-center gap-1.5'>
-                  <MessageCircle size={14} />
-                  Perguntas
-                </TabsTrigger>
-                <TabsTrigger value='avaliacoes' className='flex items-center gap-1.5'>
-                  <Star size={14} />
-                  Avaliações
-                </TabsTrigger>
-              </TabsList>
+            <hr className='border-border' />
 
-              <TabsContent value='descricao'>
-                {produto.descricaoDetalhada ? (
-                  <div className='prose prose-sm dark:prose-invert max-w-none whitespace-pre-wrap rounded-xl border border-border p-6 text-sm leading-relaxed'>
-                    {produto.descricaoDetalhada}
-                  </div>
-                ) : (
-                  <p className='text-sm text-muted-foreground'>
-                    Nenhuma descrição detalhada cadastrada para este produto.
-                  </p>
-                )}
-              </TabsContent>
+            <SecaoDescricao descricao={produto.descricaoDetalhada} />
 
-              <TabsContent value='perguntas'>
-                <Perguntas idProduto={produto.id} />
-              </TabsContent>
+            <hr className='border-border' />
 
-              <TabsContent value='avaliacoes'>
-                <Avaliacoes idProduto={produto.id} />
-              </TabsContent>
-            </Tabs>
-          </>
+            <section className='pb-4'>
+              <h2 className='mb-6 flex items-center gap-2 text-xl font-bold text-foreground'>
+                <MessageCircle size={20} className='text-primary' />
+                Perguntas e respostas
+              </h2>
+              <Perguntas idProduto={produto.id} />
+            </section>
+          </div>
         )}
       </main>
 

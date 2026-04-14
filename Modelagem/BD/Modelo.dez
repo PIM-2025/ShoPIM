@@ -873,6 +873,21 @@
 <INC>1</INC>
 </DT>
 </ATTR>
+<ATTR>
+<NAME>IMAGENS</NAME>
+<ID>9</ID>
+<POSNR>0</POSNR>
+<SCHEMA></SCHEMA>
+<DESC>URLs de fotos adicionais separadas por quebra de linha</DESC>
+<NOTE></NOTE>
+<DOMAINID>-1</DOMAINID>
+<DT>
+<DTLISTNAME>VARCHAR2</DTLISTNAME>
+<LE>2000</LE>
+<SD>1</SD>
+<INC>1</INC>
+</DT>
+</ATTR>
 </ATTRIBUTES>
 </ENT>
 <ENT>

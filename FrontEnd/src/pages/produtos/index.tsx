@@ -1,11 +1,11 @@
 import { useQuery } from '@tanstack/react-query'
+import { getProdutos } from '@/service/produtoservice'
 import { ConfigDrawer } from '@/components/config-drawer'
 import { Header } from '@/components/layout/header'
 import { Main } from '@/components/layout/main'
 import { ProfileDropdown } from '@/components/profile-dropdown'
 import { Search } from '@/components/search'
 import { ThemeSwitch } from '@/components/theme-switch'
-import { getProdutos } from '@/service/produtoservice'
 import { ProdutosDialogs } from './components/produtos-dialogs'
 import { ProdutosPrimaryButtons } from './components/produtos-primary-buttons'
 import { ProdutosProvider } from './components/produtos-provider'
@@ -16,6 +16,11 @@ export function Produtos() {
     queryKey: ['produtos'],
     queryFn: () => getProdutos(),
   })
+
+  const produtosFormatados = produtos.map((p) => ({
+    ...p,
+    imagens: p.imagens ?? '',
+  }))
 
   return (
     <ProdutosProvider>
@@ -32,7 +37,9 @@ export function Produtos() {
         <div className='flex flex-wrap items-end justify-between gap-2'>
           <div>
             <h2 className='text-2xl font-bold tracking-tight'>Produtos</h2>
-            <p className='text-muted-foreground'>Gerencie o catálogo de produtos.</p>
+            <p className='text-muted-foreground'>
+              Gerencie o catálogo de produtos.
+            </p>
           </div>
           <ProdutosPrimaryButtons />
         </div>
@@ -42,7 +49,7 @@ export function Produtos() {
             Carregando produtos...
           </div>
         ) : (
-          <ProdutosTable data={produtos} />
+          <ProdutosTable data={produtosFormatados} />
         )}
       </Main>
 

@@ -8,4 +8,5 @@ export interface Produto {
   quantidade: number // era 'emEstoque'
   imagem: string
   descricaoDetalhada?: string
+  imagens?: string   // URLs separadas por \n — dividir ao usar
 }

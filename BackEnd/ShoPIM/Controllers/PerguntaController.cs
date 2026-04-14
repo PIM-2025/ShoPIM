@@ -27,20 +27,21 @@ namespace ShoPIM.Controllers
                 .Include(p => p.Usuario)
                 .Where(p => p.IdProduto == idProduto)
                 .OrderByDescending(p => p.CriadoEm)
-                .Select(p => new
-                {
-                    p.Id,
-                    p.IdProduto,
-                    p.IdUser,
-                    nomeUsuario = p.Usuario != null ? p.Usuario.Nome : "Anônimo",
-                    p.Texto,
-                    p.Resposta,
-                    p.RespondidoEm,
-                    p.CriadoEm,
-                })
                 .ToListAsync();
 
-            return Ok(perguntas);
+            var resultado = perguntas.Select(p => new
+            {
+                p.Id,
+                p.IdProduto,
+                p.IdUser,
+                nomeUsuario = p.Usuario?.Nome ?? "Anônimo",
+                p.Texto,
+                p.Resposta,
+                p.RespondidoEm,
+                p.CriadoEm,
+            });
+
+            return Ok(resultado);
         }
         #endregion
 

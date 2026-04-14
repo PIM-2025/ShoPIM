@@ -37,6 +37,7 @@ const formSchema = z.object({
     .number()
     .min(0, 'Quantidade deve ser maior ou igual a 0.'),
   imagem: z.string().optional().default(''),
+  imagens: z.string().optional().default(''),
   descricaoDetalhada: z.string().optional().default(''),
 })
 
@@ -66,9 +67,10 @@ export function ProdutosActionDialog({
           categoria: currentRow.categoria,
           quantidade: currentRow.quantidade,
           imagem: currentRow.imagem ?? '',
+          imagens: currentRow.imagens ?? '',
           descricaoDetalhada: currentRow.descricaoDetalhada ?? '',
         }
-      : { descricao: '', preco: 0, categoria: '', quantidade: 0, imagem: '', descricaoDetalhada: '' },
+      : { descricao: '', preco: 0, categoria: '', quantidade: 0, imagem: '', imagens: '', descricaoDetalhada: '' },
   })
 
   const mutation = useMutation<void, Error, ProdutoForm>({
@@ -78,10 +80,11 @@ export function ProdutosActionDialog({
           ...values,
           id: currentRow!.id,
           imagem: values.imagem ?? '',
+          imagens: values.imagens ?? '',
           descricaoDetalhada: values.descricaoDetalhada ?? '',
         })
       } else {
-        await createProduto({ ...values, imagem: values.imagem ?? '', descricaoDetalhada: values.descricaoDetalhada ?? '' })
+        await createProduto({ ...values, imagem: values.imagem ?? '', imagens: values.imagens ?? '', descricaoDetalhada: values.descricaoDetalhada ?? '' })
       }
     },
     onSuccess: () => {
@@ -232,6 +235,29 @@ export function ProdutosActionDialog({
             />
             <FormField
               control={form.control}
+              name='imagens'
+              render={({ field }) => (
+                <FormItem className='grid grid-cols-6 items-start space-y-0 gap-x-4 gap-y-1'>
+                  <FormLabel className='col-span-2 pt-2 text-end leading-snug text-muted-foreground'>
+                    Fotos adicionais
+                  </FormLabel>
+                  <FormControl>
+                    <Textarea
+                      placeholder={'https://foto2.jpg\nhttps://foto3.jpg'}
+                      className='col-span-4 resize-none field-sizing-fixed overflow-y-auto font-mono text-xs'
+                      rows={3}
+                      {...field}
+                    />
+                  </FormControl>
+                  <p className='col-span-4 col-start-3 text-xs text-muted-foreground'>
+                    Uma URL por linha. Aparecem no carrossel da página do produto.
+                  </p>
+                  <FormMessage className='col-span-4 col-start-3' />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
               name='descricaoDetalhada'
               render={({ field }) => (
                 <FormItem className='grid grid-cols-6 items-start space-y-0 gap-x-4 gap-y-1'>
@@ -241,7 +267,7 @@ export function ProdutosActionDialog({
                   <FormControl>
                     <Textarea
                       placeholder='Detalhes do produto, especificações, características...'
-                      className='col-span-4 resize-none'
+                      className='col-span-4 resize-none field-sizing-fixed overflow-y-auto'
                       rows={4}
                       {...field}
                     />

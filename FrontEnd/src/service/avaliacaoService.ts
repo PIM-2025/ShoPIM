@@ -18,6 +18,17 @@ export interface AvaliacaoResponse {
   avaliacoes: AvaliacaoItem[]
 }
 
+export interface ProdutoPendente {
+  id: number
+  descricao: string
+  imagem: string
+}
+
+export async function getAvaliacoesPendentes(): Promise<ProdutoPendente[]> {
+  const { data } = await api.get<ProdutoPendente[]>('/avaliacao/pendentes')
+  return data
+}
+
 export async function getAvaliacoes(idProduto: number): Promise<AvaliacaoResponse> {
   const { data } = await api.get<AvaliacaoResponse>(`/avaliacao/${idProduto}`)
   return data

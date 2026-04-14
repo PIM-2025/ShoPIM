@@ -77,6 +77,7 @@ namespace ShoPIM.Controllers
             existing.Quantidade = product.Quantidade;
             existing.Imagem = product.Imagem;
             existing.DescricaoDetalhada = product.DescricaoDetalhada;
+            existing.Imagens = product.Imagens;
 
             await _context.SaveChangesAsync();
             return NoContent();

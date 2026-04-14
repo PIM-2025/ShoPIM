@@ -55,9 +55,14 @@ namespace ShoPIM.Controllers
 
                 if (!jaAvaliou)
                 {
-                    podeAvaliar = await _context.Pedido
-                        .Where(p => p.IdUsuario == idUser && p.Status == "concluído")
-                        .AnyAsync(p => p.Itens.Any(i => i.IdProduto == idProduto));
+                    podeAvaliar = await (
+                        from p in _context.Pedido
+                        join i in _context.ItemPedido on p.Id equals i.IdPedido
+                        where p.IdUsuario == idUser
+                           && p.Status == "concluído"
+                           && i.IdProduto == idProduto
+                        select p.Id
+                    ).CountAsync() > 0;
                 }
             }
 
@@ -72,9 +77,14 @@ namespace ShoPIM.Controllers
         {
             var idUser = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
 
-            var comprouEConcluiu = await _context.Pedido
-                .Where(p => p.IdUsuario == idUser && p.Status == "concluído")
-                .AnyAsync(p => p.Itens.Any(i => i.IdProduto == request.IdProduto));
+            var comprouEConcluiu = await (
+                from p in _context.Pedido
+                join i in _context.ItemPedido on p.Id equals i.IdPedido
+                where p.IdUsuario == idUser
+                   && p.Status == "concluído"
+                   && i.IdProduto == request.IdProduto
+                select p.Id
+            ).CountAsync() > 0;
 
             if (!comprouEConcluiu)
                 return Forbid();
@@ -102,6 +112,36 @@ namespace ShoPIM.Controllers
 
             await _context.SaveChangesAsync();
             return Created("", new { message = "Avaliação registrada!" });
+        }
+        #endregion
+
+        #region GET: api/avaliacao/pendentes
+        [Authorize]
+        [HttpGet("pendentes")]
+        public async Task<ActionResult> GetPendentes()
+        {
+            var idUser = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
+
+            var jaAvaliados = await _context.Avaliacao
+                .Where(a => a.IdUser == idUser)
+                .Select(a => a.IdProduto)
+                .ToListAsync();
+
+            var pendentesRaw = await (
+                from p in _context.Pedido
+                join i in _context.ItemPedido on p.Id equals i.IdPedido
+                join prod in _context.Product on i.IdProduto equals prod.Id
+                where p.IdUsuario == idUser && p.Status == "concluído"
+                    && !jaAvaliados.Contains(prod.Id)
+                select new { prod.Id, prod.Descricao, prod.Imagem }
+            )
+            .ToListAsync();
+
+            var pendentes = pendentesRaw
+                .DistinctBy(x => x.Id)
+                .ToList();
+
+            return Ok(pendentes);
         }
         #endregion
 

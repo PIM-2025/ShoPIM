@@ -7,6 +7,7 @@ import { CarouselBody } from '@/components/layout/body_landingpage'
 import { Card } from '@/components/layout/cards'
 import { HeaderLanding } from '@/components/layout/header_landingpage'
 import { Rodape } from '@/components/layout/rodape'
+import { AvaliacaoPendentePopup } from '@/components/layout/AvaliacaoPendentePopup'
 import { Skeleton } from '@/components/ui/skeleton'
 import { cn } from '@/lib/utils'
 
@@ -204,6 +205,8 @@ export default function App() {
       <div className='mt-auto'>
         <Rodape />
       </div>
+
+      <AvaliacaoPendentePopup />
     </div>
   )
 }

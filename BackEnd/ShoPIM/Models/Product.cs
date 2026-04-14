@@ -33,5 +33,9 @@ namespace ShoPIM.Models
         [Column("DESCRICAO_DETALHADA")]
         [MaxLength(4000)]
         public string? DescricaoDetalhada { get; set; }
+
+        [Column("IMAGENS")]
+        [MaxLength(2000)]
+        public string? Imagens { get; set; }
     }
 }

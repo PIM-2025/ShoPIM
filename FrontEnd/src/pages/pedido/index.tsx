@@ -1,7 +1,9 @@
+import { useState } from 'react'
 import { format } from 'date-fns'
-import { useQuery } from '@tanstack/react-query'
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { Link } from '@tanstack/react-router'
 import { getPedido } from '@/service/pedidoService'
+import { criarAvaliacao } from '@/service/avaliacaoService'
 import { ptBR } from 'date-fns/locale'
 import {
   CheckCircle2,
@@ -9,11 +11,121 @@ import {
   MapPin,
   Package,
   ShoppingBag,
+  Star,
   Truck,
 } from 'lucide-react'
+import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Separator } from '@/components/ui/separator'
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog'
+import { cn } from '@/lib/utils'
+
+const NOTA_LABEL = ['', 'Péssimo', 'Ruim', 'Regular', 'Bom', 'Excelente']
+
+function AvaliarDialog({
+  idProduto,
+  nomeProduto,
+  imagem,
+}: {
+  idProduto: number
+  nomeProduto: string
+  imagem?: string
+}) {
+  const [open, setOpen] = useState(false)
+  const [nota, setNota] = useState(0)
+  const [hover, setHover] = useState(0)
+  const [comentario, setComentario] = useState('')
+  const [avaliado, setAvaliado] = useState(false)
+  const queryClient = useQueryClient()
+
+  const { mutate, isPending } = useMutation({
+    mutationFn: () => criarAvaliacao({ idProduto, nota, comentario }),
+    onSuccess: () => {
+      toast.success('Avaliação enviada!')
+      queryClient.invalidateQueries({ queryKey: ['avaliacoes', idProduto] })
+      setAvaliado(true)
+      setOpen(false)
+    },
+    onError: () => toast.error('Erro ao enviar avaliação.'),
+  })
+
+  if (avaliado) {
+    return (
+      <span className='flex items-center gap-1 text-xs font-medium text-green-600 dark:text-green-400'>
+        <Star size={12} className='fill-yellow-400 text-yellow-400' />
+        Avaliado
+      </span>
+    )
+  }
+
+  return (
+    <Dialog open={open} onOpenChange={setOpen}>
+      <DialogTrigger asChild>
+        <Button size='sm' variant='outline' className='h-7 gap-1 px-2 text-xs'>
+          <Star size={12} />
+          Avaliar
+        </Button>
+      </DialogTrigger>
+      <DialogContent className='sm:max-w-sm'>
+        <DialogHeader>
+          <DialogTitle>Avaliar produto</DialogTitle>
+        </DialogHeader>
+        <div className='flex items-center gap-3 rounded-lg bg-muted/40 p-3'>
+          {imagem && (
+            <img src={imagem} alt={nomeProduto} className='h-12 w-12 rounded-md object-cover' />
+          )}
+          <p className='text-sm font-medium leading-snug'>{nomeProduto}</p>
+        </div>
+        <div className='space-y-4'>
+          <div>
+            <p className='mb-2 text-sm text-muted-foreground'>Sua nota</p>
+            <div className='flex items-center gap-2'>
+              <div className='flex gap-1'>
+                {[1, 2, 3, 4, 5].map((n) => (
+                  <Star
+                    key={n}
+                    size={26}
+                    className={cn(
+                      'cursor-pointer transition',
+                      n <= (hover || nota)
+                        ? 'fill-yellow-400 text-yellow-400'
+                        : 'fill-transparent text-muted-foreground'
+                    )}
+                    onMouseEnter={() => setHover(n)}
+                    onMouseLeave={() => setHover(0)}
+                    onClick={() => setNota(n)}
+                  />
+                ))}
+              </div>
+              {nota > 0 && (
+                <span className='text-sm text-muted-foreground'>{NOTA_LABEL[nota]}</span>
+              )}
+            </div>
+          </div>
+          <textarea
+            value={comentario}
+            onChange={(e) => setComentario(e.target.value)}
+            placeholder='Deixe um comentário (opcional)'
+            maxLength={1000}
+            rows={3}
+            className='w-full resize-none rounded-lg border border-border bg-background px-3 py-2 text-sm outline-none focus:ring-1 focus:ring-primary'
+          />
+          <Button disabled={nota === 0 || isPending} onClick={() => mutate()} className='w-full'>
+            {isPending && <Loader2 size={14} className='mr-2 animate-spin' />}
+            Enviar avaliação
+          </Button>
+        </div>
+      </DialogContent>
+    </Dialog>
+  )
+}
 
 const ETAPAS = [
   { status: 'pendente', label: 'Pedido recebido', icon: ShoppingBag },
@@ -173,6 +285,38 @@ export function PedidoTracking({ id }: Props) {
               {pedido.endereco.cidade} — {pedido.endereco.estado}
             </p>
             <p>CEP: {pedido.endereco.cep}</p>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Avalie seus produtos */}
+      {pedido.status === 'concluído' && (
+        <Card className='mb-6 border-yellow-200 bg-yellow-50/40 dark:border-yellow-900/40 dark:bg-yellow-900/10'>
+          <CardHeader className='pb-3'>
+            <CardTitle className='flex items-center gap-2 text-base'>
+              <Star size={16} className='fill-yellow-400 text-yellow-400' />
+              Avalie seus produtos
+            </CardTitle>
+            <p className='text-xs text-muted-foreground'>
+              Sua opinião ajuda outros compradores.
+            </p>
+          </CardHeader>
+          <CardContent className='space-y-3'>
+            {pedido.itens.map((item, idx) => (
+              <div key={idx} className='flex items-center gap-3'>
+                {item.imagem ? (
+                  <img src={item.imagem} alt={item.descricao} className='h-10 w-10 rounded-lg object-cover' />
+                ) : (
+                  <div className='h-10 w-10 rounded-lg bg-muted' />
+                )}
+                <p className='flex-1 truncate text-sm font-medium'>{item.descricao}</p>
+                <AvaliarDialog
+                  idProduto={item.idProduto}
+                  nomeProduto={item.descricao}
+                  imagem={item.imagem}
+                />
+              </div>
+            ))}
           </CardContent>
         </Card>
       )}

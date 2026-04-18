@@ -60,19 +60,29 @@ export default function Checkout() {
     saveInfo: false,
   })
 
-  // Pré-carrega endereço existente do usuário
+  // Pré-carrega endereço existente do usuário; usa CEP do cálculo de frete como fallback
   useEffect(() => {
-    if (!usuario?.id) return
+    const cepFrete = localStorage.getItem('frete_cep') ?? ''
+
+    if (!usuario?.id) {
+      if (cepFrete) {
+        const formatted = cepFrete.replace(/(\d{5})(\d)/, '$1-$2')
+        setFormData((prev) => ({ ...prev, zipCode: formatted }))
+      }
+      return
+    }
+
     getEnderecoUsuario(usuario.id).then((end) => {
-      if (!end) return
+      const cepSalvo = end?.cep ?? ''
+      const zipCode = cepSalvo || (cepFrete ? cepFrete.replace(/(\d{5})(\d)/, '$1-$2') : '')
       setFormData((prev) => ({
         ...prev,
-        rua: end.rua ?? '',
-        numero: end.numero ?? '',
-        complemento: end.complemento ?? '',
-        city: end.cidade ?? '',
-        state: end.estado ?? '',
-        zipCode: end.cep ?? '',
+        rua: end?.rua ?? '',
+        numero: end?.numero ?? '',
+        complemento: end?.complemento ?? '',
+        city: end?.cidade ?? '',
+        state: end?.estado ?? '',
+        zipCode,
       }))
     })
   }, [usuario?.id])

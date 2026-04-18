@@ -9,6 +9,7 @@ import { Produto } from '@/types/produtos'
 import { getAvaliacoes } from '@/service/avaliacaoService'
 import { Avaliacoes } from '@/components/layout/Avaliacoes'
 import { GuiaTamanhos } from '@/components/layout/GuiaTamanhos'
+import { CalculoFrete } from '@/components/layout/CalculoFrete'
 import {
   Carousel,
   CarouselContent,
@@ -300,6 +301,8 @@ export function ProdutoDetalhe({ produto }: ProdutoDetalheProps) {
             >
               Comprar agora
             </button>
+
+            <CalculoFrete />
           </div>
 
           <div className='h-px bg-border' />

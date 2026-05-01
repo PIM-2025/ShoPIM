@@ -106,7 +106,8 @@ app.UseSwaggerUI(c =>
 });
 
 app.UseCors("FrontendPolicy");
-app.UseHttpsRedirection();
+if (!app.Environment.IsProduction())
+    app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();

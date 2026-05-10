@@ -67,8 +67,8 @@ export async function enviarMensagem(
   conteudo: string,
   remetenteTipo: 'cliente' | 'admin',
   remetenteNome: string
-): Promise<void> {
-  await getConnection().invoke('EnviarMensagem', conversaId, conteudo, remetenteTipo, remetenteNome)
+): Promise<boolean> {
+  return getConnection().invoke('EnviarMensagem', conversaId, conteudo, remetenteTipo, remetenteNome)
 }
 
 // ─── REST API ────────────────────────────────────────────────────────────────

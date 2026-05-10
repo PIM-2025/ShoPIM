@@ -33,7 +33,13 @@ const addSchema = z.object({
   nome: z.string().min(1, 'Nome é obrigatório.'),
   email: z.email({ error: (iss) => (iss.input === '' ? 'E-mail é obrigatório.' : undefined) }),
   cpf: z.string().optional(),
-  senha: z.string().min(6, 'Senha deve ter pelo menos 6 caracteres.'),
+  senha: z
+    .string()
+    .min(7, 'Senha deve ter pelo menos 7 caracteres.')
+    .regex(/[A-Z]/, 'A senha deve conter pelo menos uma letra maiúscula.')
+    .regex(/[a-z]/, 'A senha deve conter pelo menos uma letra minúscula.')
+    .regex(/[0-9]/, 'A senha deve conter pelo menos um número.')
+    .regex(/[^A-Za-z0-9]/, 'A senha deve conter pelo menos um caractere especial.'),
 })
 
 const editSchema = z.object({
@@ -262,7 +268,12 @@ export function ClientesActionDialog({ currentRow, open, onOpenChange }: Props) 
                   <FormItem className='grid grid-cols-6 items-center space-y-0 gap-x-4 gap-y-1'>
                     <FormLabel className='col-span-2 text-end'>Senha</FormLabel>
                     <FormControl>
-                      <PasswordInput placeholder='Mínimo 6 caracteres' className='col-span-4' {...field} />
+                      <div className='col-span-4'>
+                        <PasswordInput
+                          placeholder='Mínimo 7 caracteres, com maiúscula, minúscula, número e especial'
+                          {...field}
+                        />
+                      </div>
                     </FormControl>
                     <FormMessage className='col-span-4 col-start-3' />
                   </FormItem>

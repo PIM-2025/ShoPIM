@@ -89,22 +89,26 @@ export default function App() {
       </div>
 
       {/* CATEGORIAS */}
-      <section className='mx-auto w-full max-w-7xl px-4 pt-10 pb-6 md:px-6'>
-        <h2 className='mb-4 text-xl font-semibold'>Categorias</h2>
-        <div className='grid grid-cols-1 gap-4 sm:grid-cols-3'>
+      <section className='mx-auto hidden w-full max-w-7xl px-4 pt-6 pb-6 sm:block md:px-6 md:pt-10'>
+        <h2 className='mb-3 text-lg font-semibold sm:mb-4 sm:text-xl'>Categorias</h2>
+
+        <div className='grid grid-cols-1 gap-3 min-[520px]:grid-cols-2 sm:grid-cols-3 sm:gap-4'>
           {CATEGORIES.map((cat) => (
             <Link
               key={cat.slug}
               to='/categoria/$slug'
               params={{ slug: cat.slug }}
-              className='group flex items-center gap-4 rounded-2xl border border-border bg-zinc-100 p-6 transition duration-200 hover:-translate-y-0.5 hover:border-orange-600 hover:shadow-md dark:bg-zinc-800'
+              className='group flex items-start gap-3 rounded-2xl border border-border bg-zinc-100 p-4 transition duration-200 hover:border-orange-600 hover:shadow-md sm:items-center sm:gap-4 sm:p-6 dark:bg-zinc-800'
             >
-              <div className='flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-orange-600 text-white transition group-hover:bg-orange-700'>
-                <cat.icon size={22} />
+              <div className='flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-orange-600 text-white transition group-hover:bg-orange-700 sm:h-12 sm:w-12'>
+                <cat.icon size={20} className='sm:size-[22px]' />
               </div>
-              <div>
+
+              <div className='min-w-0'>
                 <p className='font-semibold text-foreground'>{cat.label}</p>
-                <p className='text-xs text-muted-foreground'>{cat.description}</p>
+                <p className='line-clamp-2 text-[11px] text-muted-foreground sm:text-xs'>
+                  {cat.description}
+                </p>
               </div>
             </Link>
           ))}
@@ -137,7 +141,7 @@ export default function App() {
         </div>
 
         {/* Filtros rápidos de categoria + ordenação */}
-        <div className='mb-6 flex flex-col gap-2 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between'>
+        <div className='mb-6 hidden sm:flex sm:flex-row sm:flex-wrap sm:items-center sm:justify-between sm:gap-2'>
           {/* Categorias */}
           <div className='overflow-x-auto pb-1'>
             <div className='flex w-max gap-2'>

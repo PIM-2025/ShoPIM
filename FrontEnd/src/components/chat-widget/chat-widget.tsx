@@ -1,9 +1,4 @@
 import { useEffect, useRef, useState } from 'react'
-import { MessageCircle, X, Send, Loader2 } from 'lucide-react'
-import { cn } from '@/lib/utils'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { useAuthStore } from '@/stores/auth-store'
 import {
   criarConversa,
   entrarConversa,
@@ -13,6 +8,11 @@ import {
   startConnection,
   type Mensagem,
 } from '@/service/chatService'
+import { MessageCircle, X, Send, Loader2 } from 'lucide-react'
+import { useAuthStore } from '@/stores/auth-store'
+import { cn } from '@/lib/utils'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
 
 const STORAGE_KEY = 'shopim_conversa_id'
 
@@ -36,6 +36,10 @@ export function ChatWidget() {
     const stored = localStorage.getItem(STORAGE_KEY)
     return stored ? Number(stored) : null
   })
+  const [botAtivo, setBotAtivo] = useState<boolean>(() => {
+    const stored = localStorage.getItem(`${STORAGE_KEY}_bot`)
+    return stored !== 'false'
+  })
   const [mensagens, setMensagens] = useState<Mensagem[]>([])
   const [inputNome, setInputNome] = useState('')
   const [inputMsg, setInputMsg] = useState('')
@@ -50,9 +54,25 @@ export function ChatWidget() {
     const conn = getConnection()
 
     const onMensagem = (msg: Mensagem) => {
+      // Se um admin humano mandar mensagem, desativa o bot automaticamente
+      if (
+        msg.remetenteTipo === 'admin' &&
+        msg.remetenteNome !== 'Assistente Virtual' &&
+        msg.remetenteNome !== 'Sistema'
+      ) {
+        setBotAtivo(false)
+        localStorage.setItem(`${STORAGE_KEY}_bot`, 'false')
+      }
+
       setMensagens((prev) => {
         const semTemp = prev.filter(
-          (m) => !(m.id < 0 && m.id !== -999999 && m.conteudo === msg.conteudo && m.remetenteTipo === msg.remetenteTipo)
+          (m) =>
+            !(
+              m.id < 0 &&
+              m.id !== -999999 &&
+              m.conteudo === msg.conteudo &&
+              m.remetenteTipo === msg.remetenteTipo
+            )
         )
         if (semTemp.some((m) => m.id === msg.id)) return semTemp
         return [...semTemp, msg]
@@ -63,21 +83,34 @@ export function ChatWidget() {
       // Adiciona mensagem de sistema e marca como encerrada
       setMensagens((prev) => {
         if (prev.some((m) => m.id === MSG_ENCERRADA.id)) return prev
-        return [...prev, { ...MSG_ENCERRADA, enviadoEm: new Date().toISOString() }]
+        return [
+          ...prev,
+          { ...MSG_ENCERRADA, enviadoEm: new Date().toISOString() },
+        ]
       })
       setEncerrada(true)
       // Remove do storage para que novo envio crie nova conversa
       localStorage.removeItem(STORAGE_KEY)
+      localStorage.removeItem(`${STORAGE_KEY}_bot`)
+      setBotAtivo(true)
+    }
+
+    const onDesativarBot = () => {
+      setBotAtivo(false)
+      localStorage.setItem(`${STORAGE_KEY}_bot`, 'false')
     }
 
     conn.off('ReceberMensagem')
     conn.off('ConversaFechada')
+    conn.off('DesativarBot')
     conn.on('ReceberMensagem', onMensagem)
     conn.on('ConversaFechada', onFechada)
+    conn.on('DesativarBot', onDesativarBot)
 
     return () => {
       conn.off('ReceberMensagem', onMensagem)
       conn.off('ConversaFechada', onFechada)
+      conn.off('DesativarBot', onDesativarBot)
     }
   }, [])
 
@@ -95,6 +128,11 @@ export function ChatWidget() {
         setIniciado(true)
       } catch (e) {
         console.error('Chat: erro ao conectar', e)
+        // Se a conversa falhar ao carregar (ex: foi apagada no banco), limpa o cache local
+        localStorage.removeItem(STORAGE_KEY)
+        localStorage.removeItem(`${STORAGE_KEY}_bot`)
+        setConversaId(null)
+        setMensagens([])
       } finally {
         setConnecting(false)
       }
@@ -106,6 +144,21 @@ export function ChatWidget() {
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' })
   }, [mensagens])
+
+  // Função que envia o histórico para a API do Groq e responde como Bot
+  const handleBotResponse = async (
+    idConversa: number,
+    textoUsuario: string
+  ) => {
+    if (!botAtivo) return
+
+    try {
+      const conn = getConnection()
+      await conn.invoke('PedirRespostaBot', idConversa, textoUsuario)
+    } catch (e) {
+      console.error('Chat: erro ao solicitar resposta ao bot', e)
+    }
+  }
 
   // Inicia conversa (primeira mensagem ou reabertura após encerramento)
   const handleIniciar = async () => {
@@ -136,18 +189,31 @@ export function ChatWidget() {
       await startConnection()
       const conversa = await criarConversa(nome, usuario?.id)
       localStorage.setItem(STORAGE_KEY, String(conversa.id))
+      localStorage.setItem(`${STORAGE_KEY}_bot`, 'true')
       setConversaId(conversa.id)
       setNomeCliente(nome)
       setEncerrada(false)
       setIniciado(true)
+      setBotAtivo(true)
       await entrarConversa(conversa.id)
       await enviarMensagem(conversa.id, texto, 'cliente', nome)
+      await handleBotResponse(conversa.id, texto)
     } catch (e) {
       console.error('Chat: erro ao iniciar', e)
       setMensagens((prev) => prev.filter((m) => m.id !== tempId))
     } finally {
       setConnecting(false)
     }
+  }
+
+  const resetConversaInvalida = () => {
+    localStorage.removeItem(STORAGE_KEY)
+    localStorage.removeItem(`${STORAGE_KEY}_bot`)
+    setConversaId(null)
+    setIniciado(false)
+    setEncerrada(false)
+    setBotAtivo(true)
+    setMensagens([])
   }
 
   // Envia mensagem numa conversa existente
@@ -167,10 +233,24 @@ export function ChatWidget() {
     setMensagens((prev) => [...prev, tempMsg])
     setInputMsg('')
     try {
-      await enviarMensagem(conversaId, texto, 'cliente', nomeCliente || 'Cliente')
+      const enviada = await enviarMensagem(
+        conversaId,
+        texto,
+        'cliente',
+        nomeCliente || 'Cliente'
+      )
+      if (!enviada) {
+        setMensagens((prev) => prev.filter((m) => m.id !== tempId))
+        resetConversaInvalida()
+        return
+      }
+      await handleBotResponse(conversaId, texto)
     } catch (e) {
       console.error('Chat: erro ao enviar', e)
       setMensagens((prev) => prev.filter((m) => m.id !== tempId))
+      if (e instanceof Error && e.message.includes('CONVERSA_NAO_ENCONTRADA')) {
+        resetConversaInvalida()
+      }
     }
   }
 
@@ -196,15 +276,21 @@ export function ChatWidget() {
   const precisaNome = (!usuario || !usuario.name) && !conversaId && !encerrada
 
   return (
-    <div className='fixed bottom-6 right-6 z-50 flex flex-col items-end gap-3'>
+    <div className='fixed right-6 bottom-6 z-50 flex flex-col items-end gap-3'>
       {isOpen && (
         <div className='flex h-[420px] w-80 flex-col overflow-hidden rounded-2xl border border-border bg-background shadow-2xl'>
           {/* Header */}
           <div className='flex items-center justify-between bg-primary px-4 py-3'>
             <div>
-              <p className='text-sm font-semibold text-primary-foreground'>Suporte ShoPIM</p>
+              <p className='text-sm font-semibold text-primary-foreground'>
+                Suporte ShoPIM
+              </p>
               <p className='text-xs text-primary-foreground/70'>
-                {connecting ? 'Conectando...' : encerrada ? 'Encerrado' : 'Online'}
+                {connecting
+                  ? 'Conectando...'
+                  : encerrada
+                    ? 'Encerrado'
+                    : 'Online'}
               </p>
             </div>
             <button
@@ -226,14 +312,20 @@ export function ChatWidget() {
             )}
             {connecting && (
               <div className='flex flex-1 items-center justify-center'>
-                <Loader2 size={20} className='animate-spin text-muted-foreground' />
+                <Loader2
+                  size={20}
+                  className='animate-spin text-muted-foreground'
+                />
               </div>
             )}
             {mensagens.map((msg) => {
               // Mensagem de sistema (encerramento)
               if (msg.id === -999999 || msg.remetenteNome === 'Sistema') {
                 return (
-                  <p key={msg.id} className='text-center text-[11px] text-muted-foreground italic py-1'>
+                  <p
+                    key={msg.id}
+                    className='py-1 text-center text-[11px] text-muted-foreground italic'
+                  >
                     {msg.conteudo}
                   </p>
                 )
@@ -300,7 +392,11 @@ export function ChatWidget() {
               <Button
                 size='icon'
                 className='h-8 w-8 shrink-0'
-                disabled={connecting || !inputMsg.trim() || (precisaNome && !inputNome.trim())}
+                disabled={
+                  connecting ||
+                  !inputMsg.trim() ||
+                  (precisaNome && !inputNome.trim())
+                }
                 onClick={handleSubmit}
               >
                 {connecting ? (

@@ -17,7 +17,6 @@ namespace ShoPIM.Models
 
         [Column("PRECO")]
         [Required]
-        [MaxLength(255)]
         public decimal Preco { get; set; }
 
         [Column("CATEGORIA")]

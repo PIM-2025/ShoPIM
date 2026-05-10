@@ -258,7 +258,8 @@ namespace ShoPIM.Controllers
         public string Email { get; set; } = string.Empty;
 
         [Required(ErrorMessage = "Senha é obrigatória.")]
-        [MinLength(6, ErrorMessage = "Senha deve ter no mínimo 6 caracteres.")]
+        [MinLength(7, ErrorMessage = "Senha deve ter no mínimo 7 caracteres.")]
+        [RegularExpression(@"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).+$", ErrorMessage = "A senha deve conter ao menos uma letra maiúscula, uma minúscula, um número e um caractere especial.")]
         public string Senha { get; set; } = string.Empty;
 
         [StringLength(14, ErrorMessage = "CPF inválido.")]
@@ -288,7 +289,8 @@ namespace ShoPIM.Controllers
         public string Token { get; set; } = string.Empty;
 
         [Required(ErrorMessage = "Nova senha é obrigatória.")]
-        [MinLength(6, ErrorMessage = "Senha deve ter no mínimo 6 caracteres.")]
+        [MinLength(7, ErrorMessage = "Senha deve ter no mínimo 7 caracteres.")]
+        [RegularExpression(@"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).+$", ErrorMessage = "A senha deve conter ao menos uma letra maiúscula, uma minúscula, um número e um caractere especial.")]
         public string NovaSenha { get; set; } = string.Empty;
     }
 

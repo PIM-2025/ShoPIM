@@ -128,7 +128,13 @@ export function Chats() {
     const texto = inputMsg.trim()
     if (!texto || !selected) return
     setInputMsg('')
-    await enviarMensagem(selected.id, texto, 'admin', adminNome)
+    const enviada = await enviarMensagem(selected.id, texto, 'admin', adminNome)
+    if (!enviada) {
+      setSelected(null)
+      setMensagens([])
+      const lista = await getConversas()
+      setConversas(lista)
+    }
   }
 
   const handleKeyDown = (e: React.KeyboardEvent) => {

@@ -22,7 +22,16 @@ export function ProfileDropdown() {
   const location = useRouterState({ select: (s) => s.location.pathname })
 
   const isAdmin = auth.user?.role.includes('admin') ?? false
-  const ADMIN_PREFIXES = ['/dashboard', '/chats', '/clientes', '/produtos', '/pedidos', '/users', '/settings', '/help-center']
+  const ADMIN_PREFIXES = [
+    '/dashboard',
+    '/chats',
+    '/clientes',
+    '/produtos',
+    '/pedidos',
+    '/users',
+    '/settings',
+    '/help-center',
+  ]
   const onAdminArea = ADMIN_PREFIXES.some((p) => location.startsWith(p))
 
   return (
@@ -70,7 +79,7 @@ export function ProfileDropdown() {
               )}
             </DropdownMenuItem>
           )}
-          {isAdmin && !onAdminArea && (
+          {!onAdminArea && (
             <DropdownMenuItem asChild>
               <Link to='/minhas-compras'>
                 <ShoppingBag className='mr-2 h-4 w-4' />

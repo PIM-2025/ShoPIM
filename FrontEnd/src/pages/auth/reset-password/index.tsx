@@ -3,7 +3,7 @@ import { z } from 'zod'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useNavigate } from '@tanstack/react-router'
-import { Loader2, ShieldCheck } from 'lucide-react'
+import { Check, Loader2, ShieldCheck, X } from 'lucide-react'
 import { toast } from 'sonner'
 import { resetPassword } from '@/service/authService'
 import { cn } from '@/lib/utils'
@@ -28,13 +28,51 @@ import { PasswordInput } from '@/components/password-input'
 
 const formSchema = z
   .object({
-    novaSenha: z.string().min(7, 'A senha deve ter pelo menos 7 caracteres.'),
+    novaSenha: z
+      .string()
+      .min(1, 'Por favor, insira sua senha.')
+      .min(7, 'A senha deve ter pelo menos 7 caracteres.'),
     confirmar: z.string().min(1, 'Confirme a senha.'),
   })
   .refine((d) => d.novaSenha === d.confirmar, {
     message: 'As senhas não coincidem.',
     path: ['confirmar'],
   })
+
+const passwordRules = [
+  { label: 'Pelo menos 7 caracteres', test: (v: string) => v.length >= 7 },
+  { label: 'Uma letra maiúscula', test: (v: string) => /[A-Z]/.test(v) },
+  { label: 'Uma letra minúscula', test: (v: string) => /[a-z]/.test(v) },
+  { label: 'Um número', test: (v: string) => /[0-9]/.test(v) },
+  {
+    label: 'Um caractere especial',
+    test: (v: string) => /[^A-Za-z0-9]/.test(v),
+  },
+]
+
+function PasswordChecklist({ value }: { value: string }) {
+  if (!value) return null
+
+  return (
+    <ul className='mt-1 space-y-1'>
+      {passwordRules.map(({ label, test }) => {
+        const passed = test(value)
+        return (
+          <li
+            key={label}
+            className={cn(
+              'flex items-center gap-1.5 text-xs',
+              passed ? 'text-green-600' : 'text-muted-foreground'
+            )}
+          >
+            {passed ? <Check className='size-3' /> : <X className='size-3' />}
+            {label}
+          </li>
+        )
+      })}
+    </ul>
+  )
+}
 
 export function ResetPassword() {
   const navigate = useNavigate()
@@ -44,6 +82,8 @@ export function ResetPassword() {
     resolver: zodResolver(formSchema),
     defaultValues: { novaSenha: '', confirmar: '' },
   })
+
+  const passwordValue = form.watch('novaSenha')
 
   async function onSubmit(data: z.infer<typeof formSchema>) {
     const token = sessionStorage.getItem('reset_token')
@@ -91,6 +131,7 @@ export function ResetPassword() {
                     <FormControl>
                       <PasswordInput placeholder='Mínimo 7 caracteres' {...field} />
                     </FormControl>
+                    <PasswordChecklist value={passwordValue} />
                     <FormMessage />
                   </FormItem>
                 )}

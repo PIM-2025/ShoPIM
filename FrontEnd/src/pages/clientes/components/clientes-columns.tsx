@@ -94,6 +94,32 @@ export const clientesColumns: ColumnDef<Cliente>[] = [
     enableHiding: false,
   },
   {
+    id: 'endereco',
+    header: ({ column }) => <DataTableColumnHeader column={column} title='Endereço' />,
+    cell: ({ row }) => {
+      const addresses = row.original.addresses ?? []
+      const principal = addresses[0]
+      if (!principal) return <span className='text-muted-foreground'>—</span>
+
+      const endereco = [
+        principal.rua,
+        principal.numero,
+        principal.cidade,
+        principal.estado,
+      ]
+        .filter(Boolean)
+        .join(', ')
+
+      return (
+        <LongText className='max-w-72'>
+          {endereco || principal.cep || '—'}
+        </LongText>
+      )
+    },
+    meta: { className: 'max-md:hidden' },
+    enableSorting: false,
+  },
+  {
     accessorKey: 'role',
     header: ({ column }) => <DataTableColumnHeader column={column} title='Perfil' />,
     cell: ({ row }) => {

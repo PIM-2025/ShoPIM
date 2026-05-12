@@ -25,3 +25,7 @@ export async function updateProduto(id: number, produto: Produto): Promise<void>
 export async function deleteProduto(id: number): Promise<void> {
   await api.delete(`/Product/${id}`)
 }
+
+export async function updateProdutoStatus(id: number, ativo: boolean): Promise<void> {
+  await api.patch(`/Product/${id}/status`, { ativo })
+}

@@ -1,5 +1,15 @@
 import { api } from './api'
 
+export interface ClienteAddressAPI {
+  id: number
+  rua: string
+  numero: string
+  cidade: string
+  estado: string
+  cep: string
+  complemento?: string | null
+}
+
 export interface ClienteAPI {
   id: number
   nome: string
@@ -8,6 +18,7 @@ export interface ClienteAPI {
   dataCadastro: string
   ativo: number
   role: number
+  addresses?: ClienteAddressAPI[]
 }
 
 export async function getClientes(): Promise<ClienteAPI[]> {

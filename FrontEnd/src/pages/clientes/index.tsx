@@ -19,6 +19,7 @@ export function Clientes() {
       return data.map((c) => ({
         ...c,
         dataCadastro: c.dataCadastro ? new Date(c.dataCadastro) : null,
+        addresses: c.addresses ?? [],
       }))
     },
   })

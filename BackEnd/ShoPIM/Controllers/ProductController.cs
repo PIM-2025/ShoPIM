@@ -98,5 +98,28 @@ namespace ShoPIM.Controllers
             return NoContent();
         }
         #endregion
+
+        #region PATCH: api/product/{id}/status
+        [Authorize(Roles = "1")]
+        [HttpPatch("{id}/status")]
+        public async Task<ActionResult> UpdateProductStatus(int id, [FromBody] UpdateProductStatusRequest request)
+        {
+            var product = await _context.Product.FindAsync(id);
+            if (product == null) return NotFound(new { message = "Produto não encontrado." });
+
+            if (!request.Ativo)
+            {
+                product.Quantidade = 0;
+            }
+
+            await _context.SaveChangesAsync();
+            return NoContent();
+        }
+        #endregion
+    }
+
+    public class UpdateProductStatusRequest
+    {
+        public bool Ativo { get; set; }
     }
 }

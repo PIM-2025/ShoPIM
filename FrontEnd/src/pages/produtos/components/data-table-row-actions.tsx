@@ -1,6 +1,6 @@
 import { DotsHorizontalIcon } from '@radix-ui/react-icons'
 import { type Row } from '@tanstack/react-table'
-import { Pencil, Trash2 } from 'lucide-react'
+import { CircleOff, Pencil, Trash2 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import {
   DropdownMenu,
@@ -25,7 +25,7 @@ export function DataTableRowActions({ row }: Props) {
           <span className='sr-only'>Abrir menu</span>
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align='end' className='w-[160px]'>
+      <DropdownMenuContent align='end' className='w-[180px]'>
         <DropdownMenuItem
           onClick={() => {
             setCurrentRow(row.original)
@@ -34,6 +34,15 @@ export function DataTableRowActions({ row }: Props) {
         >
           Editar
           <DropdownMenuShortcut><Pencil size={16} /></DropdownMenuShortcut>
+        </DropdownMenuItem>
+        <DropdownMenuItem
+          onClick={() => {
+            setCurrentRow(row.original)
+            setOpen('status')
+          }}
+        >
+          Marcar inativo
+          <DropdownMenuShortcut><CircleOff size={16} /></DropdownMenuShortcut>
         </DropdownMenuItem>
         <DropdownMenuSeparator />
         <DropdownMenuItem

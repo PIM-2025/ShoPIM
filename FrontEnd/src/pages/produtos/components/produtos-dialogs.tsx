@@ -1,5 +1,6 @@
 import { ProdutosActionDialog } from './produtos-action-dialog'
 import { ProdutosDeleteDialog } from './produtos-delete-dialog'
+import { ProdutosStatusDialog } from './produtos-status-dialog'
 import { useProdutos } from './produtos-provider'
 
 export function ProdutosDialogs() {
@@ -30,6 +31,12 @@ export function ProdutosDialogs() {
             key={`produto-delete-${currentRow.id}`}
             open={open === 'delete'}
             onOpenChange={() => closeWithDelay(() => setOpen('delete'))}
+            currentRow={currentRow}
+          />
+          <ProdutosStatusDialog
+            key={`produto-status-${currentRow.id}`}
+            open={open === 'status'}
+            onOpenChange={() => closeWithDelay(() => setOpen('status'))}
             currentRow={currentRow}
           />
         </>

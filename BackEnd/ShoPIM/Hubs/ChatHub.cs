@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Globalization;
 using System.Text;
 using System.Text.Json;
 using ShoPIM.Data;
@@ -96,7 +97,7 @@ namespace ShoPIM.Hubs
 
                 var produtosDisponiveis = await db.Product
                     .Take(50)
-                    .Select(p => $"- {p.Descricao}")
+                    .Select(p => $"- {p.Descricao} | Preço: R$ {p.Preco.ToString("0.00", CultureInfo.InvariantCulture)} | Estoque: {p.Quantidade.ToString("0.##", CultureInfo.InvariantCulture)}")
                     .ToListAsync();
 
                 var catalogoStr = string.Join("\n", produtosDisponiveis);
